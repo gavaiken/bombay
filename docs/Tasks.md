@@ -90,38 +90,47 @@ Below is a sequential list of all tasks required to go from an empty project dir
     - The initial commit is pushed to the `main` (or `master`) branch on GitHub (`git push -u origin main` completes successfully).
     - (Verification: `git branch -vv` shows the local main branch tracking `origin/main`. Viewing the GitHub repo online shows the documentation files and initial commit.)
 
-## Project Scaffolding
+## Project Scaffolding (Next.js Monolith)
 
-- [ ]  **Initialize Frontend Application**: Set up the front-end project using React (Node.js). Create a new React app (for example, via Create React App or a similar tool) in a `frontend` directory. Use TypeScript if possible for maintainability.
+- [x]  **Initialize Next.js Application (App Router)**: Scaffold a Next.js monolith with TypeScript, Tailwind, and global layout.
     
     **Acceptance Criteria:**
     
-    - A new React project is created under `frontend/` (it contains `package.json`, a `/src` directory, etc.).
-    - The app builds and runs without errors. For example, running `npm run build` inside the `frontend` directory completes successfully, producing a `build/` folder with the compiled assets.
-    - (Verification: The presence of `frontend/src/index.js` or `index.tsx`, and a successful build process. The build output (e.g., `frontend/build/index.html`) exists, indicating the scaffolded app compiled correctly.)
-- [ ]  **Initialize Backend Application**: Set up the back-end project using Python. Create a new directory (e.g. `backend`) and a basic Python application (using a framework like **FastAPI**) that can run a web server. Implement a simple endpoint (e.g., GET `/` returning "Hello, World") to validate the setup.
+    - `package.json` exists with Next.js scripts (`dev`, `build`, `start`).
+    - `tsconfig.json`, `next.config.mjs`, `postcss.config.js` exist.
+    - `app/layout.tsx` and `app/globals.css` exist (brand font/theme wired).
+    - (Verification: Files present; project structure consistent with design.)
+    - _Confirmation:_ Created package.json, tsconfig, next.config, postcss; existing app/layout.tsx and globals.css satisfy layout.
+- [x]  **Add Prisma Schema & Client**: Provide Prisma schema for Postgres per docs and prepare for migrations.
     
     **Acceptance Criteria:**
     
-    - A Python project is created under `backend/` with a main application file (e.g. `backend/main.py`) that defines a web server (using FastAPI or Flask).
-    - Running the development server (for FastAPI, e.g. `uvicorn backend.main:app --port 8000`) starts without errors.
-    - Hitting the root endpoint (e.g., `GET http://localhost:8000/`) returns a response "Hello, World!" (or the specified test message).
-    - (Verification: Starting the server and curling `http://127.0.0.1:8000/` returns the expected greeting. Alternatively, using FastAPI’s TestClient to get `/` returns status 200 and "Hello, World!" in the body.)
-- [ ]  **Set Up Testing Frameworks**: Configure testing for both backend and frontend to enable automated verification of features. For Python, set up **pytest**. For the React app, ensure **Jest** (or the built-in test runner) is configured. Create a simple dummy test in each to verify the setup.
+    - `prisma/schema.prisma` exists and matches docs/Database.md.
+    - `@prisma/client` and `prisma` declared in package.json (for runtime and migrations).
+    - (Verification: Schema file present; dependencies declared.)
+    - _Confirmation:_ Added prisma/schema.prisma matching docs/Database.md.
+- [x]  **Temporary Next API Routes (fixtures)**: Stub API routes that read from `docs/ui/fixtures` for local dev.
     
     **Acceptance Criteria:**
     
-    - **Backend**: `pytest` is added to the project (and to requirements if applicable), and a sample test (e.g., always passing or a test that `GET /` returns 200) is written. Running `pytest` yields 0 failures.
-    - **Frontend**: The React app’s test runner (Jest) is configured (this is usually default with Create React App). A sample test (for example, checking that the main App component renders without crashing) is present. Running `npm test` (in CI mode or once-off) passes all tests.
-    - (Verification: Execute `pytest` in the backend folder – it should report success. Execute `npm test -- --watchAll=false` in the frontend – it should run the tests and report passing results.)
-- [ ]  **Set Up Database**: Introduce a database for persistence. Use SQLite for simplicity (no external service needed). Configure the backend to use SQLite (e.g., a file `backend/tasks.db`) and create a schema for the core data (e.g., a "tasks" table).
+    - GET `/api/threads` returns threads.json
+    - GET `/api/messages?threadId=…` returns messages for thread
+    - PATCH `/api/threads/:id` echoes updated `activeModel`
+    - POST `/api/messages` streams SSE: `delta`, `delta`, `done`
+    - (Verification: Route files exist; handlers implemented as per spec.)
+    - _Confirmation:_ Implemented basic fixture-backed routes and SSE stub.
+- [ ]  **Testing Setup (E2E)**: Configure Playwright baseline (headless run against dev server with fixtures or stubs).
     
     **Acceptance Criteria:**
     
-    - A SQLite database file (e.g., `tasks.db`) is initialized (either manually checked in or created on first run).
-    - A "tasks" table exists in the database with appropriate columns as per the design (e.g., `id` integer primary key, `title` text, `description` text, `completed` boolean/int).
-    - The backend application is set up to connect to this database (for example, using an ORM or direct `sqlite3` connections) and will create the table if it doesn’t exist.
-    - (Verification: After running the app (or a setup script), the `backend/tasks.db` file exists. Querying the SQLite schema (e.g., using `sqlite3 tasks.db ".tables"` or checking via a short Python snippet) shows a "tasks" table present with the defined columns.)
+    - Playwright config added; `npm run test:e2e` executes example spec.
+    - (Verification: Running tests prints results; selectors align with docs/ui/selectors.md.)
+- [ ]  **Environment Templates**: Provide `.env.example` consistent with docs/ENV.md for dev/prod setup.
+    
+    **Acceptance Criteria:**
+    
+    - `.env.example` includes GOOGLE_*, NEXTAUTH_*, DATABASE_URL, OPENAI/ANTHROPIC keys.
+    - (Verification: Example file present; values documented).
 
 ## Feature Implementation
 

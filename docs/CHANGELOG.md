@@ -4,3 +4,8 @@
 - 2025-10-11: Node verified (v24.9.0) and npm (11.6.0) OK; meets >= 18 requirement.
 - 2025-10-11: Python verified (3.13.7) and functional (`python3 -c 'print("OK")'`).
 - 2025-10-11: Added root .gitignore for Node/OS/editor/Python; confirmed VCS setup and remote.
+- 2025-10-11: Refactored Project Scaffolding to Next.js monolith in Tasks.md.
+- 2025-10-11: Scaffolded Next.js project files (package.json, tsconfig, next.config, postcss).
+- 2025-10-11: Added Prisma schema (prisma/schema.prisma) per docs/Database.md.
+- 2025-10-11: Implemented temporary Next API routes backed by fixtures; added SSE stub for POST /api/messages.
+- 2025-10-11: Added .env.example per docs/ENV.md; added simple app/page.tsx matching selectors.
