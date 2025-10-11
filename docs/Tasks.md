@@ -14,6 +14,63 @@ Below is a sequential list of all tasks required to go from an empty project dir
     - Existing later sections remain intact for future work.
     - (Verification: Opening `docs/Tasks.md` shows the new audit task, the new "Next 20 Tasks — Working Demo Track" section, no duplicate env template task, and no Tasks API section.)
 
+## Immediate Fixes (post-verification)
+
+- [ ] F1) Upgrade to current stable Next.js and fix themeColor
+    
+    Acceptance Criteria:
+    - Update dependencies to current stable Next.js and eslint-config-next
+    - Move metadata.themeColor to exported viewport per Next guidance
+    - npm run dev starts cleanly with no themeColor warning in logs
+    - App loads at http://localhost:3000
+
+- [ ] F2) Style “New Chat” button (outlined pink)
+    
+    Acceptance Criteria:
+    - Button classes: border-brand-500 text-brand-500 hover:bg-brand-100/10 focus:ring-4 focus:ring-pink-400/40 rounded-md px-2 py-1
+    - Button is visually distinct from thread list items
+    - Hover and focus styles are visible
+
+- [ ] F3) Composer input high-contrast styling
+    
+    Acceptance Criteria:
+    - Textarea classes: bg-panel text-text placeholder:text-text/50 border border-border focus:outline-none focus:border-brand-500 focus:ring-4 focus:ring-pink-400/40 rounded-md p-2
+    - Typed text and placeholder are readable (no white on white)
+    - Focus ring visible; Send remains disabled only when input empty or during typing
+
+- [ ] F4) Brand swatch placement and label
+    
+    Acceptance Criteria:
+    - Move [data-testid="brand-swatch"] to the top of the sidebar above the “New Chat” button
+    - Add adjacent subtle label text "bombay" (grey) to clarify purpose
+    - Swatch remains testable for gradient presence; visually unobtrusive
+
+- [ ] F5) Model selector styling (pink text on panel)
+    
+    Acceptance Criteria:
+    - Select classes: bg-panel text-brand-500 border border-border hover:border-brand-500 focus:ring-4 focus:ring-pink-400/40 rounded-md px-2 py-1
+    - Current value is legible; control is clearly visible on dark theme
+
+- [ ] F6) Error UI with persistent Retry/Reload
+    
+    Acceptance Criteria:
+    - When threads or messages fail to load, show an obvious error block with role="alert" and a prominent Retry/Reload button (pink outline)
+    - Retry remains available until success; auto-retry on navigator.onLine if feasible
+    - Verified by simulating offline/failed requests and confirming recovery with Retry
+
+- [ ] F7) Keyboard shortcuts (ChatGPT-like bindings)
+    
+    Acceptance Criteria:
+    - New chat: Cmd/Ctrl+Shift+O creates a new chat and focuses the composer
+    - Toggle sidebar: Cmd/Ctrl+Shift+S opens/closes the thread tray on mobile and desktop
+    - No conflict with browser shortcuts (e.g., no new tab)
+
+- [ ] F8) Re-verify together
+    
+    Acceptance Criteria:
+    - Run dev server and confirm: mobile overlay, loading/error states, New Chat button styling, composer contrast, model selector styling, and both shortcuts
+    - You confirm visuals; I confirm logs and non-interactive checks
+
 ## AI Agent Configuration
 
 - [x]  **Create AGENTS.md**: Create a new `docs/AGENTS.md` file with instructions for the Claude AI agent. Include references to the Product Requirements Document (`docs/PRD.md`) and the Design document (`docs/Design.md`). Also outline that the agent should take the next incomplete task from `docs/Tasks.md`, implement it, then pause for human verification before continuing.
