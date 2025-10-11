@@ -248,6 +248,72 @@ Below is a sequential list of all tasks required to go from an empty project dir
     - `docs/ui/acceptance.md` defines testable acceptance criteria
     - (Verification: All files exist with comprehensive content. Claude Code can read the specifications and understand the complete UI requirements without ambiguity.)
 
+### Brand System Setup
+
+- [ ]  **Add Brand Tokens**: Update design tokens with bombay brand palette, IBM Plex Mono font, and new design system.
+    
+    **Acceptance Criteria:**
+    
+    - `docs/ui/tokens.json` contains bombay brand colors (dark and light themes)
+    - Font definition uses IBM Plex Mono as primary font
+    - Brand colors include: brand-600 (#E11D74), brand-500 (#FF2E88), brand-300 (#FFA6D1), brand-100 (#FFE4F0)
+    - Radius values use 12px (md) and 16px (xl) for bombay's shape language
+    - Gradient and elevation tokens include pink-tinted shadows
+    - (Verification: JSON file contains keys: `font.mono`, `color.dark.bg`, `color.light.bg`, `gradient.brand` with correct bombay values.)
+
+- [ ]  **Configure Tailwind & CSS Variables**: Set up Tailwind configuration and CSS custom properties for theme switching.
+    
+    **Acceptance Criteria:**
+    
+    - `tailwind.config.ts` extends theme with brand color variables and IBM Plex Mono font
+    - `app/globals.css` defines CSS variables for dark/light themes with bombay colors
+    - Dark theme set as default with `data-theme="dark"` on body
+    - CSS variables follow pattern: `--color-bg`, `--color-brand-500`, etc.
+    - Custom scrollbar styling with brand accent colors
+    - (Verification: Playwright check: `document.body.getAttribute('data-theme') === 'dark'`; CSS var `--color-bg` equals `#0B1220`.)
+
+- [ ]  **Add IBM Plex Mono Font**: Integrate IBM Plex Mono via Google Fonts in Next.js layout.
+    
+    **Acceptance Criteria:**
+    
+    - IBM Plex Mono loaded in `app/layout.tsx` with weights 400, 500, 600, 700
+    - Font variable `--font-mono` properly configured
+    - Body element uses `font-mono` class
+    - Font loads with swap display for performance
+    - (Verification: Computed `font-family` on `body` contains "IBM Plex Mono".)
+
+- [ ]  **Add Brand Assets**: Create wordmark SVG and favicon with bombay branding.
+    
+    **Acceptance Criteria:**
+    
+    - `public/brand/wordmark.svg` contains bombay wordmark with gradient and caret bar
+    - `public/favicon.svg` contains monogram-style 'b' in brand colors
+    - Favicon properly referenced in layout metadata
+    - SVG assets use proper gradient definitions and dark background
+    - (Verification: `GET /favicon.svg` returns 200; `<link rel="icon">` present in HTML.)
+
+- [ ]  **Create Brand Guidelines**: Document brand usage rules and component recipes for consistent implementation.
+    
+    **Acceptance Criteria:**
+    
+    - `docs/brand.md` contains comprehensive brand guidelines
+    - Guidelines specify lowercase "bombay" usage and IBM Plex Mono requirement
+    - Tailwind component recipes provided for buttons, panels, and form elements
+    - Color accessibility notes and contrast requirements documented
+    - Theme implementation details and CSS variable structure explained
+    - (Verification: File exists; contains "Always use lowercase" and component recipes.)
+
+- [ ]  **Validate Brand Implementation**: Add brand-specific acceptance tests and verify consistent application.
+    
+    **Acceptance Criteria:**
+    
+    - Brand validation tests added to `docs/ui/acceptance.md` (B1-B5)
+    - Tests verify IBM Plex Mono font loading and application
+    - Tests check CSS custom properties and theme variables
+    - Brand gradient and color accessibility validated
+    - Favicon and metadata properly configured
+    - (Verification: Acceptance criteria B1-B5 added; tests can verify font, colors, and assets.)
+
 - [ ]  **Implement Mock Service Worker (MSW) Setup**: Configure MSW in the Next.js application to serve fixture data and enable UI development before backend exists.
     
     **Acceptance Criteria:**

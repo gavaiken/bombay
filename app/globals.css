@@ -1,0 +1,109 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+
+  /* Light theme as default */
+  --color-bg: #FFF7FB;
+  --color-text: #0B1220;
+  --color-panel: #FFFFFF;
+  --color-border: #E2E8F0;
+  
+  /* Brand colors (same for both themes) */
+  --color-brand-600: #E11D74;
+  --color-brand-500: #FF2E88;
+  --color-brand-300: #FFA6D1;
+  --color-brand-100: #FFE4F0;
+  
+  /* Design tokens */
+  --radius-md: 12px;
+  --radius-xl: 16px;
+  --elevation-panel: 0 6px 24px rgba(255,46,136,0.06);
+  --gradient-brand: linear-gradient(90deg, #FF2E88 0%, #FF72B6 100%);
+}
+
+[data-theme="dark"] {
+  --color-bg: #0B1220;
+  --color-text: #F8FAFC;
+  --color-panel: #0F172A;
+  --color-border: #1F2937;
+  /* Brand colors stay identical in dark theme */
+}
+
+html {
+  height: 100%;
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+}
+
+body {
+  height: 100%;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-mono);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Custom scrollbar for dark theme */
+[data-theme="dark"] ::-webkit-scrollbar {
+  width: 6px;
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-track {
+  background: var(--color-panel);
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 3px;
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-thumb:hover {
+  background: var(--color-brand-300);
+}
+
+/* Light theme scrollbar */
+[data-theme="light"] ::-webkit-scrollbar {
+  width: 6px;
+}
+
+[data-theme="light"] ::-webkit-scrollbar-track {
+  background: var(--color-bg);
+}
+
+[data-theme="light"] ::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 3px;
+}
+
+[data-theme="light"] ::-webkit-scrollbar-thumb:hover {
+  background: var(--color-brand-500);
+}
+
+/* Focus ring utilities */
+.focus-ring {
+  @apply focus:outline-none focus:ring-4 focus:ring-pink-400/40;
+}
+
+/* Brand gradient text utility */
+.text-gradient-brand {
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-brand-500 to-[#FF72B6];
+}
+
+/* Animations */
+@keyframes pulse-subtle {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.animate-pulse-subtle {
+  animation: pulse-subtle 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}

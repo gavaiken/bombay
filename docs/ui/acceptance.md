@@ -261,3 +261,64 @@
 - XSS prevention active
 - Long messages truncated with warning
 - Unicode characters display correctly
+
+## Brand Validation Tests
+
+### B1: IBM Plex Mono Font Applied
+**Test**: Body font is IBM Plex Mono
+**Steps**:
+1. Load application
+2. Check computed font-family on body element
+
+**Expected**:
+- `getComputedStyle(document.body).fontFamily` includes "IBM Plex Mono"
+- Font loads successfully from Google Fonts
+- Monospace characteristics visible in UI text
+
+### B2: Dark Theme Variables Present
+**Test**: CSS custom properties are correctly applied
+**Steps**:
+1. Verify body has `data-theme="dark"` attribute
+2. Check CSS custom property values
+
+**Expected**:
+- `document.body.getAttribute('data-theme') === 'dark'`
+- `getComputedStyle(document.documentElement).getPropertyValue('--color-bg')` equals `#0B1220` (or RGB equivalent)
+- `getComputedStyle(document.documentElement).getPropertyValue('--color-brand-500')` equals `#FF2E88`
+- All brand color variables are accessible
+
+### B3: Brand Gradient Exists
+**Test**: Brand gradient is properly defined and usable
+**Steps**:
+1. Find element with brand gradient (test swatch)
+2. Verify background-image contains linear-gradient
+
+**Expected**:
+- `page.locator('[data-testid="brand-swatch"]').hasCSS('background-image', /linear-gradient/i)`
+- Gradient transitions from #FF2E88 to #FF72B6
+- Visual verification shows smooth pink gradient
+
+### B4: Brand Color Accessibility
+**Test**: Brand colors meet contrast requirements
+**Steps**:
+1. Test brand-500 on panel backgrounds
+2. Verify text remains readable
+3. Check focus ring visibility
+
+**Expected**:
+- Brand-500 (#FF2E88) on panel backgrounds meets WCAG AA contrast
+- Focus rings with `ring-pink-400/40` are visible against dark background
+- No text uses brand colors on colored backgrounds (maintains neutral text)
+
+### B5: Favicon and Metadata
+**Test**: Brand assets load correctly
+**Steps**:
+1. Check favicon is present in document head
+2. Verify favicon.svg is accessible
+3. Validate metadata
+
+**Expected**:
+- `<link rel="icon" href="/favicon.svg">` present in HTML
+- `GET /favicon.svg` returns 200 status
+- Title is lowercase "bombay"
+- Theme color is set to #0B1220
