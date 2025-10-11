@@ -1,2 +1,6 @@
 - 2025-10-11: Confirmed Task 1 (“Create AGENTS.md”) is complete; verification lives in docs/AGENTS.md.
 - 2025-10-11: Created CLAUDE.md symlink to docs/AGENTS.md (AI agent bootstrap). Verified via `readlink`.
+- 2025-10-11: Homebrew verified (4.6.15) and updated taps successfully; outdated formulae listed.
+- 2025-10-11: Node verified (v24.9.0) and npm (11.6.0) OK; meets >= 18 requirement.
+- 2025-10-11: Python verified (3.13.7) and functional (`python3 -c 'print("OK")'`).
+- 2025-10-11: Added root .gitignore for Node/OS/editor/Python; confirmed VCS setup and remote.

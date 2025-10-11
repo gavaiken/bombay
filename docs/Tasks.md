@@ -23,14 +23,15 @@ Below is a sequential list of all tasks required to go from an empty project dir
 
 ## Development Environment Setup
 
-- [ ]  **Verify Homebrew Installation**: Ensure Homebrew is installed and update it to the latest version. This will guarantee we have access to package management for any needed tools.
+- [x]  **Verify Homebrew Installation**: Ensure Homebrew is installed and update it to the latest version. This will guarantee we have access to package management for any needed tools.
     
     **Acceptance Criteria:**
     
     - Running `brew --version` outputs the Homebrew version (confirming Homebrew is installed).
     - Running `brew update` completes without errors (Homebrew is up-to-date).
     - (Verification: `brew --version` returns a version string and `brew update` reports “Already up-to-date” or updates formulae successfully.)
-- [ ]  **Verify Node.js Installation**: Ensure Node.js (and npm) is installed at a recent version, updating if necessary. Node will be used for front-end development and build tools.
+    - _Confirmation:_ Homebrew 4.6.15 installed; `brew update` succeeded (taps updated, outdated formulae listed).
+- [x]  **Verify Node.js Installation**: Ensure Node.js (and npm) is installed at a recent version, updating if necessary. Node will be used for front-end development and build tools.
     
     **Acceptance Criteria:**
     
@@ -38,7 +39,8 @@ Below is a sequential list of all tasks required to go from an empty project dir
     - Running `npm -v` outputs the npm version, confirming npm is functional.
     - If Node was outdated, it has been upgraded (e.g. via Homebrew) to a current LTS release.
     - (Verification: `node -v` and `npm -v` show expected version numbers, and Node commands execute without error.)
-- [ ]  **Verify Python Installation**: Ensure Python 3 is installed and updated to a modern version (e.g. Python 3.10+). This will be used for back-end development.
+    - _Confirmation:_ Node v24.9.0 and npm 11.6.0 detected; meets requirement (>= 18).
+- [x]  **Verify Python Installation**: Ensure Python 3 is installed and updated to a modern version (e.g. Python 3.10+). This will be used for back-end development.
     
     **Acceptance Criteria:**
     
@@ -46,24 +48,25 @@ Below is a sequential list of all tasks required to go from an empty project dir
     - The Python installation is functional (e.g., running `python3 -c "print('OK')"` prints “OK”).
     - If the default Python was outdated, it has been updated (via Homebrew or pyenv) to a recent stable release.
     - (Verification: `python3 --version` shows a recent version number, indicating an up-to-date Python interpreter.)
+    - _Confirmation:_ Python 3.13.7 detected; `python3 -c 'print("OK")'` succeeded.
 
 ## Version Control Setup
 
-- [ ]  **Initialize Git Repository**: Set up a new git repository in the project directory to track our progress. This will allow version control and integration with GitHub.
+- [x]  **Initialize Git Repository**: Set up a new git repository in the project directory to track our progress. This will allow version control and integration with GitHub.
     
     **Acceptance Criteria:**
     
     - The command `git init` has been run in `~/Source/bombay`, creating a `.git/` directory.
     - Running `git status` in the project shows “No commits yet” or an empty commit history (confirming the repo is initialized).
     - (Verification: The `.git` folder exists and `git status` outputs the expected initial repository state.)
-- [ ]  **Create .gitignore**: Add a `.gitignore` file to exclude unnecessary or sensitive files from version control. It should cover common Node and Python artifacts.
+- [x]  **Create .gitignore**: Add a `.gitignore` file to exclude unnecessary or sensitive files from version control. It should cover common Node and Python artifacts.
     
     **Acceptance Criteria:**
     
     - A file `.gitignore` exists in the project root.
     - `.gitignore` contains entries for Node modules (e.g. `node_modules/`), Python bytecode and cache files (`.pyc`, `__pycache__/`), virtual environments (e.g. `venv/`), and OS files (like `.DS_Store`).
     - (Verification: Viewing `.gitignore` shows patterns for Node and Python ignores; for example, searching the file for “node_modules” and “**pycache**” returns entries.)
-- [ ]  **Initial Commit**: Commit the existing documentation files to git. This includes the PRD, Design doc, Tasks list (this file), the new AGENTS guide, and .gitignore. Use a clear commit message (e.g. "Initial documentation commit").
+- [x]  **Initial Commit**: Commit the existing documentation files to git. This includes the PRD, Design doc, Tasks list (this file), the new AGENTS guide, and .gitignore. Use a clear commit message (e.g. "Initial documentation commit").
     
     **Acceptance Criteria:**
     
@@ -71,14 +74,14 @@ Below is a sequential list of all tasks required to go from an empty project dir
     - Running `git log -1 --oneline` shows the initial commit with an appropriate message.
     - `git ls-files` lists the above files, confirming they are tracked in the repository.
     - (Verification: `git status` now shows a clean working directory, and `git log` indicates the initial commit containing the documentation files.)
-- [ ]  **Create GitHub Repository**: Create a new repository on GitHub (e.g., named "bombay") for this project and prepare it for remote collaboration. This can be done via GitHub CLI or the web interface.
+- [x]  **Create GitHub Repository**: Create a new repository on GitHub (e.g., named "bombay") for this project and prepare it for remote collaboration. This can be done via GitHub CLI or the web interface.
     
     **Acceptance Criteria:**
     
     - A remote repository exists on GitHub (accessible by the user) with the given project name.
     - (If using GitHub CLI: Running `gh repo view <your-username>/bombay` shows repository details, confirming creation.)
     - (Verification: The GitHub repo URL is reachable or visible in the GitHub account, and it’s empty or only contains an initial README if created with one.)
-- [ ]  **Add Remote and Push**: Link the local git repo to the GitHub repository and push the initial commit to the remote.
+- [x]  **Add Remote and Push**: Link the local git repo to the GitHub repository and push the initial commit to the remote.
     
     **Acceptance Criteria:**
     

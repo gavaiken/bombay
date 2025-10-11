@@ -1,0 +1,41 @@
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
+.next/
+.next-static/
+.next/cache/
+.vercel/
+.DS_Store
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+logs/
+
+# Editor
+.vscode/
+.idea/
+*.swp
+
+# Build
+build/
+dist/
+
+# Python (not used in app, but ignored for safety)
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.envrc
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
