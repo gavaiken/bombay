@@ -119,12 +119,19 @@ Below is a sequential list of all tasks required to go from an empty project dir
     - POST `/api/messages` streams SSE: `delta`, `delta`, `done`
     - (Verification: Route files exist; handlers implemented as per spec.)
     - _Confirmation:_ Implemented basic fixture-backed routes and SSE stub.
-- [ ]  **Testing Setup (E2E)**: Configure Playwright baseline (headless run against dev server with fixtures or stubs).
+- [x]  **Testing Setup (E2E)**: Configure Playwright baseline (headless run against dev server with fixtures or stubs).
     
     **Acceptance Criteria:**
     
     - Playwright config added; `npm run test:e2e` executes example spec.
     - (Verification: Running tests prints results; selectors align with docs/ui/selectors.md.)
+    - _Confirmation:_ Added playwright.config.ts and e2e/ui.spec.ts covering shell, threads, model switcher, and send.
+- [x]  **Environment Templates**: Provide `.env.example` consistent with docs/ENV.md for dev/prod setup.
+    
+    **Acceptance Criteria:**
+    
+    - `.env.example` includes GOOGLE_*, NEXTAUTH_*, DATABASE_URL, OPENAI/ANTHROPIC keys.
+    - (Verification: Example file present; values documented).
 - [ ]  **Environment Templates**: Provide `.env.example` consistent with docs/ENV.md for dev/prod setup.
     
     **Acceptance Criteria:**
