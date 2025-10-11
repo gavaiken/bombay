@@ -228,3 +228,111 @@ Below is a sequential list of all tasks required to go from an empty project dir
     - The documentation is written clearly and covers all the steps to get the product running from scratch.
     - Final manual test: Start the backend and frontend following the README instructions and perform a quick end-to-end check (create a task via the UI, mark it complete, delete it) to ensure the application behaves as expected in a real scenario.
     - (Verification: Opening `README.md` shows all the required sections (Installation, Usage, etc.) with appropriate content. Following the instructions in the README allows a new developer/user to set up and run the project successfully. The product features work in a final end-to-end manual test, confirming the project is complete.)
+
+## UI Specification Implementation
+
+### LLM-Friendly Mock Setup
+
+- [ ]  **Create UI Specification Structure**: Set up the complete `docs/ui/` folder structure with all machine-readable specifications that Claude Code can use to build the chat interface deterministically.
+    
+    **Acceptance Criteria:**
+    
+    - `docs/ui/` directory exists with design tokens, component specs, fixtures, and wireframes
+    - `docs/ui/tokens.json` contains color, font, spacing, and other design tokens
+    - `docs/ui/components.md` defines component inventory and structure
+    - `docs/ui/selectors.md` specifies canonical `data-testid` selectors for testing
+    - `docs/ui/states.md` documents component states and behaviors
+    - `docs/ui/fixtures/` contains JSON mock data (models.json, threads.json, messages.json, user.json)
+    - `docs/ui/wireframes/chat.html` provides copy-ready HTML structure with proper selectors
+    - `docs/ui/flows.md` documents user interaction flows and keyboard shortcuts
+    - `docs/ui/acceptance.md` defines testable acceptance criteria
+    - (Verification: All files exist with comprehensive content. Claude Code can read the specifications and understand the complete UI requirements without ambiguity.)
+
+- [ ]  **Implement Mock Service Worker (MSW) Setup**: Configure MSW in the Next.js application to serve fixture data and enable UI development before backend exists.
+    
+    **Acceptance Criteria:**
+    
+    - MSW is installed and configured in the Next.js project
+    - Mock handlers serve data from `docs/ui/fixtures/` files
+    - API endpoints match the defined contract: `GET /api/threads`, `GET /api/messages?threadId=...`, `PATCH /api/threads/:id`, `POST /api/messages`
+    - Mock responses include proper HTTP status codes and realistic delays
+    - Development server works with mocks (no real backend required)
+    - (Verification: Frontend runs with `npm run dev`, makes API calls that return fixture data. Network tab shows mocked responses. UI displays sample conversations from fixtures.)
+
+- [ ]  **Add Playwright End-to-End Testing**: Set up Playwright with the basic acceptance test suite to verify UI functionality against the specification.
+    
+    **Acceptance Criteria:**
+    
+    - Playwright is installed and configured in the project
+    - `e2e/ui.spec.ts` implements the acceptance checks from `docs/ui/acceptance.md`
+    - Tests use the canonical selectors from `docs/ui/selectors.md`
+    - Test covers: shell rendering, fixture data loading, thread switching, model selection, message sending flow
+    - `npm run test:e2e` executes tests against running dev server with mocks
+    - All acceptance tests pass, confirming UI meets specification
+    - (Verification: Running `npx playwright test` shows all tests passing. Tests successfully locate elements using data-testid selectors and verify expected behaviors.)
+
+### Chat UI Implementation
+
+- [ ]  **Build Chat Interface from Wireframe**: Implement the complete chat UI using the HTML wireframe and design tokens, ensuring all required selectors are present.
+    
+    **Acceptance Criteria:**
+    
+    - Chat interface matches the structure from `docs/ui/wireframes/chat.html`
+    - All components use design tokens from `docs/ui/tokens.json`
+    - Every interactive element has the correct `data-testid` from `docs/ui/selectors.md`
+    - Layout is responsive (mobile overlay, desktop sidebar)
+    - Visual design uses Tailwind CSS with proper styling
+    - Components are properly structured (ThreadTray, ChatPane, Composer, etc.)
+    - (Verification: UI renders without errors, visually matches wireframe intent, all acceptance test selectors are found, responsive design works on different screen sizes.)
+
+- [ ]  **Implement State Management and Interactions**: Add React state management and user interactions to make the UI fully functional with mock data.
+    
+    **Acceptance Criteria:**
+    
+    - Thread selection switches active conversation and loads messages
+    - Model switcher updates thread settings and applies to future messages
+    - Message composer handles input, validation, and sending
+    - Typing indicators appear during simulated assistant responses
+    - Loading and error states display properly
+    - Keyboard shortcuts work (Cmd+N for new thread, Enter to send, etc.)
+    - All user flows from `docs/ui/flows.md` function correctly
+    - (Verification: All Playwright acceptance tests pass. User can interact with every feature. State persists correctly when switching threads. No console errors during normal usage.)
+
+- [ ]  **Add Real-time Message Streaming**: Implement streaming responses for assistant messages to simulate the real chat experience.
+    
+    **Acceptance Criteria:**
+    
+    - Assistant messages stream in progressively (not all at once)
+    - Typing indicator shows during streaming, disappears when complete
+    - User cannot send messages while assistant is responding
+    - Streaming works with mock WebSocket or Server-Sent Events
+    - Auto-scroll keeps latest content visible during streaming
+    - Stream can be cancelled if user navigates away
+    - (Verification: Sending a message shows typing indicator, then assistant response appears word-by-word. UI remains responsive during streaming. All streaming edge cases handled gracefully.)
+
+### Progressive Enhancement
+
+- [ ]  **Replace Mocks with Real API Integration**: Swap MSW mocks for actual backend API calls while keeping all selectors and UI behavior unchanged.
+    
+    **Acceptance Criteria:**
+    
+    - API client configured to call real backend endpoints
+    - Authentication and error handling implemented
+    - WebSocket connection for real-time message streaming
+    - Mock responses are replaced but UI behavior stays identical
+    - All Playwright tests continue passing with real backend
+    - Graceful fallback if backend is unavailable
+    - (Verification: UI works with real API, all features functional, no behavior changes from user perspective. Tests pass against real backend. Error states handle API failures appropriately.)
+
+- [ ]  **Performance Optimization and Polish**: Optimize the chat interface for production use with proper loading states, caching, and performance improvements.
+    
+    **Acceptance Criteria:**
+    
+    - Message history pagination for long conversations
+    - Optimistic updates for better perceived performance
+    - Proper loading skeletons and transitions
+    - Image/media handling in messages (if applicable)
+    - Accessibility improvements (ARIA labels, keyboard navigation)
+    - Bundle size optimization and code splitting
+    - Service worker for offline functionality (optional)
+    - (Verification: Lighthouse scores 90+ for Performance, Accessibility, Best Practices. Large conversations load smoothly. App feels responsive under normal usage patterns.)

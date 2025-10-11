@@ -1,0 +1,37 @@
+[
+  {
+    "id": "t_1",
+    "title": "SEO plan for new website",
+    "activeModel": "openai:gpt-4o",
+    "updatedAt": "2025-10-09T20:41:00Z",
+    "messageCount": 8
+  },
+  {
+    "id": "t_2", 
+    "title": "Refactor React components",
+    "activeModel": "anthropic:claude-3-5-sonnet",
+    "updatedAt": "2025-10-10T01:12:00Z",
+    "messageCount": 12
+  },
+  {
+    "id": "t_3",
+    "title": "Database schema design",
+    "activeModel": "openai:gpt-4o-mini", 
+    "updatedAt": "2025-10-10T15:30:00Z",
+    "messageCount": 5
+  },
+  {
+    "id": "t_4",
+    "title": "API documentation review",
+    "activeModel": "anthropic:claude-3-5-haiku",
+    "updatedAt": "2025-10-11T09:15:00Z", 
+    "messageCount": 3
+  },
+  {
+    "id": "t_5",
+    "title": "Performance optimization",
+    "activeModel": "openai:gpt-4-turbo",
+    "updatedAt": "2025-10-11T12:45:00Z",
+    "messageCount": 15
+  }
+]

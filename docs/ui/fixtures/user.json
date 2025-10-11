@@ -1,0 +1,24 @@
+{
+  "id": "u_1",
+  "email": "user@example.com",
+  "username": "dev_user",
+  "full_name": "Alex Developer",
+  "avatar_url": "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=32&h=32&fit=crop&crop=face",
+  "preferences": {
+    "theme": "system", 
+    "defaultModel": "openai:gpt-4o",
+    "sidebarCollapsed": false,
+    "messageTimestamps": true,
+    "keyboardShortcuts": true
+  },
+  "subscription": {
+    "plan": "pro",
+    "status": "active",
+    "usage": {
+      "messagesThisMonth": 247,
+      "limit": 1000
+    }
+  },
+  "created_at": "2025-09-15T10:30:00Z",
+  "updated_at": "2025-10-11T06:00:00Z"
+}

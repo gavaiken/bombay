@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chat UI Wireframe</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="font-sans">
+  
+<div data-testid="app-shell" class="grid grid-cols-[280px_1fr] h-screen bg-white">
+  
+  <!-- Thread Tray (Sidebar) -->
+  <aside data-testid="thread-tray" class="border-r border-gray-200 bg-gray-50 overflow-y-auto">
+    
+    <!-- New Thread Button -->
+    <div class="p-3 border-b border-gray-200">
+      <button 
+        data-testid="new-thread" 
+        class="w-full flex items-center justify-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+      >
+        <span>+</span> New Chat
+      </button>
+    </div>
+    
+    <!-- Thread List -->
+    <ul data-testid="thread-list" class="p-2 space-y-1">
+      <li 
+        data-testid="thread-item" 
+        data-thread-id="t_1" 
+        data-active="true"
+        class="block w-full text-left p-3 rounded-lg bg-blue-100 border border-blue-200 hover:bg-blue-50"
+      >
+        <div class="font-medium text-gray-900 truncate">SEO plan for new website</div>
+        <div class="text-xs text-gray-500 mt-1">OpenAI • GPT-4o • 2h ago</div>
+      </li>
+      
+      <li 
+        data-testid="thread-item"
+        data-thread-id="t_2" 
+        class="block w-full text-left p-3 rounded-lg hover:bg-gray-100"
+      >
+        <div class="font-medium text-gray-900 truncate">Refactor React components</div>
+        <div class="text-xs text-gray-500 mt-1">Anthropic • Claude 3.5 Sonnet • 1d ago</div>
+      </li>
+      
+      <li 
+        data-testid="thread-item"
+        data-thread-id="t_3" 
+        class="block w-full text-left p-3 rounded-lg hover:bg-gray-100"
+      >
+        <div class="font-medium text-gray-900 truncate">Database schema design</div>
+        <div class="text-xs text-gray-500 mt-1">OpenAI • GPT-4o Mini • 3h ago</div>
+      </li>
+    </ul>
+    
+    <!-- Empty State (hidden when threads exist) -->
+    <div data-testid="empty-state" class="p-4 text-center text-gray-500" hidden>
+      <p>No conversations yet</p>
+      <p class="text-sm mt-1">Start a new chat to begin</p>
+    </div>
+    
+  </aside>
+
+  <!-- Chat Pane -->
+  <main data-testid="chat-pane" class="flex flex-col">
+    
+    <!-- Chat Header -->
+    <header class="flex items-center justify-between border-b border-gray-200 p-4 bg-white">
+      <h1 data-testid="thread-title" class="text-lg font-semibold text-gray-900">
+        SEO plan for new website
+      </h1>
+      
+      <select 
+        data-testid="model-switcher" 
+        class="border border-gray-300 rounded-lg px-3 py-1.5 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+      >
+        <optgroup label="OpenAI">
+          <option value="openai:gpt-4o" selected>OpenAI — GPT-4o</option>
+          <option value="openai:gpt-4o-mini">OpenAI — GPT-4o Mini</option>
+          <option value="openai:gpt-4-turbo">OpenAI — GPT-4 Turbo</option>
+        </optgroup>
+        <optgroup label="Anthropic">
+          <option value="anthropic:claude-3-5-sonnet">Anthropic — Claude 3.5 Sonnet</option>
+          <option value="anthropic:claude-3-5-haiku">Anthropic — Claude 3.5 Haiku</option>
+          <option value="anthropic:claude-3-opus">Anthropic — Claude 3 Opus</option>
+        </optgroup>
+      </select>
+    </header>
+
+    <!-- Transcript -->
+    <section data-testid="transcript" class="flex-1 overflow-y-auto p-4 space-y-4">
+      
+      <!-- User Message -->
+      <div data-testid="message" data-role="user" data-message-id="m1_1" class="flex justify-end">
+        <div class="max-w-[80%] bg-blue-600 text-white rounded-lg px-4 py-2">
+          <p>Help me plan a sitemap and SEO strategy for my new e-commerce website selling handmade jewelry.</p>
+          <div class="text-xs opacity-75 mt-1">2:20 PM</div>
+        </div>
+      </div>
+      
+      <!-- Assistant Message -->
+      <div data-testid="message" data-role="assistant" data-message-id="m1_2" data-provider="openai" data-model="gpt-4o" class="flex justify-start">
+        <div class="max-w-[80%] bg-gray-100 text-gray-900 rounded-lg px-4 py-2">
+          <p class="mb-2">I'd be happy to help you create a sitemap and SEO strategy for your handmade jewelry e-commerce site. Let's start with some questions:</p>
+          <ol class="list-decimal list-inside space-y-1 mb-2">
+            <li>What types of jewelry do you make? (rings, necklaces, earrings, etc.)</li>
+            <li>Do you have different collections or themes?</li>
+            <li>What's your target audience?</li>
+            <li>Do you plan to include a blog or educational content?</li>
+          </ol>
+          <p class="mb-2">For now, here's a basic sitemap structure I'd recommend:</p>
+          <p class="font-medium">Main Navigation:</p>
+          <ul class="list-disc list-inside mb-2">
+            <li>Home</li>
+            <li>Shop (with category filters)</li>
+            <li>About</li>
+            <li>Contact</li>
+            <li>Blog (for SEO)</li>
+          </ul>
+          <p>What's your domain name? I can give more specific SEO advice once I know more about your brand.</p>
+          <div class="text-xs text-gray-500 mt-2">GPT-4o • 2:22 PM</div>
+        </div>
+      </div>
+      
+      <!-- Typing Indicator -->
+      <div data-testid="typing-indicator" class="flex justify-start" hidden>
+        <div class="bg-gray-100 rounded-lg px-4 py-2">
+          <div class="flex items-center space-x-1">
+            <div class="w-2 h-2 bg-gray-400 rounded-full animate-pulse"></div>
+            <div class="w-2 h-2 bg-gray-400 rounded-full animate-pulse" style="animation-delay: 0.1s"></div>
+            <div class="w-2 h-2 bg-gray-400 rounded-full animate-pulse" style="animation-delay: 0.2s"></div>
+            <span class="text-sm text-gray-500 ml-2">Assistant is typing...</span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Empty State for Transcript -->
+      <div data-testid="empty-state" class="flex flex-col items-center justify-center h-full text-gray-500" hidden>
+        <p class="text-lg mb-2">Say hello to start chatting</p>
+        <p class="text-sm">Choose a model above and send your first message</p>
+      </div>
+      
+    </section>
+
+    <!-- Composer -->
+    <form data-testid="composer" class="border-t border-gray-200 p-4 bg-white">
+      <div class="flex space-x-3">
+        <textarea 
+          data-testid="composer-input"
+          rows="2" 
+          placeholder="Message..." 
+          class="flex-1 resize-none border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+        ></textarea>
+        <button 
+          data-testid="composer-send" 
+          type="submit" 
+          disabled
+          class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
+        >
+          Send
+        </button>
+      </div>
+      <div class="text-xs text-gray-500 mt-2">
+        Press Enter to send, Shift+Enter for new line
+      </div>
+    </form>
+    
+  </main>
+  
+</div>
+
+<!-- Loading State Overlay (shown during app initialization) -->
+<div data-testid="loading-state" class="fixed inset-0 bg-white flex items-center justify-center" hidden>
+  <div class="text-center">
+    <div class="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+    <p class="text-gray-600">Loading your conversations...</p>
+  </div>
+</div>
+
+<!-- Error State (shown when app fails to load) -->
+<div data-testid="error-state" role="alert" class="fixed inset-0 bg-white flex items-center justify-center" hidden>
+  <div class="text-center max-w-md">
+    <div class="text-red-600 text-4xl mb-4">⚠️</div>
+    <h2 class="text-xl font-semibold text-gray-900 mb-2">Something went wrong</h2>
+    <p class="text-gray-600 mb-4">We couldn't load your conversations. Please try again.</p>
+    <button class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+      Retry
+    </button>
+  </div>
+</div>
+
+</body>
+</html>
