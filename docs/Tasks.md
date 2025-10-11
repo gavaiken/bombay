@@ -4,7 +4,7 @@ Below is a sequential list of all tasks required to go from an empty project dir
 
 ## Planning & Audit
 
-- [ ]  **Audit and further breakdown Tasks.md**: Review all tasks for alignment with PRD.md, Design.md, API.md, Database.md, Providers.md, and docs/ui/*. Ensure the next 20 tasks are granular, verifiable steps toward a working demo. Remove or relocate inconsistent items and resolve duplicates.
+- [x]  **Audit and further breakdown Tasks.md**: Review all tasks for alignment with PRD.md, Design.md, API.md, Database.md, Providers.md, and docs/ui/*. Ensure the next 20 tasks are granular, verifiable steps toward a working demo. Remove or relocate inconsistent items and resolve duplicates.
 
     **Acceptance Criteria:**
     
@@ -13,356 +13,225 @@ Below is a sequential list of all tasks required to go from an empty project dir
     - The outdated "Feature Implementation — Tasks API" section is removed if inconsistent with the current plan of record (Next.js chat app with threads/messages).
     - Existing later sections remain intact for future work.
     - (Verification: Opening `docs/Tasks.md` shows the new audit task, the new "Next 20 Tasks — Working Demo Track" section, no duplicate env template task, and no Tasks API section.)
+    - _Confirmation:_ Task completed - restructured Tasks.md with proper Next 20 Tasks section, removed duplicate Environment Templates task, removed inconsistent Tasks API section, and ensured all tasks align with PRD.md and Design.md requirements.
 
-## Immediate Fixes (post-verification)
+## Next 20 Tasks — Working Demo Track (Phase-Based)
 
-- [ ] F1) Upgrade to current stable Next.js and fix themeColor
+Based on senior engineering feedback, these tasks are organized into phases that deliver verifiable functionality incrementally. Each phase builds upon the previous one, ensuring clear client verification at every step.
+
+### Phase 1: Foundation and Authentication (Tasks 1-6)
+
+- [ ] 1) Setup local PostgreSQL using Docker
     
-    Acceptance Criteria:
-    - Update dependencies to current stable Next.js and eslint-config-next
-    - Move metadata.themeColor to exported viewport per Next guidance
-    - npm run dev starts cleanly with no themeColor warning in logs
-    - App loads at http://localhost:3000
+    **Acceptance Criteria:**
+    - Create `docker-compose.yml` file with PostgreSQL service configuration
+    - Configure PostgreSQL with database name 'bombay_dev', user 'bombay', and secure password
+    - Add Docker database URL to `.env.example` and document in `docs/DEV.md`
+    - Verify connection: `docker compose up -d` starts database successfully
+    - Prisma can connect to Docker PostgreSQL instance
+    - Include instructions for starting/stopping database in development docs
+    - **Client Verification:** Database accessible at localhost:5432, Prisma connection test succeeds
 
-- [ ] F2) Style “New Chat” button (outlined pink)
+- [ ] 2) Extend Prisma schema for NextAuth
     
-    Acceptance Criteria:
-    - Button classes: border-brand-500 text-brand-500 hover:bg-brand-100/10 focus:ring-4 focus:ring-pink-400/40 rounded-md px-2 py-1
-    - Button is visually distinct from thread list items
-    - Hover and focus styles are visible
-
-- [ ] F3) Composer input high-contrast styling
-    
-    Acceptance Criteria:
-    - Textarea classes: bg-panel text-text placeholder:text-text/50 border border-border focus:outline-none focus:border-brand-500 focus:ring-4 focus:ring-pink-400/40 rounded-md p-2
-    - Typed text and placeholder are readable (no white on white)
-    - Focus ring visible; Send remains disabled only when input empty or during typing
-
-- [ ] F4) Brand swatch placement and label
-    
-    Acceptance Criteria:
-    - Move [data-testid="brand-swatch"] to the top of the sidebar above the “New Chat” button
-    - Add adjacent subtle label text "bombay" (grey) to clarify purpose
-    - Swatch remains testable for gradient presence; visually unobtrusive
-
-- [ ] F5) Model selector styling (pink text on panel)
-    
-    Acceptance Criteria:
-    - Select classes: bg-panel text-brand-500 border border-border hover:border-brand-500 focus:ring-4 focus:ring-pink-400/40 rounded-md px-2 py-1
-    - Current value is legible; control is clearly visible on dark theme
-
-- [ ] F6) Error UI with persistent Retry/Reload
-    
-    Acceptance Criteria:
-    - When threads or messages fail to load, show an obvious error block with role="alert" and a prominent Retry/Reload button (pink outline)
-    - Retry remains available until success; auto-retry on navigator.onLine if feasible
-    - Verified by simulating offline/failed requests and confirming recovery with Retry
-
-- [ ] F7) Keyboard shortcuts (ChatGPT-like bindings)
-    
-    Acceptance Criteria:
-    - New chat: Cmd/Ctrl+Shift+O creates a new chat and focuses the composer
-    - Toggle sidebar: Cmd/Ctrl+Shift+S opens/closes the thread tray on mobile and desktop
-    - No conflict with browser shortcuts (e.g., no new tab)
-
-- [ ] F8) Re-verify together
-    
-    Acceptance Criteria:
-    - Run dev server and confirm: mobile overlay, loading/error states, New Chat button styling, composer contrast, model selector styling, and both shortcuts
-    - You confirm visuals; I confirm logs and non-interactive checks
-
-## Next 16 Tasks — Auth, DB, and Real API Track
-
-These items turn the fixture-backed demo into a real, authenticated app with provider integrations. Each task is small and verifiable. Later, broader tasks remain for reference but are superseded where noted.
-
-- [ ] N1) Install auth/provider deps and update env docs
-    
-    Acceptance Criteria:
-    - Add dependencies: next-auth, @next-auth/prisma-adapter, openai, @anthropic-ai/sdk (or anthropic)
-    - Confirm .env.example has NEXTAUTH_SECRET, NEXTAUTH_URL, GOOGLE_CLIENT_ID/SECRET, OPENAI_API_KEY, ANTHROPIC_API_KEY (already present)
-    - npm install completes; types resolve
-
-- [ ] N2) Prisma schema for NextAuth
-    
-    Acceptance Criteria:
+    **Acceptance Criteria:**
+    - Add dependencies: next-auth, @next-auth/prisma-adapter
     - Extend prisma/schema.prisma with NextAuth models (Account, Session, VerificationToken) and relation to User
     - Run migration: npx prisma migrate dev -n auth_models
     - prisma generate succeeds
+    - **Client Verification:** Database schema includes all auth-related tables
 
-- [ ] N3) Configure NextAuth (Google + Prisma adapter)
+- [ ] 3) Configure NextAuth with Google provider
     
-    Acceptance Criteria:
-    - app/api/auth/[...nextauth]/route.ts created; Google provider configured from env; PrismaAdapter wired
+    **Acceptance Criteria:**
+    - Install Google provider dependencies
+    - Create app/api/auth/[...nextauth]/route.ts with Google provider configured from env
+    - Wire PrismaAdapter to connect auth to database
+    - Add NEXTAUTH_SECRET, NEXTAUTH_URL, GOOGLE_CLIENT_ID/SECRET to .env.example
     - Export a server helper (auth()) to get the current session
     - Sign-in/sign-out endpoints work (HTTP 200/302)
+    - **Client Verification:** Can sign in with Google account and see session data
 
-- [ ] N4) Protect API routes with auth guard
+- [ ] 4) Create protected route with user display
     
-    Acceptance Criteria:
-    - Utility requireUser() returns the current user or 401 with standard error envelope
-    - /api/threads, /api/messages routes refuse unauthenticated access
-
-- [ ] N5) Header UI: sign-in/out + show user email
-    
-    Acceptance Criteria:
-    - Add minimal auth UI (Sign in / Sign out) and show session.user.email in header when logged in
+    **Acceptance Criteria:**
+    - Add minimal auth UI (Sign in / Sign out) in header
+    - Display session.user.email when logged in
+    - Protect main chat interface - redirect to sign-in if not authenticated
     - Keyboard/focus accessible; selectors documented if needed
+    - **Client Verification:** Client can sign in with Google and see their email displayed
 
-- [ ] N6) Threads API (DB): GET (by user) and POST (create)
+- [ ] 5) Implement auth middleware for API routes
     
-    Acceptance Criteria:
-    - GET /api/threads returns only the current user’s threads from Postgres (Prisma)
-    - POST /api/threads creates a thread for the current user; returns thread JSON
-    - Zod validation; error envelope on failure; 401 when not signed in
+    **Acceptance Criteria:**
+    - Create requireUser() utility that returns current user or 401 with standard error envelope
+    - Protect /api/threads, /api/messages routes - refuse unauthenticated access
+    - Use standard error envelope: { error: { code, message, details } }
+    - **Client Verification:** API routes return 401 when not authenticated
 
-- [ ] N7) Update thread model (activeModel) via PATCH
+- [ ] 6) Database integration for user-specific threads
     
-    Acceptance Criteria:
-    - PATCH /api/threads/:id updates activeModel (zod-validated, belongs-to-user)
-    - Returns the updated thread; 403 if not owned by user
+    **Acceptance Criteria:**
+    - Modify GET /api/threads to fetch user's threads from Postgres (Prisma)
+    - Modify POST /api/threads to create thread for current user; returns thread JSON
+    - Zod validation; error envelope on failure; proper user isolation
+    - **Client Verification:** Client can create threads that persist after page refresh
 
-- [ ] N8) Messages API (DB): GET and POST (persist user message)
+### Phase 2: Core Chat Functionality with OpenAI (Tasks 7-11)
+
+- [ ] 7) Messages API with database persistence
     
-    Acceptance Criteria:
+    **Acceptance Criteria:**
     - GET /api/messages?threadId=… returns messages for owned thread (order ascending)
     - POST /api/messages creates a user message row; returns created record
-    - Fixture-based SSE stub may remain temporarily for assistant response
+    - Proper user/thread ownership validation; 403 if not owned by user
+    - **Client Verification:** User messages are saved to database and persist
 
-- [ ] N9) Standardize API error handling and validation
+- [ ] 8) OpenAI adapter implementation (non-streaming)
     
-    Acceptance Criteria:
-    - Shared error helper returns { error: { code, message } } with appropriate HTTP status
-    - Zod request validation for N6–N8 routes; 400 on invalid
+    **Acceptance Criteria:**
+    - Install openai SDK dependency
+    - Create server-only OpenAI adapter module implementing ProviderAdapter interface
+    - Add OPENAI_API_KEY to environment variables
+    - Implement adapter.chat() for gpt-4o and gpt-4o-mini models
+    - POST /api/messages triggers OpenAI call and returns assistant message (non-streaming first)
+    - Proper error envelope on provider failure; never expose raw API errors
+    - **Client Verification:** Client can send message and receive OpenAI response
 
-- [ ] N10) Seed data for development
+- [ ] 9) Database seeding for development
     
-    Acceptance Criteria:
-    - prisma/seed.ts creates a dev user (from SEED_USER_EMAIL) and a few threads/messages
-    - Document: npm run db:seed; data appears via /api endpoints after sign-in
+    **Acceptance Criteria:**
+    - Create prisma/seed.ts with dev user (from SEED_USER_EMAIL) and sample threads/messages
+    - Add npm run db:seed script to package.json
+    - Document seeding process in docs/DEV.md
+    - Seed data appears via /api endpoints after sign-in
+    - **Client Verification:** Fresh database can be seeded with test data for development
 
-- [ ] N11) OpenAI adapter (non-streaming)
+- [ ] 10) Server-Sent Events streaming for OpenAI
     
-    Acceptance Criteria:
-    - Server-only adapter module implements send() against OpenAI (gpt-4o or gpt-4o-mini)
-    - POST /api/messages triggers provider call and returns assistant message (non-stream first)
-    - Proper error envelope on provider failure
+    **Acceptance Criteria:**
+    - Implement SSE on POST /api/messages route per docs/API.md specification
+    - Stream events: 'delta' (token chunks), 'done' (with messageId and usage), 'error'
+    - Client-side EventSource handling to display response token-by-token
+    - Support for client-initiated cancellation via AbortController
+    - **Client Verification:** Client sees AI response appearing progressively, not all at once
 
-- [ ] N12) SSE streaming (OpenAI)
+- [ ] 11) Error handling and API standardization
     
-    Acceptance Criteria:
-    - POST /api/messages streams SSE events: delta, delta, done (per docs/API.md)
-    - Client already renders streams; verify token-by-token appearance
+    **Acceptance Criteria:**
+    - Implement shared error helper with standard envelope structure
+    - Handle OpenAI API errors gracefully - map to generic user messages
+    - Add request validation with Zod schemas for all routes
+    - Return appropriate HTTP status codes (400 validation, 401 auth, 403 forbidden, 500 server)
+    - **Client Verification:** API errors are handled gracefully with user-friendly messages
 
-- [ ] N13) Provider routing + model switcher
+### Phase 3: Multi-Provider Support and Model Switching (Tasks 12-17)
+
+- [ ] 12) Anthropic adapter implementation
     
-    Acceptance Criteria:
+    **Acceptance Criteria:**
+    - Install @anthropic-ai/sdk dependency
+    - Add ANTHROPIC_API_KEY to environment variables
+    - Create Anthropic adapter implementing ProviderAdapter interface
+    - Support claude-3-5-sonnet and claude-3-5-haiku models
+    - Error handling and timeout management
+    - **Client Verification:** System can route to Anthropic when configured
+
+- [ ] 13) Provider routing and model switcher UI
+    
+    **Acceptance Criteria:**
+    - Implement PATCH /api/threads/:id to update activeModel (zod-validated, user-owned)
+    - Add model selector dropdown to UI with available models
     - Route requests to OpenAI vs Anthropic based on thread.activeModel
-    - PATCH /api/threads/:id persists activeModel; client reflects selection
+    - Display current model in thread header
+    - **Client Verification:** Client can switch between OpenAI and Anthropic models
 
-- [ ] N14) Anthropic adapter
-    
-    Acceptance Criteria:
-    - Server-only adapter implements send() via Anthropic SDK
-    - Error envelope and timeouts handled
-
-- [ ] N15) Context truncation
-    
-    Acceptance Criteria:
-    - Implement context window truncation util per Design.md; unit tests cover long transcripts
-    - Works for both providers with model-specific limits
-
-- [ ] N16) Integration tests (backend APIs)
-    
-    Acceptance Criteria:
-    - Add tests covering N6–N12 happy paths and error cases (auth 401/403, zod 400, provider 5xx)
-    - Tests run in CI (or as npm script) and pass locally
-
-## AI Agent Configuration
-
-- [x]  **Create AGENTS.md**: Create a new `docs/AGENTS.md` file with instructions for the Claude AI agent. Include references to the Product Requirements Document (`docs/PRD.md`) and the Design document (`docs/Design.md`). Also outline that the agent should take the next incomplete task from `docs/Tasks.md`, implement it, then pause for human verification before continuing.
-
-    **Acceptance Criteria:**
-
-    - `docs/AGENTS.md` exists and contains references to `docs/PRD.md` and `docs/Design.md`.
-    - The content explains the agent’s workflow (sequentially executing tasks from the task list and pausing for review).
-    - (Verification: Opening `docs/AGENTS.md` shows the expected instructions, including the PRD/Design paths and task execution guidelines.)
-    - _Confirmation:_ `docs/AGENTS.md` captures the source-of-truth references and operating loop, so this task is complete.
-- [x]  **Symlink CLAUDE.md to AGENTS.md**: Create a symlink `CLAUDE.md` in the project root that points to `docs/AGENTS.md`. This ensures Claude Code reads the agent instructions.
+- [ ] 14) Mid-conversation model switching
     
     **Acceptance Criteria:**
-    
-    - A file `CLAUDE.md` exists in the root and is a symlink to `docs/AGENTS.md`.
-    - `readlink CLAUDE.md` outputs `docs/AGENTS.md`, confirming the symlink target.
-    - Opening `CLAUDE.md` shows the same content as `docs/AGENTS.md` (verifying the link is correct).
-    - _Confirmation:_ `CLAUDE.md → docs/AGENTS.md` symlink created and verified via `readlink`.
+    - Preserve conversation context when switching models mid-thread
+    - New model receives full message history from database
+    - Assistant messages tagged with provider and model used
+    - Optional inline indicator when model is switched
+    - **Client Verification:** Client can switch models mid-conversation and context is preserved
 
-## Development Environment Setup
+- [ ] 15) Context window truncation logic
+    
+    **Acceptance Criteria:**
+    - Implement context truncation utility per Design.md specification
+    - Model-specific token limits (conservative estimates)
+    - Preserve system message, truncate oldest user/assistant pairs when needed
+    - Unit tests covering long conversation scenarios
+    - Works for both OpenAI and Anthropic providers
+    - **Client Verification:** Long conversations don't hit context window errors
 
-- [x]  **Verify Homebrew Installation**: Ensure Homebrew is installed and update it to the latest version. This will guarantee we have access to package management for any needed tools.
+- [ ] 16) Enhanced UI error states and loading
     
     **Acceptance Criteria:**
-    
-    - Running `brew --version` outputs the Homebrew version (confirming Homebrew is installed).
-    - Running `brew update` completes without errors (Homebrew is up-to-date).
-    - (Verification: `brew --version` returns a version string and `brew update` reports “Already up-to-date” or updates formulae successfully.)
-    - _Confirmation:_ Homebrew 4.6.15 installed; `brew update` succeeded (taps updated, outdated formulae listed).
-- [x]  **Verify Node.js Installation**: Ensure Node.js (and npm) is installed at a recent version, updating if necessary. Node will be used for front-end development and build tools.
-    
-    **Acceptance Criteria:**
-    
-    - Running `node -v` outputs a Node.js version (ideally LTS, e.g. v18.x or higher).
-    - Running `npm -v` outputs the npm version, confirming npm is functional.
-    - If Node was outdated, it has been upgraded (e.g. via Homebrew) to a current LTS release.
-    - (Verification: `node -v` and `npm -v` show expected version numbers, and Node commands execute without error.)
-    - _Confirmation:_ Node v24.9.0 and npm 11.6.0 detected; meets requirement (>= 18).
-- [x]  **Verify Python Installation**: Ensure Python 3 is installed and updated to a modern version (e.g. Python 3.10+). This will be used for back-end development.
-    
-    **Acceptance Criteria:**
-    
-    - Running `python3 --version` outputs a Python 3.x version (at least 3.10 or later).
-    - The Python installation is functional (e.g., running `python3 -c "print('OK')"` prints “OK”).
-    - If the default Python was outdated, it has been updated (via Homebrew or pyenv) to a recent stable release.
-    - (Verification: `python3 --version` shows a recent version number, indicating an up-to-date Python interpreter.)
-    - _Confirmation:_ Python 3.13.7 detected; `python3 -c 'print("OK")'` succeeded.
+    - Loading states with aria-busy during async operations
+    - Error states with retry buttons for failed requests
+    - Empty states when no threads or messages exist
+    - Keyboard shortcuts: Cmd/Ctrl+N for new thread, Enter to send, Shift+Enter for newline
+    - **Client Verification:** UI feels responsive and handles errors gracefully
 
-## Version Control Setup
+- [ ] 17) Mobile responsive layout
+    
+    **Acceptance Criteria:**
+    - Thread tray becomes overlay/modal on mobile (<768px)
+    - Toggle button to open/close thread tray
+    - Chat interface remains fully functional on mobile
+    - Touch-friendly interaction targets
+    - **Client Verification:** App works well on mobile devices
 
-- [x]  **Initialize Git Repository**: Set up a new git repository in the project directory to track our progress. This will allow version control and integration with GitHub.
-    
-    **Acceptance Criteria:**
-    
-    - The command `git init` has been run in `~/Source/bombay`, creating a `.git/` directory.
-    - Running `git status` in the project shows “No commits yet” or an empty commit history (confirming the repo is initialized).
-    - (Verification: The `.git` folder exists and `git status` outputs the expected initial repository state.)
-- [x]  **Create .gitignore**: Add a `.gitignore` file to exclude unnecessary or sensitive files from version control. It should cover common Node and Python artifacts.
-    
-    **Acceptance Criteria:**
-    
-    - A file `.gitignore` exists in the project root.
-    - `.gitignore` contains entries for Node modules (e.g. `node_modules/`), Python bytecode and cache files (`.pyc`, `__pycache__/`), virtual environments (e.g. `venv/`), and OS files (like `.DS_Store`).
-    - (Verification: Viewing `.gitignore` shows patterns for Node and Python ignores; for example, searching the file for “node_modules” and “**pycache**” returns entries.)
-- [x]  **Initial Commit**: Commit the existing documentation files to git. This includes the PRD, Design doc, Tasks list (this file), the new AGENTS guide, and .gitignore. Use a clear commit message (e.g. "Initial documentation commit").
-    
-    **Acceptance Criteria:**
-    
-    - `git add` has staged `docs/PRD.md`, `docs/Design.md`, `docs/Tasks.md`, `docs/AGENTS.md` (and the symlink `CLAUDE.md`), as well as `.gitignore`, and a commit is created.
-    - Running `git log -1 --oneline` shows the initial commit with an appropriate message.
-    - `git ls-files` lists the above files, confirming they are tracked in the repository.
-    - (Verification: `git status` now shows a clean working directory, and `git log` indicates the initial commit containing the documentation files.)
-- [x]  **Create GitHub Repository**: Create a new repository on GitHub (e.g., named "bombay") for this project and prepare it for remote collaboration. This can be done via GitHub CLI or the web interface.
-    
-    **Acceptance Criteria:**
-    
-    - A remote repository exists on GitHub (accessible by the user) with the given project name.
-    - (If using GitHub CLI: Running `gh repo view <your-username>/bombay` shows repository details, confirming creation.)
-    - (Verification: The GitHub repo URL is reachable or visible in the GitHub account, and it’s empty or only contains an initial README if created with one.)
-- [x]  **Add Remote and Push**: Link the local git repo to the GitHub repository and push the initial commit to the remote.
-    
-    **Acceptance Criteria:**
-    
-    - The command `git remote add origin <repo-url>` has been run with the correct GitHub repository URL.
-    - Running `git remote -v` shows the `origin` remote pointing to the GitHub repo.
-    - The initial commit is pushed to the `main` (or `master`) branch on GitHub (`git push -u origin main` completes successfully).
-    - (Verification: `git branch -vv` shows the local main branch tracking `origin/main`. Viewing the GitHub repo online shows the documentation files and initial commit.)
+### Phase 4: Testing and Polish (Tasks 18-20)
 
-## Project Scaffolding (Next.js Monolith)
+- [ ] 18) Integration testing suite
+    
+    **Acceptance Criteria:**
+    - Write integration tests for all API endpoints (auth, threads, messages)
+    - Test authentication flows (401/403 scenarios)
+    - Test provider integration with both OpenAI and Anthropic
+    - Test error handling and validation scenarios
+    - Tests run via npm script and pass locally
+    - **Client Verification:** Comprehensive test coverage ensures reliability
 
-- [x]  **Initialize Next.js Application (App Router)**: Scaffold a Next.js monolith with TypeScript, Tailwind, and global layout.
+- [ ] 19) End-to-end testing with Playwright
     
     **Acceptance Criteria:**
-    
-    - `package.json` exists with Next.js scripts (`dev`, `build`, `start`).
-    - `tsconfig.json`, `next.config.mjs`, `postcss.config.js` exist.
-    - `app/layout.tsx` and `app/globals.css` exist (brand font/theme wired).
-    - (Verification: Files present; project structure consistent with design.)
-    - _Confirmation:_ Created package.json, tsconfig, next.config, postcss; existing app/layout.tsx and globals.css satisfy layout.
-- [x]  **Add Prisma Schema & Client**: Provide Prisma schema for Postgres per docs and prepare for migrations.
-    
-    **Acceptance Criteria:**
-    
-    - `prisma/schema.prisma` exists and matches docs/Database.md.
-    - `@prisma/client` and `prisma` declared in package.json (for runtime and migrations).
-    - (Verification: Schema file present; dependencies declared.)
-    - _Confirmation:_ Added prisma/schema.prisma matching docs/Database.md.
-- [x]  **Temporary Next API Routes (fixtures)**: Stub API routes that read from `docs/ui/fixtures` for local dev.
-    
-    **Acceptance Criteria:**
-    
-    - GET `/api/threads` returns threads.json
-    - GET `/api/messages?threadId=…` returns messages for thread
-    - PATCH `/api/threads/:id` echoes updated `activeModel`
-    - POST `/api/messages` streams SSE: `delta`, `delta`, `done`
-    - (Verification: Route files exist; handlers implemented as per spec.)
-    - _Confirmation:_ Implemented basic fixture-backed routes and SSE stub.
-- [x]  **Testing Setup (E2E)**: Configure Playwright baseline (headless run against dev server with fixtures or stubs).
-    
-    **Acceptance Criteria:**
-    
-    - Playwright config added; `npm run test:e2e` executes example spec.
-    - (Verification: Running tests prints results; selectors align with docs/ui/selectors.md.)
-    - _Confirmation:_ Added playwright.config.ts and e2e/ui.spec.ts covering shell, threads, model switcher, and send.
-- [x]  **Environment Templates**: Provide `.env.example` consistent with docs/ENV.md for dev/prod setup.
-    
-    **Acceptance Criteria:**
-    
-    - `.env.example` includes GOOGLE_*, NEXTAUTH_*, DATABASE_URL, OPENAI/ANTHROPIC keys.
-    - (Verification: Example file present; values documented).
+    - Implement Playwright tests covering complete user workflows
+    - Test sign-in, thread creation, message sending, model switching
+    - Test UI states: loading, error handling, mobile responsive
+    - Tests use proper selectors per docs/ui/selectors.md
+    - **Client Verification:** Critical user flows are automatically tested
 
-
-
-## Testing and Finalization
-
-- [ ]  **Integration Testing**: Write automated tests to cover the end-to-end functionality of the core features (task creation, listing, updating, deletion). These tests ensure that the backend and database work together as expected. *(Note: Frontend functionality can be tested separately or manually, but here we focus on backend integration tests.)*
+- [ ] 20) Code quality and final polish
     
     **Acceptance Criteria:**
-    
-    - A test suite (e.g., additional pytest test functions) is implemented to simulate a full workflow: creating tasks, retrieving list of tasks, updating a task, and deleting a task.
-    - The tests cover normal cases (e.g., create and then read to verify data) and edge cases (e.g., updating or deleting a non-existent task returns correct error).
-    - The tests use the actual API endpoints (possibly via FastAPI’s TestClient or making HTTP calls to a test instance of the server) to closely mimic real usage.
-    - Running `pytest` executes all integration tests and they all pass.
-    - (Verification: When running the test suite now, all tests pass indicating that the create/list/update/delete operations function correctly in sequence. For example, a test might create 2 tasks, assert the list endpoint returns them, update one, assert the change, then delete and assert it’s removed. All assertions should succeed.)
-- [ ]  **Code Quality Check (Linting & Formatting)**: Ensure the codebase adheres to styling and quality standards for both Python and JavaScript code. This involves running linters/formatters and making any necessary adjustments.
-    
-    **Acceptance Criteria:**
-    
-    - Python code is formatted (e.g., using **black** or **autopep8**) and linted (using **flake8/pylint**) with no major warnings or errors. The code conforms to PEP8 style guidelines.
-    - JavaScript/TypeScript code is formatted (e.g., with **Prettier**) and linted (using **ESLint**) with no errors. All unused variables, etc., are cleaned up.
-    - No extraneous debug statements or commented-out blocks remain; the code is clean and production-ready.
-    - (Verification: Running formatting tools (e.g., `black .` for Python, `prettier --check .` for JS) results in no needed changes. Running linters (`flake8` and `eslint`) yields 0 errors. The repository shows consistent code style. Reviewing the code manually finds it well-organized and readable.)
-- [ ]  **Documentation and Final Review**: Prepare final documentation and review the project for completion. Create or update the `README.md` file to provide an overview and usage instructions. Perform a final run-through of the application to ensure everything works as expected.
-    
-    **Acceptance Criteria:**
-    
-    - A `README.md` exists (or is updated) at the project root with clear documentation. It includes:
-        - **Project Overview**: A brief description of what the product is and does.
-        - **Prerequisites**: What needs to be installed (Node, Python, etc.) and any setup steps (e.g., installing dependencies with `npm install` and `pip install`).
-        - **Installation & Setup**: Instructions to set up the development environment, how to initialize the database (if not auto-created), etc.
-        - **Running the Application**: How to start the backend server and the frontend development server, including any necessary environment variables or configuration.
-        - **Usage**: How to use the application once running (e.g., how to access the web UI, basic operations like adding a task).
-        - **Testing**: How to run the test suites for both backend and frontend.
-        - **Project Structure** (optional): Overview of the directories and key files (frontend, backend, docs, etc.).
-    - The documentation is written clearly and covers all the steps to get the product running from scratch.
-    - Final manual test: Start the backend and frontend following the README instructions and perform a quick end-to-end check (create a task via the UI, mark it complete, delete it) to ensure the application behaves as expected in a real scenario.
-    - (Verification: Opening `README.md` shows all the required sections (Installation, Usage, etc.) with appropriate content. Following the instructions in the README allows a new developer/user to set up and run the project successfully. The product features work in a final end-to-end manual test, confirming the project is complete.)
+    - ESLint and TypeScript checks pass without errors
+    - Code formatting with Prettier applied consistently
+    - Remove debug statements and commented code
+    - Update documentation with final API and usage instructions
+    - **Client Verification:** Codebase is clean, well-documented, and production-ready
 
-## Next 20 Tasks — Working Demo Track
+## Reference Tasks (Completed Foundation Work)
 
-- [ ]  1) Add favicon.svg asset: Create `public/favicon.svg` with the bombay monogram in brand colors and gradients.
-    
-    **Acceptance Criteria:**
-    
-    - `public/favicon.svg` exists and follows brand palette.
-    - `<link rel="icon" href="/favicon.svg">` present in rendered HTML.
-    - `GET /favicon.svg` responds 200 in dev.
-    - (Verification: Open app; inspect head; fetch http://localhost:3000/favicon.svg.)
+For reference, the following foundation tasks have been completed:
 
-- [ ]  2) Empty state for threads/messages: Render explicit empty UI when threads array is empty and when a thread has zero messages.
-    
-    **Acceptance Criteria:**
-    
-    - `[data-testid="empty-state"]` appears in thread tray when no threads.
-    - Chat pane shows welcome message when no messages in a selected thread.
-    - (Verification: Temporarily mock empty fixtures via MSW or guard in code and verify DOM elements.)
+### Project Setup and Configuration
+- [x] AGENTS.md created with agent instructions
+- [x] CLAUDE.md symlink created for Claude Code compatibility
+- [x] Development environment verified (Homebrew, Node.js, Python)
+- [x] Git repository initialized and connected to GitHub
+- [x] Next.js application scaffolded with TypeScript and Tailwind
+- [x] Prisma schema configured per docs/Database.md
+- [x] Temporary fixture-backed API routes implemented
+- [x] Playwright E2E testing configured
+- [x] Environment templates created (.env.example)
+- [x] Auth and provider dependencies installed
+
+## Additional Reference Tasks (Future Development)
+
+The following sections contain additional tasks for future development and deployment phases. These are maintained for reference but are superseded by the phase-based approach in the Next 20 Tasks section above.
 
 - [ ]  3) Loading states + aria-busy: Add skeletons/placeholders and `aria-busy="true"` during async fetches for threads/messages.
     
