@@ -2,6 +2,18 @@
 
 Below is a sequential list of all tasks required to go from an empty project directory to a complete product. Each task is bite-sized with clear acceptance criteria that can be verified (often by running commands or tests). The development will pause after each task for review before proceeding.
 
+## Planning & Audit
+
+- [ ]  **Audit and further breakdown Tasks.md**: Review all tasks for alignment with PRD.md, Design.md, API.md, Database.md, Providers.md, and docs/ui/*. Ensure the next 20 tasks are granular, verifiable steps toward a working demo. Remove or relocate inconsistent items and resolve duplicates.
+
+    **Acceptance Criteria:**
+    
+    - Next 20 tasks are present as a dedicated section near the top, each with clear, testable acceptance criteria.
+    - Duplicated tasks are removed (e.g., duplicate "Environment Templates").
+    - The outdated "Feature Implementation — Tasks API" section is removed if inconsistent with the current plan of record (Next.js chat app with threads/messages).
+    - Existing later sections remain intact for future work.
+    - (Verification: Opening `docs/Tasks.md` shows the new audit task, the new "Next 20 Tasks — Working Demo Track" section, no duplicate env template task, and no Tasks API section.)
+
 ## AI Agent Configuration
 
 - [x]  **Create AGENTS.md**: Create a new `docs/AGENTS.md` file with instructions for the Claude AI agent. Include references to the Product Requirements Document (`docs/PRD.md`) and the Design document (`docs/Design.md`). Also outline that the agent should take the next incomplete task from `docs/Tasks.md`, implement it, then pause for human verification before continuing.
@@ -132,88 +144,8 @@ Below is a sequential list of all tasks required to go from an empty project dir
     
     - `.env.example` includes GOOGLE_*, NEXTAUTH_*, DATABASE_URL, OPENAI/ANTHROPIC keys.
     - (Verification: Example file present; values documented).
-- [ ]  **Environment Templates**: Provide `.env.example` consistent with docs/ENV.md for dev/prod setup.
-    
-    **Acceptance Criteria:**
-    
-    - `.env.example` includes GOOGLE_*, NEXTAUTH_*, DATABASE_URL, OPENAI/ANTHROPIC keys.
-    - (Verification: Example file present; values documented).
 
-## Feature Implementation
 
-### Backend API Features
-
-- [ ]  **Implement Create Task API**: Develop an endpoint to create a new task. According to the PRD, a task has attributes like title (and optionally description). This will be a POST request to the backend (e.g., `POST /tasks`) that inserts a new task into the database.
-    
-    **Acceptance Criteria:**
-    
-    - **Endpoint Behavior**: `POST /tasks` accepts task data (JSON payload, e.g., `{ "title": "...", "description": "..." }`) and creates a new task record in the database.
-    - On success, the endpoint returns a 201 Created status and the created task object (including its auto-generated `id` and default `completed` status, e.g., false).
-    - The new task actually persists in the database (verified by a subsequent read or direct DB query).
-    - (Verification: Starting the backend server and sending a sample POST request with a title/description returns a 201 status and a JSON response containing the new task with an ID. After the request, querying the DB or using the GET endpoint (if implemented) shows the new task present.)
-- [ ]  **Implement List Tasks API**: Develop an endpoint to retrieve all tasks. This will be a GET request (e.g., `GET /tasks`) that reads tasks from the database and returns them in a list.
-    
-    **Acceptance Criteria:**
-    
-    - **Endpoint Behavior**: `GET /tasks` returns a 200 OK status and a JSON array of task objects. If no tasks exist, it returns an empty list `[]`.
-    - Each task object in the list includes at least `id`, `title`, `description`, and `completed` status (and any other fields defined in the design).
-    - The tasks are fetched from the SQLite database and reflect the current state (including any tasks added or modified).
-    - (Verification: After creating some tasks (via the API or seeding the DB), a GET request to `/tasks` returns a list containing those tasks. For example, if one task was created in the previous step, it appears in the array with correct data.)
-- [ ]  **Implement Update Task API**: Develop an endpoint to update an existing task’s details or status. This could be a PUT/PATCH request (e.g., `PUT /tasks/{id}`) that updates a task’s title, description, or completion status.
-    
-    **Acceptance Criteria:**
-    
-    - **Endpoint Behavior**: `PUT /tasks/{id}` (or PATCH) accepts JSON with fields to update (e.g., title or completed flag) and updates the corresponding task in the database.
-    - On success, returns 200 OK and the updated task data. The database record is modified accordingly (e.g., marking a task as completed or changing its title).
-    - If the task ID does not exist, the endpoint returns an appropriate error (404 Not Found).
-    - (Verification: Create a test task, then send `PUT /tasks/{id}` with new data (e.g., change the title or set `"completed": true`). The response should be 200 and show the task with updated fields. A subsequent GET for that task (or all tasks) shows the updated data. Also, trying to update a non-existent ID yields a 404 error.)
-- [ ]  **Implement Delete Task API**: Develop an endpoint to delete a task. This will handle DELETE requests (e.g., `DELETE /tasks/{id}`) and remove the task from the database.
-    
-    **Acceptance Criteria:**
-    
-    - **Endpoint Behavior**: `DELETE /tasks/{id}` removes the task with the given ID from the database.
-    - On success, returns a 204 No Content (or 200 with no body) indicating the task was deleted. The task should no longer exist in the database after this operation.
-    - If the task ID does not exist, the endpoint returns a 404 Not Found error.
-    - (Verification: Create a sample task, then send `DELETE /tasks/{id}` for that task. The response should indicate success (no content). A follow-up GET `/tasks/{id}` (if implemented) or GET all tasks should confirm the task is gone. Also, deleting an already deleted or non-existent task returns a 404.)
-
-### Frontend UI Features
-
-- [ ]  **Display Tasks List (UI)**: Implement a front-end component/page that displays the list of tasks. On page load, the app should fetch the list of tasks from the backend and render them in a readable format.
-    
-    **Acceptance Criteria:**
-    
-    - The frontend has a "Tasks" page or component that on load sends a request to `GET /tasks` on the backend API.
-    - If tasks exist, they are displayed as a list (e.g., each task’s title (and possibly description) is shown in a list or table).
-    - If no tasks exist, the UI shows an empty state message (e.g. “No tasks yet”).
-    - (Verification: With the backend running and containing some tasks, open the front-end application. The tasks page should show the tasks that were created. In code, verify that an API call to `/tasks` is made (e.g., using the browser dev tools or reading the source code for a fetch/XHR request). No console errors should occur during rendering.)
-- [ ]  **Add Task (UI)**: Implement a form in the frontend to create a new task. This should allow the user to input at least a title (and description, if applicable) and submit to add the task via the API.
-    
-    **Acceptance Criteria:**
-    
-    - There is an input form on the UI for adding a new task (e.g., text fields for title/description and a submit button labeled "Add Task").
-    - When the form is submitted, the frontend makes a `POST /tasks` API call with the form data.
-    - If the API call succeeds, the new task is added to the list displayed on the page (without requiring a full page refresh). The list updates to include the newly created task.
-    - Basic validation: The form prevents submission of an empty title (if title is required by PRD). If an error occurs (e.g., API failure), an error message is shown to the user.
-    - (Verification: Using the running app, fill out the "Add Task" form and submit. The new task appears in the task list immediately. In the network dev tools, a successful POST request is seen. Also, confirming via a GET /tasks (or the UI list itself) that the task now exists. No errors appear in console upon submission.)
-- [ ]  **Mark Task as Complete (UI)**: Add functionality to mark a task as completed (or toggle its completed status) from the UI. For example, each task in the list could have a checkbox or "Complete" button. When used, it will update the task’s status via the API and update the UI accordingly.
-    
-    **Acceptance Criteria:**
-    
-    - Each task item in the list has a way to mark it complete/incomplete (e.g., a checkbox or toggle button reflecting the `completed` status).
-    - When the user marks a task as complete, the frontend sends a `PUT /tasks/{id}` request to update that task’s `completed` status to true (or false if unchecking).
-    - On success, the task’s display is updated in the UI without a full refresh (e.g., the task might show a strikethrough or a "Done" label). The change is persisted (refreshing the page would show the task in its new state, since the backend was updated).
-    - Completed tasks are visually distinguished from incomplete ones (for example, gray text or strikethrough for completed tasks, as per design guidelines).
-    - (Verification: In the running app, clicking the complete checkbox/button on a task triggers an API call (observable in network logs) which returns success. The UI immediately reflects the completed state (e.g., the task appears crossed out). If the page is refreshed or tasks re-fetched, the task remains marked as completed. No console errors occur during this interaction.)
-- [ ]  **Delete Task (UI)**: Provide a way to delete a task from the UI. Each task entry should have a delete option (e.g., a trash icon or "Delete" button). When clicked, it should ask for confirmation and then call the delete API.
-    
-    **Acceptance Criteria:**
-    
-    - Each task in the list has a delete control (button/icon).
-    - Clicking the delete initiates a confirmation prompt (to prevent accidental deletions). The user can confirm or cancel.
-    - On confirm, the frontend sends a `DELETE /tasks/{id}` request to the backend for that task.
-    - If the API responds with success, the task is removed from the UI list immediately.
-    - The deletion persists (the task is truly gone from backend; a refresh will not show it).
-    - (Verification: In the app, use the delete button on a task. Confirm the prompt, and observe a `DELETE` request in the network logs. The UI list no longer shows the task. Checking the backend (via GET /tasks or database) confirms the task is removed. Canceling the prompt should leave the task unchanged. No errors should occur during deletion operations.)
 
 ## Testing and Finalization
 
@@ -249,6 +181,169 @@ Below is a sequential list of all tasks required to go from an empty project dir
     - The documentation is written clearly and covers all the steps to get the product running from scratch.
     - Final manual test: Start the backend and frontend following the README instructions and perform a quick end-to-end check (create a task via the UI, mark it complete, delete it) to ensure the application behaves as expected in a real scenario.
     - (Verification: Opening `README.md` shows all the required sections (Installation, Usage, etc.) with appropriate content. Following the instructions in the README allows a new developer/user to set up and run the project successfully. The product features work in a final end-to-end manual test, confirming the project is complete.)
+
+## Next 20 Tasks — Working Demo Track
+
+- [ ]  1) Add favicon.svg asset: Create `public/favicon.svg` with the bombay monogram in brand colors and gradients.
+    
+    **Acceptance Criteria:**
+    
+    - `public/favicon.svg` exists and follows brand palette.
+    - `<link rel="icon" href="/favicon.svg">` present in rendered HTML.
+    - `GET /favicon.svg` responds 200 in dev.
+    - (Verification: Open app; inspect head; fetch http://localhost:3000/favicon.svg.)
+
+- [ ]  2) Empty state for threads/messages: Render explicit empty UI when threads array is empty and when a thread has zero messages.
+    
+    **Acceptance Criteria:**
+    
+    - `[data-testid="empty-state"]` appears in thread tray when no threads.
+    - Chat pane shows welcome message when no messages in a selected thread.
+    - (Verification: Temporarily mock empty fixtures via MSW or guard in code and verify DOM elements.)
+
+- [ ]  3) Loading states + aria-busy: Add skeletons/placeholders and `aria-busy="true"` during async fetches for threads/messages.
+    
+    **Acceptance Criteria:**
+    
+    - `[data-testid="thread-tray"][aria-busy="true"]` during thread load.
+    - Message transcript shows loading placeholder while fetching messages.
+    - (Verification: Introduce artificial delay; observe attributes and placeholder elements.)
+
+- [ ]  4) Error states + retry: Show `[data-testid="error-state"]` with message and a retry button on fetch errors for threads/messages.
+    
+    **Acceptance Criteria:**
+    
+    - Error component renders on non-2xx responses.
+    - Clicking retry re-issues the request and recovers to normal state when successful.
+    - (Verification: Force 500 via MSW; click retry; verify recovery.)
+
+- [ ]  5) Mobile layout (thread tray overlay): Convert thread tray to an overlay/modal under 768px with a toggle button.
+    
+    **Acceptance Criteria:**
+    
+    - On small viewport, `[data-testid="thread-tray"]` becomes overlay.
+    - Toggle opens/closes tray; chat remains usable.
+    - (Verification: Resize to mobile width; confirm behavior matches A10.)
+
+- [ ]  6) Keyboard shortcuts: Implement Cmd/Ctrl+N for new thread (focus composer), Enter to send (when non-empty), Shift+Enter to newline.
+    
+    **Acceptance Criteria:**
+    
+    - Pressing Cmd/Ctrl+N adds a new thread in UI and focuses `[data-testid="composer-input"]`.
+    - Enter sends when composer non-empty; Shift+Enter inserts a newline.
+    - (Verification: Manual and Playwright checks per A9.)
+
+- [ ]  7) Accessibility semantics: Ensure semantic structure and ARIA labels align with docs/ui/selectors.md and Accessibility guidance.
+    
+    **Acceptance Criteria:**
+    
+    - `role="main"` on chat pane, `role="alert"` on error states.
+    - Proper heading hierarchy and `aria-label` on key controls.
+    - (Verification: Automated axe scan shows no violations at Level AA; keyboard-only navigation works.)
+
+- [ ]  8) Selector audit: Confirm all `data-testid` match docs/ui/selectors.md and add any missing attributes.
+    
+    **Acceptance Criteria:**
+    
+    - Elements include: `app-shell`, `thread-tray`, `thread-list`, `thread-item`, `thread-title`, `model-switcher`, `transcript`, `typing-indicator`, `composer`, `composer-input`, `composer-send`, `brand-swatch`.
+    - (Verification: Inspect DOM; ensure presence and correct values.)
+
+- [ ]  9) Dev-only MSW bootstrap: Install and configure MSW (browser worker) to serve fixture data from `docs/ui/fixtures` during development.
+    
+    **Acceptance Criteria:**
+    
+    - `msw` dependency added; worker initialized in dev only.
+    - Handlers implemented for `GET /api/threads`, `GET /api/messages?threadId=...`, `PATCH /api/threads/:id`.
+    - `POST /api/messages` may continue using Next route SSE stub for streaming.
+    - (Verification: With `NEXT_PUBLIC_API_MOCKING=1`, network requests show mocked responses.)
+
+- [ ]  10) MSW fixture handlers: Map handlers to JSON fixtures and add realistic delays.
+    
+    **Acceptance Criteria:**
+    
+    - Handlers read from `docs/ui/fixtures/*.json`.
+    - Delays configurable (e.g., 200–600ms) to exercise loading states.
+    - (Verification: Logs show handler hits; UI displays skeletons then data.)
+
+- [ ]  11) Mocking toggle: Add env-controlled toggle (e.g., `NEXT_PUBLIC_API_MOCKING=1`) and document it in docs/DEV.md.
+    
+    **Acceptance Criteria:**
+    
+    - Mocking starts automatically in dev when toggle is set.
+    - Production builds do not include/initialize the worker.
+    - (Verification: Build output excludes MSW; dev includes worker registration.)
+
+- [ ]  12) Playwright: Add initial e2e suite scaffolding `e2e/ui.spec.ts` covering A1 (shell) and B1–B2 (brand font and dark theme vars).
+    
+    **Acceptance Criteria:**
+    
+    - `e2e/ui.spec.ts` exists and `npm run test:e2e` executes it.
+    - Tests assert presence of core selectors and brand variables.
+    - (Verification: Tests pass locally.)
+
+- [ ]  13) Playwright: Add A2 (fixture data loads) using MSW fixtures.
+    
+    **Acceptance Criteria:**
+    
+    - Test asserts 5 thread items and exact titles from fixtures.
+    - First thread has `data-active="true"`.
+    - (Verification: Test passes.)
+
+- [ ]  14) Playwright: Add A3 (thread selection) and A4 (model retention per thread).
+    
+    **Acceptance Criteria:**
+    
+    - Clicking different thread updates active state and header title.
+    - Model selection persists per thread within session.
+    - (Verification: Tests pass.)
+
+- [ ]  15) Playwright: Add A5 (message send flow) using SSE stub.
+    
+    **Acceptance Criteria:**
+    
+    - Composer clears and disables during response; typing indicator visible.
+    - Assistant message streams in; indicator hides when done.
+    - (Verification: Tests pass.)
+
+- [ ]  16) Playwright: Add A6–A8 (empty, loading, error) by toggling MSW responses and delays.
+    
+    **Acceptance Criteria:**
+    
+    - Empty state test shows welcome/empty UI.
+    - Loading state test observes `aria-busy` and skeletons.
+    - Error test shows error state and successful retry.
+    - (Verification: Tests pass.)
+
+- [ ]  17) Responsive test A10: Verify mobile overlay behavior of thread tray.
+    
+    **Acceptance Criteria:**
+    
+    - Set viewport to mobile; assert tray becomes overlay and is toggleable.
+    - (Verification: Test passes.)
+
+- [ ]  18) Brand tests B3–B5: Gradient, accessibility checks, favicon and metadata verification.
+    
+    **Acceptance Criteria:**
+    
+    - Gradient background-image present on brand swatch.
+    - Contrast checks meet guidance; favicon present and accessible.
+    - (Verification: Tests pass.)
+
+- [ ]  19) Developer docs: Update `docs/DEV.md` with MSW usage, mocking toggle, and testing commands.
+    
+    **Acceptance Criteria:**
+    
+    - DEV.md includes steps to enable/disable mocks and run E2E.
+    - (Verification: File updated; instructions work as written.)
+
+- [ ]  20) Task list hygiene: Remove duplicates and inconsistent sections, and confirm ordering.
+    
+    **Acceptance Criteria:**
+    
+    - Duplicate "Environment Templates" entry removed.
+    - "Feature Implementation — Tasks API" removed (inconsistent).
+    - Next 20 tasks appear in order at top for the agent to execute sequentially.
+    - (Verification: `docs/Tasks.md` reflects the new ordering and content.)
 
 ## UI Specification Implementation
 
