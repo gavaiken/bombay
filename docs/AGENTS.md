@@ -28,6 +28,7 @@ Operating loop: “Read task → implement → verify → commit → push → pa
 
 - Batching (with user approval): You may batch up to 5 small, related tasks. Pause after any large task or when input is needed. Summarize and verify each batch before proceeding.
 - Verification-first: Every task or batch must be verified by running tests and/or directly exercising the app. Prefer automated checks; supplement with manual checks as needed.
+- Commit & push cadence: Commit and push after each small task. For a batch, still make one commit per task and push each commit immediately. Do not batch unrelated changes into a single commit.
 - Periodic manual verification: At least once every 10 tasks, request the user’s manual verification (e.g., run the demo or tests and confirm expected outcomes). Wait for explicit confirmation before continuing.
 - Task list upkeep: At the end of each task/batch, update docs/Tasks.md as needed to add follow-on items. Keep the “Next 20 Tasks” small and verifiable. Do not rewrite the entire file—make targeted updates.
 - Pause on ambiguity: If acceptance criteria are unclear or prerequisites are missing, stop and ask a concise question before making assumptions.
