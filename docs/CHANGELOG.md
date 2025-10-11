@@ -1,1 +1,2 @@
 - 2025-10-11: Confirmed Task 1 (“Create AGENTS.md”) is complete; verification lives in docs/AGENTS.md.
+- 2025-10-11: Created CLAUDE.md symlink to docs/AGENTS.md (AI agent bootstrap). Verified via `readlink`.

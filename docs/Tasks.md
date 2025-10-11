@@ -12,13 +12,14 @@ Below is a sequential list of all tasks required to go from an empty project dir
     - The content explains the agent’s workflow (sequentially executing tasks from the task list and pausing for review).
     - (Verification: Opening `docs/AGENTS.md` shows the expected instructions, including the PRD/Design paths and task execution guidelines.)
     - _Confirmation:_ `docs/AGENTS.md` captures the source-of-truth references and operating loop, so this task is complete.
-- [ ]  **Symlink CLAUDE.md to AGENTS.md**: Create a symlink `CLAUDE.md` in the project root that points to `docs/AGENTS.md`. This ensures Claude Code reads the agent instructions.
+- [x]  **Symlink CLAUDE.md to AGENTS.md**: Create a symlink `CLAUDE.md` in the project root that points to `docs/AGENTS.md`. This ensures Claude Code reads the agent instructions.
     
     **Acceptance Criteria:**
     
     - A file `CLAUDE.md` exists in the root and is a symlink to `docs/AGENTS.md`.
     - `readlink CLAUDE.md` outputs `docs/AGENTS.md`, confirming the symlink target.
     - Opening `CLAUDE.md` shows the same content as `docs/AGENTS.md` (verifying the link is correct).
+    - _Confirmation:_ `CLAUDE.md → docs/AGENTS.md` symlink created and verified via `readlink`.
 
 ## Development Environment Setup
 
