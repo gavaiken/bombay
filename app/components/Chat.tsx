@@ -24,6 +24,17 @@ export default function Chat() {
 
   // Mobile tray
   const [isTrayOpen, setIsTrayOpen] = useState(false)
+  // Desktop sidebar visibility
+  const [isSidebarVisible, setIsSidebarVisible] = useState(true)
+
+  function toggleSidebar() {
+    const isMobile = window.matchMedia('(max-width: 767px)').matches
+    if (isMobile) {
+      setIsTrayOpen((v) => !v)
+    } else {
+      setIsSidebarVisible((v) => !v)
+    }
+  }
 
   const transcriptRef = useRef<HTMLDivElement>(null)
   const composerRef = useRef<HTMLTextAreaElement>(null)
@@ -58,12 +69,22 @@ export default function Chat() {
     function onKey(e: KeyboardEvent) {
       const isMac = navigator.platform.toLowerCase().includes('mac')
       const mod = isMac ? e.metaKey : e.ctrlKey
-      if (mod && e.key.toLowerCase() === 'n') {
+      const shift = e.shiftKey
+      const key = e.key.toLowerCase()
+      // New chat: Cmd/Ctrl+Shift+O
+      if (mod && shift && key === 'o') {
         e.preventDefault()
         newThread()
         setTimeout(() => composerRef.current?.focus(), 0)
+        return
       }
-      if (e.key === 'Escape') {
+      // Toggle sidebar: Cmd/Ctrl+Shift+S
+      if (mod && shift && key === 's') {
+        e.preventDefault()
+        toggleSidebar()
+        return
+      }
+      if (key === 'escape') {
         setIsTrayOpen(false)
       }
     }
@@ -213,7 +234,10 @@ export default function Chat() {
   const activeThread = useMemo(() => threads.find(t => t.id === currentThreadId) || null, [threads, currentThreadId])
 
   return (
-    <div data-testid="app-shell" className="relative md:grid md:grid-cols-[280px_1fr] h-screen">
+    <div
+      data-testid="app-shell"
+      className={`relative md:grid h-screen ${isSidebarVisible ? 'md:grid-cols-[280px_1fr]' : 'md:grid-cols-[0_1fr]'}`}
+    >
       {/* Mobile overlay backdrop */}
       {isTrayOpen && (
         <button aria-label="Close threads" onClick={() => setIsTrayOpen(false)} className="fixed inset-0 bg-black/50 md:hidden z-40" />
@@ -222,12 +246,20 @@ export default function Chat() {
       <aside
         id="thread-tray"
         data-testid="thread-tray"
-        className={`border-r overflow-y-auto p-2 bg-panel z-50 ${isTrayOpen ? 'fixed inset-0 w-4/5 max-w-xs md:static' : 'hidden md:block'}`}
+        className={`border-r overflow-y-auto p-2 bg-panel z-50 ${isTrayOpen ? 'fixed inset-0 w-4/5 max-w-xs md:static' : 'hidden md:block'} ${isSidebarVisible ? 'md:opacity-100 md:pointer-events-auto' : 'md:opacity-0 md:pointer-events-none md:w-0 md:p-0 md:border-0'}`}
         aria-label="Chat threads"
         aria-busy={isLoadingThreads || undefined}
       >
         <div className="flex items-center justify-between mb-2">
-          <button data-testid="new-thread" className="mb-0 rounded-md border border-border px-2 py-1" onClick={newThread}>
+          <div className="flex items-center gap-2">
+            <div data-testid="brand-swatch" aria-label="bombay brand" className="h-4 w-12 rounded-sm" style={{ background: 'var(--gradient-brand)' }} />
+            <span className="text-text/60 text-xs">bombay</span>
+          </div>
+          <button
+            data-testid="new-thread"
+            className="mb-0 rounded-md border border-brand-500 text-brand-500 hover:bg-brand-100/10 focus:outline-none focus:ring-4 focus:ring-pink-400/40 px-2 py-1"
+            onClick={newThread}
+          >
             New Chat
           </button>
           <button className="md:hidden rounded-md border border-border px-2 py-1" aria-label="Close thread tray" onClick={() => setIsTrayOpen(false)}>Close</button>
@@ -271,7 +303,13 @@ export default function Chat() {
             </button>
             <h1 data-testid="thread-title">{currentThreadTitle || 'bombay'}</h1>
           </div>
-          <select data-testid="model-switcher" aria-label="Model selector" value={model} onChange={(e) => onChangeModel(e.target.value)}>
+          <select
+            data-testid="model-switcher"
+            aria-label="Model selector"
+            className="bg-panel text-brand-500 border border-border hover:border-brand-500 focus:outline-none focus:ring-4 focus:ring-pink-400/40 rounded-md px-2 py-1"
+            value={model}
+            onChange={(e) => onChangeModel(e.target.value)}
+          >
             <option value="openai:gpt-4o">OpenAI — gpt-4o</option>
             <option value="openai:gpt-4o-mini">OpenAI — gpt-4o-mini</option>
             <option value="anthropic:claude-3-5-sonnet">Claude — 3.5 Sonnet</option>
@@ -288,6 +326,12 @@ export default function Chat() {
           aria-live="polite"
           className="flex-1 overflow-y-auto p-4 space-y-2"
         >
+          {(threadsError || messagesError) && (
+            <div data-testid="error-state" role="alert" className="rounded-md border border-brand-500 text-brand-500 bg-panel p-3 flex items-center justify-between">
+              <span>{threadsError || messagesError}</span>
+              <button className="rounded-md border border-brand-500 text-brand-500 px-2 py-1" onClick={() => { threadsError ? loadThreads() : reloadMessages() }}>Retry</button>
+            </div>
+          )
           {messagesError && (
             <div data-testid="error-state" role="alert" className="rounded-md border border-border bg-panel p-3">
               <div className="mb-2">{messagesError}</div>
@@ -324,7 +368,7 @@ export default function Chat() {
             data-testid="composer-input"
             rows={2}
             placeholder="Message…"
-            className="flex-1 border p-2"
+            className="flex-1 bg-panel text-text placeholder:text-text/50 border border-border rounded-md p-2 focus:outline-none focus:border-brand-500 focus:ring-4 focus:ring-pink-400/40"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={onComposerKeyDown}
@@ -333,7 +377,6 @@ export default function Chat() {
           <button data-testid="composer-send" type="submit" disabled={typing || !input.trim()} className="border px-3">Send</button>
         </form>
 
-        <div data-testid="brand-swatch" className="h-6 w-24 m-2 rounded-md" style={{ background: 'var(--gradient-brand)' }} />
       </main>
     </div>
   )
