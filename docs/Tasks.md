@@ -71,6 +71,112 @@ Below is a sequential list of all tasks required to go from an empty project dir
     - Run dev server and confirm: mobile overlay, loading/error states, New Chat button styling, composer contrast, model selector styling, and both shortcuts
     - You confirm visuals; I confirm logs and non-interactive checks
 
+## Next 16 Tasks — Auth, DB, and Real API Track
+
+These items turn the fixture-backed demo into a real, authenticated app with provider integrations. Each task is small and verifiable. Later, broader tasks remain for reference but are superseded where noted.
+
+- [ ] N1) Install auth/provider deps and update env docs
+    
+    Acceptance Criteria:
+    - Add dependencies: next-auth, @next-auth/prisma-adapter, openai, @anthropic-ai/sdk (or anthropic)
+    - Confirm .env.example has NEXTAUTH_SECRET, NEXTAUTH_URL, GOOGLE_CLIENT_ID/SECRET, OPENAI_API_KEY, ANTHROPIC_API_KEY (already present)
+    - npm install completes; types resolve
+
+- [ ] N2) Prisma schema for NextAuth
+    
+    Acceptance Criteria:
+    - Extend prisma/schema.prisma with NextAuth models (Account, Session, VerificationToken) and relation to User
+    - Run migration: npx prisma migrate dev -n auth_models
+    - prisma generate succeeds
+
+- [ ] N3) Configure NextAuth (Google + Prisma adapter)
+    
+    Acceptance Criteria:
+    - app/api/auth/[...nextauth]/route.ts created; Google provider configured from env; PrismaAdapter wired
+    - Export a server helper (auth()) to get the current session
+    - Sign-in/sign-out endpoints work (HTTP 200/302)
+
+- [ ] N4) Protect API routes with auth guard
+    
+    Acceptance Criteria:
+    - Utility requireUser() returns the current user or 401 with standard error envelope
+    - /api/threads, /api/messages routes refuse unauthenticated access
+
+- [ ] N5) Header UI: sign-in/out + show user email
+    
+    Acceptance Criteria:
+    - Add minimal auth UI (Sign in / Sign out) and show session.user.email in header when logged in
+    - Keyboard/focus accessible; selectors documented if needed
+
+- [ ] N6) Threads API (DB): GET (by user) and POST (create)
+    
+    Acceptance Criteria:
+    - GET /api/threads returns only the current user’s threads from Postgres (Prisma)
+    - POST /api/threads creates a thread for the current user; returns thread JSON
+    - Zod validation; error envelope on failure; 401 when not signed in
+
+- [ ] N7) Update thread model (activeModel) via PATCH
+    
+    Acceptance Criteria:
+    - PATCH /api/threads/:id updates activeModel (zod-validated, belongs-to-user)
+    - Returns the updated thread; 403 if not owned by user
+
+- [ ] N8) Messages API (DB): GET and POST (persist user message)
+    
+    Acceptance Criteria:
+    - GET /api/messages?threadId=… returns messages for owned thread (order ascending)
+    - POST /api/messages creates a user message row; returns created record
+    - Fixture-based SSE stub may remain temporarily for assistant response
+
+- [ ] N9) Standardize API error handling and validation
+    
+    Acceptance Criteria:
+    - Shared error helper returns { error: { code, message } } with appropriate HTTP status
+    - Zod request validation for N6–N8 routes; 400 on invalid
+
+- [ ] N10) Seed data for development
+    
+    Acceptance Criteria:
+    - prisma/seed.ts creates a dev user (from SEED_USER_EMAIL) and a few threads/messages
+    - Document: npm run db:seed; data appears via /api endpoints after sign-in
+
+- [ ] N11) OpenAI adapter (non-streaming)
+    
+    Acceptance Criteria:
+    - Server-only adapter module implements send() against OpenAI (gpt-4o or gpt-4o-mini)
+    - POST /api/messages triggers provider call and returns assistant message (non-stream first)
+    - Proper error envelope on provider failure
+
+- [ ] N12) SSE streaming (OpenAI)
+    
+    Acceptance Criteria:
+    - POST /api/messages streams SSE events: delta, delta, done (per docs/API.md)
+    - Client already renders streams; verify token-by-token appearance
+
+- [ ] N13) Provider routing + model switcher
+    
+    Acceptance Criteria:
+    - Route requests to OpenAI vs Anthropic based on thread.activeModel
+    - PATCH /api/threads/:id persists activeModel; client reflects selection
+
+- [ ] N14) Anthropic adapter
+    
+    Acceptance Criteria:
+    - Server-only adapter implements send() via Anthropic SDK
+    - Error envelope and timeouts handled
+
+- [ ] N15) Context truncation
+    
+    Acceptance Criteria:
+    - Implement context window truncation util per Design.md; unit tests cover long transcripts
+    - Works for both providers with model-specific limits
+
+- [ ] N16) Integration tests (backend APIs)
+    
+    Acceptance Criteria:
+    - Add tests covering N6–N12 happy paths and error cases (auth 401/403, zod 400, provider 5xx)
+    - Tests run in CI (or as npm script) and pass locally
+
 ## AI Agent Configuration
 
 - [x]  **Create AGENTS.md**: Create a new `docs/AGENTS.md` file with instructions for the Claude AI agent. Include references to the Product Requirements Document (`docs/PRD.md`) and the Design document (`docs/Design.md`). Also outline that the agent should take the next incomplete task from `docs/Tasks.md`, implement it, then pause for human verification before continuing.
@@ -553,11 +659,13 @@ Below is a sequential list of all tasks required to go from an empty project dir
 
 - [ ]  **Replace Mocks with Real API Integration**: Swap MSW mocks for actual backend API calls while keeping all selectors and UI behavior unchanged.
     
+    Note: Superseded by the detailed "Next 16 Tasks — Auth, DB, and Real API Track" (N1–N16). Keep this as a reference umbrella task only.
+    
     **Acceptance Criteria:**
     
     - API client configured to call real backend endpoints
     - Authentication and error handling implemented
-    - WebSocket connection for real-time message streaming
+    - SSE streaming implemented per docs/API.md
     - Mock responses are replaced but UI behavior stays identical
     - All Playwright tests continue passing with real backend
     - Graceful fallback if backend is unavailable
