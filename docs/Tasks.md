@@ -4,13 +4,14 @@ Below is a sequential list of all tasks required to go from an empty project dir
 
 ## AI Agent Configuration
 
-- [ ]  **Create AGENTS.md**: Create a new `docs/AGENTS.md` file with instructions for the Claude AI agent. Include references to the Product Requirements Document (`docs/PRD.md`) and the Design document (`docs/Design.md`). Also outline that the agent should take the next incomplete task from `docs/Tasks.md`, implement it, then pause for human verification before continuing.
-    
+- [x]  **Create AGENTS.md**: Create a new `docs/AGENTS.md` file with instructions for the Claude AI agent. Include references to the Product Requirements Document (`docs/PRD.md`) and the Design document (`docs/Design.md`). Also outline that the agent should take the next incomplete task from `docs/Tasks.md`, implement it, then pause for human verification before continuing.
+
     **Acceptance Criteria:**
-    
+
     - `docs/AGENTS.md` exists and contains references to `docs/PRD.md` and `docs/Design.md`.
     - The content explains the agent’s workflow (sequentially executing tasks from the task list and pausing for review).
     - (Verification: Opening `docs/AGENTS.md` shows the expected instructions, including the PRD/Design paths and task execution guidelines.)
+    - _Confirmation:_ `docs/AGENTS.md` captures the source-of-truth references and operating loop, so this task is complete.
 - [ ]  **Symlink CLAUDE.md to AGENTS.md**: Create a symlink `CLAUDE.md` in the project root that points to `docs/AGENTS.md`. This ensures Claude Code reads the agent instructions.
     
     **Acceptance Criteria:**

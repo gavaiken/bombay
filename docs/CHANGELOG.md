@@ -1,0 +1,1 @@
+- 2025-10-11: Confirmed Task 1 (“Create AGENTS.md”) is complete; verification lives in docs/AGENTS.md.
