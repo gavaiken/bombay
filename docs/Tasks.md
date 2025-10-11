@@ -402,3 +402,127 @@ Below is a sequential list of all tasks required to go from an empty project dir
     - Bundle size optimization and code splitting
     - Service worker for offline functionality (optional)
     - (Verification: Lighthouse scores 90+ for Performance, Accessibility, Best Practices. Large conversations load smoothly. App feels responsive under normal usage patterns.)
+
+## Production Deployment
+
+### API Keys and External Services
+
+- [ ]  **Generate AI Provider API Keys**: Request user to create API keys for OpenAI and Anthropic services.
+    
+    **Acceptance Criteria:**
+    
+    - **USER ACTION REQUIRED**: Agent prompts user to:
+      - Sign up for OpenAI account at https://platform.openai.com
+      - Generate API key with appropriate usage limits
+      - Sign up for Anthropic account at https://console.anthropic.com  
+      - Generate API key for Claude access
+      - Store keys securely for environment variable configuration
+    - Agent waits for user confirmation that keys have been generated
+    - Keys follow format: `sk-...` for OpenAI, `sk-ant-...` for Anthropic
+    - (Verification: User confirms API keys are generated and ready for deployment setup.)
+
+### Hosting Platform Setup
+
+- [ ]  **Set Up Vercel Account and Project**: Request user to create Vercel account and connect GitHub repository.
+    
+    **Acceptance Criteria:**
+    
+    - **USER ACTION REQUIRED**: Agent prompts user to:
+      - Sign up for Vercel account at https://vercel.com
+      - Connect GitHub account and authorize Vercel access
+      - Import the bombay GitHub repository as new Vercel project
+      - Configure project settings (Next.js framework auto-detected)
+      - Set Node.js version to 18+ in project settings
+    - Agent waits for user confirmation that Vercel project is created
+    - Initial deployment should succeed (may have missing env vars)
+    - (Verification: User confirms Vercel project exists and initial deployment completed.)
+
+- [ ]  **Configure Production Environment Variables**: Set up API keys and database connection in Vercel dashboard.
+    
+    **Acceptance Criteria:**
+    
+    - **USER ACTION REQUIRED**: Agent prompts user to:
+      - Access Vercel project dashboard → Settings → Environment Variables
+      - Add production environment variables:
+        - `OPENAI_API_KEY` (from previous step)
+        - `ANTHROPIC_API_KEY` (from previous step)
+        - `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` (OAuth setup)
+        - `NEXTAUTH_SECRET` (generate random 32+ char string)
+        - `DATABASE_URL` (managed Postgres connection string)
+        - `NEXTAUTH_URL` (https://bombay.chat)
+      - Trigger new deployment after environment variables are set
+    - All environment variables properly configured for production
+    - New deployment succeeds with all services connected
+    - (Verification: Environment variables configured, deployment succeeds, app functional on Vercel domain.)
+
+### Domain Configuration
+
+- [ ]  **Configure Custom Domain**: Set up bombay.chat domain to point to Vercel deployment.
+    
+    **Acceptance Criteria:**
+    
+    - **USER ACTION REQUIRED**: Agent prompts user to:
+      - Access Vercel project dashboard → Settings → Domains
+      - Add custom domain: bombay.chat
+      - Copy DNS configuration values from Vercel (CNAME/A records)
+      - Log into Porkbun account at https://porkbun.com
+      - Navigate to DNS management for bombay.chat domain
+      - Update DNS records to point to Vercel (remove default parking)
+      - Wait for DNS propagation (5-60 minutes)
+    - SSL certificate automatically provisioned by Vercel
+    - Domain resolves to bombay application
+    - HTTPS redirect properly configured
+    - (Verification: https://bombay.chat loads the application with valid SSL certificate.)
+
+### Database Setup
+
+- [ ]  **Set Up Production Database**: Configure managed Postgres database for production use.
+    
+    **Acceptance Criteria:**
+    
+    - **USER ACTION REQUIRED**: Agent prompts user to:
+      - Choose managed Postgres provider (Neon/Supabase/Vercel Postgres)
+      - Create production database instance
+      - Configure connection settings (SSL required)
+      - Copy database connection string
+      - Add `DATABASE_URL` to Vercel environment variables
+      - Run Prisma migrations: `npx prisma db push` (or setup auto-migration)
+    - Database schema matches development (users, threads, messages tables)
+    - Connection secure with SSL/TLS encryption
+    - Prisma can successfully connect and query database
+    - (Verification: Database connected, tables created, application can read/write data in production.)
+
+### Production Validation
+
+- [ ]  **Test End-to-End Production Flow**: Validate complete application functionality on live domain.
+    
+    **Acceptance Criteria:**
+    
+    - Navigate to https://bombay.chat and verify application loads
+    - Test Google OAuth sign-in flow works in production
+    - Create new chat thread and verify database persistence
+    - Send message and verify AI provider integration (OpenAI/Anthropic)
+    - Test model switching mid-conversation
+    - Verify message history persists across sessions
+    - Check SSL certificate validity and security headers
+    - Test responsive design on mobile and desktop
+    - Verify no console errors or broken functionality
+    - (Verification: All core features work correctly on production domain with real user flow.)
+
+### Local Development Setup
+
+- [ ]  **Document Local Development Process**: Create clear instructions for running bombay locally.
+    
+    **Acceptance Criteria:**
+    
+    - Update README.md with local development section:
+      - Prerequisites: Node.js 18+, PostgreSQL (local or remote)
+      - Clone repository and install dependencies: `npm install`
+      - Set up `.env.local` with development environment variables
+      - Initialize database: `npx prisma db push`
+      - Start development server: `npm run dev`
+      - Access local app at http://localhost:3000
+    - Include troubleshooting section for common issues
+    - Document how to switch between local and production databases
+    - Provide example `.env.local` template with placeholder values
+    - (Verification: Following README instructions results in working local development environment.)

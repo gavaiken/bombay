@@ -313,13 +313,38 @@ export interface ProviderAdapter {
 
 ---
 
+## **Deployment Strategy**
+
+### **Production Domain & Hosting**
+
+- **Domain**: bombay.chat (purchased via porkbun.com)
+- **Primary hosting**: Vercel for Next.js deployment
+- **Database**: Managed Postgres (Neon/Supabase/Vercel Postgres)
+- **CDN**: Vercel Edge Network
+- **SSL/TLS**: Automatic via Vercel + custom domain
+
+### **Deployment Flow**
+
+1. **GitHub Integration**: Vercel auto-deploys from main branch
+2. **DNS Configuration**: Point bombay.chat to Vercel via Porkbun DNS management
+3. **Environment Variables**: API keys and secrets via Vercel dashboard
+4. **Database Setup**: Postgres connection string in production environment
+
+### **Local Development**
+
+- **Prerequisites**: Node.js 18+, PostgreSQL (local or remote)
+- **Setup**: `npm install`, `npx prisma db push`, `npm run dev`
+- **Environment**: `.env.local` with development API keys
+- **Hot reload**: Next.js dev server with fast refresh
+
 ## **Hosting & Environments**
 
-**Primary recommendation (simplest)**
+**Primary deployment (chosen)**
 
-- **Vercel** for Next.js (Node runtime for API, SSE compatible).
-- **Neon**/**Supabase**/**Railway** Postgres (managed).
-- **Vercel env vars** or **Cloud Secret Manager** injection.
+- **Vercel** for Next.js (Node runtime for API, SSE compatible)
+- **Custom domain**: bombay.chat via Porkbun DNS
+- **Database**: Managed Postgres (Neon/Supabase/Vercel Postgres)
+- **Vercel env vars** for secrets management
 
 **Alt (GCP-preferred)**
 
