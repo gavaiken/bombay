@@ -70,3 +70,13 @@ These selectors form a **contract** between:
 - Browser automation
 
 **Never change these selectors without updating all dependent tests.**
+
+## Accessibility roles & labels (append)
+
+- Thread tray container: `<nav aria-label="Chat threads" data-testid="thread-tray">`
+- Main chat area: `<main role="main" data-testid="chat-pane">`
+- Transcript container: `<div role="log" aria-label="Chat messages" aria-live="polite" data-testid="transcript">`
+- Error bubbles: `role="alert"`
+- Model selector: label or `aria-label="Model selector"`
+- Composer: textarea has an associated `<label>` (visually hidden) “Message”
+- Typing indicator: `aria-live="polite"`

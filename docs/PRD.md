@@ -18,7 +18,7 @@ The goal: demonstrate that conversation context can continue smoothly across mod
 - **Core Chat Experience:** A familiar, simple chat UI (like ChatGPT).
 - **Persistent Conversations:** Multiple saved threads in a left sidebar.
 - **Google Sign-In:** Easy authentication and per-user data.
-- **Multi-Provider Support:** Start with OpenAI + Anthropic, exact model selection.
+- **Multi-Provider Support:** Start with OpenAI + Anthropic, exact model selection (OpenAI: GPT-4o / GPT-4o-mini; Anthropic: Claude 3.5 Sonnet / Claude 3.5 Haiku).
 
 ---
 
@@ -29,7 +29,7 @@ The goal: demonstrate that conversation context can continue smoothly across mod
 - **US3:** *Chat with AI* using a conversational interface.
 - **US4:** *Switch providers/models mid-chat* without losing context.
 - **US5:** *See saved threads* in a sidebar for continuity.
-- **US6:** *Pick exact models* (e.g., GPT-4 vs Claude 2.1) for control and comparison.
+- **US6:** *Pick exact models* (e.g., GPT-4o vs Claude 3.5 Sonnet) for control and comparison.
 
 ---
 
