@@ -13,7 +13,10 @@ export const metadata = {
   description: 'multi-model chat',
   icons: { 
     icon: '/favicon.svg' 
-  },
+  }
+}
+
+export const viewport = {
   themeColor: '#0B1220'
 }
 
