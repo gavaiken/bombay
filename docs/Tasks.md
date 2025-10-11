@@ -1,0 +1,230 @@
+# Tasks
+
+Below is a sequential list of all tasks required to go from an empty project directory to a complete product. Each task is bite-sized with clear acceptance criteria that can be verified (often by running commands or tests). The development will pause after each task for review before proceeding.
+
+## AI Agent Configuration
+
+- [ ]  **Create AGENTS.md**: Create a new `docs/AGENTS.md` file with instructions for the Claude AI agent. Include references to the Product Requirements Document (`docs/PRD.md`) and the Design document (`docs/Design.md`). Also outline that the agent should take the next incomplete task from `docs/Tasks.md`, implement it, then pause for human verification before continuing.
+    
+    **Acceptance Criteria:**
+    
+    - `docs/AGENTS.md` exists and contains references to `docs/PRD.md` and `docs/Design.md`.
+    - The content explains the agent’s workflow (sequentially executing tasks from the task list and pausing for review).
+    - (Verification: Opening `docs/AGENTS.md` shows the expected instructions, including the PRD/Design paths and task execution guidelines.)
+- [ ]  **Symlink CLAUDE.md to AGENTS.md**: Create a symlink `CLAUDE.md` in the project root that points to `docs/AGENTS.md`. This ensures Claude Code reads the agent instructions.
+    
+    **Acceptance Criteria:**
+    
+    - A file `CLAUDE.md` exists in the root and is a symlink to `docs/AGENTS.md`.
+    - `readlink CLAUDE.md` outputs `docs/AGENTS.md`, confirming the symlink target.
+    - Opening `CLAUDE.md` shows the same content as `docs/AGENTS.md` (verifying the link is correct).
+
+## Development Environment Setup
+
+- [ ]  **Verify Homebrew Installation**: Ensure Homebrew is installed and update it to the latest version. This will guarantee we have access to package management for any needed tools.
+    
+    **Acceptance Criteria:**
+    
+    - Running `brew --version` outputs the Homebrew version (confirming Homebrew is installed).
+    - Running `brew update` completes without errors (Homebrew is up-to-date).
+    - (Verification: `brew --version` returns a version string and `brew update` reports “Already up-to-date” or updates formulae successfully.)
+- [ ]  **Verify Node.js Installation**: Ensure Node.js (and npm) is installed at a recent version, updating if necessary. Node will be used for front-end development and build tools.
+    
+    **Acceptance Criteria:**
+    
+    - Running `node -v` outputs a Node.js version (ideally LTS, e.g. v18.x or higher).
+    - Running `npm -v` outputs the npm version, confirming npm is functional.
+    - If Node was outdated, it has been upgraded (e.g. via Homebrew) to a current LTS release.
+    - (Verification: `node -v` and `npm -v` show expected version numbers, and Node commands execute without error.)
+- [ ]  **Verify Python Installation**: Ensure Python 3 is installed and updated to a modern version (e.g. Python 3.10+). This will be used for back-end development.
+    
+    **Acceptance Criteria:**
+    
+    - Running `python3 --version` outputs a Python 3.x version (at least 3.10 or later).
+    - The Python installation is functional (e.g., running `python3 -c "print('OK')"` prints “OK”).
+    - If the default Python was outdated, it has been updated (via Homebrew or pyenv) to a recent stable release.
+    - (Verification: `python3 --version` shows a recent version number, indicating an up-to-date Python interpreter.)
+
+## Version Control Setup
+
+- [ ]  **Initialize Git Repository**: Set up a new git repository in the project directory to track our progress. This will allow version control and integration with GitHub.
+    
+    **Acceptance Criteria:**
+    
+    - The command `git init` has been run in `~/Source/bombay`, creating a `.git/` directory.
+    - Running `git status` in the project shows “No commits yet” or an empty commit history (confirming the repo is initialized).
+    - (Verification: The `.git` folder exists and `git status` outputs the expected initial repository state.)
+- [ ]  **Create .gitignore**: Add a `.gitignore` file to exclude unnecessary or sensitive files from version control. It should cover common Node and Python artifacts.
+    
+    **Acceptance Criteria:**
+    
+    - A file `.gitignore` exists in the project root.
+    - `.gitignore` contains entries for Node modules (e.g. `node_modules/`), Python bytecode and cache files (`.pyc`, `__pycache__/`), virtual environments (e.g. `venv/`), and OS files (like `.DS_Store`).
+    - (Verification: Viewing `.gitignore` shows patterns for Node and Python ignores; for example, searching the file for “node_modules” and “**pycache**” returns entries.)
+- [ ]  **Initial Commit**: Commit the existing documentation files to git. This includes the PRD, Design doc, Tasks list (this file), the new AGENTS guide, and .gitignore. Use a clear commit message (e.g. "Initial documentation commit").
+    
+    **Acceptance Criteria:**
+    
+    - `git add` has staged `docs/PRD.md`, `docs/Design.md`, `docs/Tasks.md`, `docs/AGENTS.md` (and the symlink `CLAUDE.md`), as well as `.gitignore`, and a commit is created.
+    - Running `git log -1 --oneline` shows the initial commit with an appropriate message.
+    - `git ls-files` lists the above files, confirming they are tracked in the repository.
+    - (Verification: `git status` now shows a clean working directory, and `git log` indicates the initial commit containing the documentation files.)
+- [ ]  **Create GitHub Repository**: Create a new repository on GitHub (e.g., named "bombay") for this project and prepare it for remote collaboration. This can be done via GitHub CLI or the web interface.
+    
+    **Acceptance Criteria:**
+    
+    - A remote repository exists on GitHub (accessible by the user) with the given project name.
+    - (If using GitHub CLI: Running `gh repo view <your-username>/bombay` shows repository details, confirming creation.)
+    - (Verification: The GitHub repo URL is reachable or visible in the GitHub account, and it’s empty or only contains an initial README if created with one.)
+- [ ]  **Add Remote and Push**: Link the local git repo to the GitHub repository and push the initial commit to the remote.
+    
+    **Acceptance Criteria:**
+    
+    - The command `git remote add origin <repo-url>` has been run with the correct GitHub repository URL.
+    - Running `git remote -v` shows the `origin` remote pointing to the GitHub repo.
+    - The initial commit is pushed to the `main` (or `master`) branch on GitHub (`git push -u origin main` completes successfully).
+    - (Verification: `git branch -vv` shows the local main branch tracking `origin/main`. Viewing the GitHub repo online shows the documentation files and initial commit.)
+
+## Project Scaffolding
+
+- [ ]  **Initialize Frontend Application**: Set up the front-end project using React (Node.js). Create a new React app (for example, via Create React App or a similar tool) in a `frontend` directory. Use TypeScript if possible for maintainability.
+    
+    **Acceptance Criteria:**
+    
+    - A new React project is created under `frontend/` (it contains `package.json`, a `/src` directory, etc.).
+    - The app builds and runs without errors. For example, running `npm run build` inside the `frontend` directory completes successfully, producing a `build/` folder with the compiled assets.
+    - (Verification: The presence of `frontend/src/index.js` or `index.tsx`, and a successful build process. The build output (e.g., `frontend/build/index.html`) exists, indicating the scaffolded app compiled correctly.)
+- [ ]  **Initialize Backend Application**: Set up the back-end project using Python. Create a new directory (e.g. `backend`) and a basic Python application (using a framework like **FastAPI**) that can run a web server. Implement a simple endpoint (e.g., GET `/` returning "Hello, World") to validate the setup.
+    
+    **Acceptance Criteria:**
+    
+    - A Python project is created under `backend/` with a main application file (e.g. `backend/main.py`) that defines a web server (using FastAPI or Flask).
+    - Running the development server (for FastAPI, e.g. `uvicorn backend.main:app --port 8000`) starts without errors.
+    - Hitting the root endpoint (e.g., `GET http://localhost:8000/`) returns a response "Hello, World!" (or the specified test message).
+    - (Verification: Starting the server and curling `http://127.0.0.1:8000/` returns the expected greeting. Alternatively, using FastAPI’s TestClient to get `/` returns status 200 and "Hello, World!" in the body.)
+- [ ]  **Set Up Testing Frameworks**: Configure testing for both backend and frontend to enable automated verification of features. For Python, set up **pytest**. For the React app, ensure **Jest** (or the built-in test runner) is configured. Create a simple dummy test in each to verify the setup.
+    
+    **Acceptance Criteria:**
+    
+    - **Backend**: `pytest` is added to the project (and to requirements if applicable), and a sample test (e.g., always passing or a test that `GET /` returns 200) is written. Running `pytest` yields 0 failures.
+    - **Frontend**: The React app’s test runner (Jest) is configured (this is usually default with Create React App). A sample test (for example, checking that the main App component renders without crashing) is present. Running `npm test` (in CI mode or once-off) passes all tests.
+    - (Verification: Execute `pytest` in the backend folder – it should report success. Execute `npm test -- --watchAll=false` in the frontend – it should run the tests and report passing results.)
+- [ ]  **Set Up Database**: Introduce a database for persistence. Use SQLite for simplicity (no external service needed). Configure the backend to use SQLite (e.g., a file `backend/tasks.db`) and create a schema for the core data (e.g., a "tasks" table).
+    
+    **Acceptance Criteria:**
+    
+    - A SQLite database file (e.g., `tasks.db`) is initialized (either manually checked in or created on first run).
+    - A "tasks" table exists in the database with appropriate columns as per the design (e.g., `id` integer primary key, `title` text, `description` text, `completed` boolean/int).
+    - The backend application is set up to connect to this database (for example, using an ORM or direct `sqlite3` connections) and will create the table if it doesn’t exist.
+    - (Verification: After running the app (or a setup script), the `backend/tasks.db` file exists. Querying the SQLite schema (e.g., using `sqlite3 tasks.db ".tables"` or checking via a short Python snippet) shows a "tasks" table present with the defined columns.)
+
+## Feature Implementation
+
+### Backend API Features
+
+- [ ]  **Implement Create Task API**: Develop an endpoint to create a new task. According to the PRD, a task has attributes like title (and optionally description). This will be a POST request to the backend (e.g., `POST /tasks`) that inserts a new task into the database.
+    
+    **Acceptance Criteria:**
+    
+    - **Endpoint Behavior**: `POST /tasks` accepts task data (JSON payload, e.g., `{ "title": "...", "description": "..." }`) and creates a new task record in the database.
+    - On success, the endpoint returns a 201 Created status and the created task object (including its auto-generated `id` and default `completed` status, e.g., false).
+    - The new task actually persists in the database (verified by a subsequent read or direct DB query).
+    - (Verification: Starting the backend server and sending a sample POST request with a title/description returns a 201 status and a JSON response containing the new task with an ID. After the request, querying the DB or using the GET endpoint (if implemented) shows the new task present.)
+- [ ]  **Implement List Tasks API**: Develop an endpoint to retrieve all tasks. This will be a GET request (e.g., `GET /tasks`) that reads tasks from the database and returns them in a list.
+    
+    **Acceptance Criteria:**
+    
+    - **Endpoint Behavior**: `GET /tasks` returns a 200 OK status and a JSON array of task objects. If no tasks exist, it returns an empty list `[]`.
+    - Each task object in the list includes at least `id`, `title`, `description`, and `completed` status (and any other fields defined in the design).
+    - The tasks are fetched from the SQLite database and reflect the current state (including any tasks added or modified).
+    - (Verification: After creating some tasks (via the API or seeding the DB), a GET request to `/tasks` returns a list containing those tasks. For example, if one task was created in the previous step, it appears in the array with correct data.)
+- [ ]  **Implement Update Task API**: Develop an endpoint to update an existing task’s details or status. This could be a PUT/PATCH request (e.g., `PUT /tasks/{id}`) that updates a task’s title, description, or completion status.
+    
+    **Acceptance Criteria:**
+    
+    - **Endpoint Behavior**: `PUT /tasks/{id}` (or PATCH) accepts JSON with fields to update (e.g., title or completed flag) and updates the corresponding task in the database.
+    - On success, returns 200 OK and the updated task data. The database record is modified accordingly (e.g., marking a task as completed or changing its title).
+    - If the task ID does not exist, the endpoint returns an appropriate error (404 Not Found).
+    - (Verification: Create a test task, then send `PUT /tasks/{id}` with new data (e.g., change the title or set `"completed": true`). The response should be 200 and show the task with updated fields. A subsequent GET for that task (or all tasks) shows the updated data. Also, trying to update a non-existent ID yields a 404 error.)
+- [ ]  **Implement Delete Task API**: Develop an endpoint to delete a task. This will handle DELETE requests (e.g., `DELETE /tasks/{id}`) and remove the task from the database.
+    
+    **Acceptance Criteria:**
+    
+    - **Endpoint Behavior**: `DELETE /tasks/{id}` removes the task with the given ID from the database.
+    - On success, returns a 204 No Content (or 200 with no body) indicating the task was deleted. The task should no longer exist in the database after this operation.
+    - If the task ID does not exist, the endpoint returns a 404 Not Found error.
+    - (Verification: Create a sample task, then send `DELETE /tasks/{id}` for that task. The response should indicate success (no content). A follow-up GET `/tasks/{id}` (if implemented) or GET all tasks should confirm the task is gone. Also, deleting an already deleted or non-existent task returns a 404.)
+
+### Frontend UI Features
+
+- [ ]  **Display Tasks List (UI)**: Implement a front-end component/page that displays the list of tasks. On page load, the app should fetch the list of tasks from the backend and render them in a readable format.
+    
+    **Acceptance Criteria:**
+    
+    - The frontend has a "Tasks" page or component that on load sends a request to `GET /tasks` on the backend API.
+    - If tasks exist, they are displayed as a list (e.g., each task’s title (and possibly description) is shown in a list or table).
+    - If no tasks exist, the UI shows an empty state message (e.g. “No tasks yet”).
+    - (Verification: With the backend running and containing some tasks, open the front-end application. The tasks page should show the tasks that were created. In code, verify that an API call to `/tasks` is made (e.g., using the browser dev tools or reading the source code for a fetch/XHR request). No console errors should occur during rendering.)
+- [ ]  **Add Task (UI)**: Implement a form in the frontend to create a new task. This should allow the user to input at least a title (and description, if applicable) and submit to add the task via the API.
+    
+    **Acceptance Criteria:**
+    
+    - There is an input form on the UI for adding a new task (e.g., text fields for title/description and a submit button labeled "Add Task").
+    - When the form is submitted, the frontend makes a `POST /tasks` API call with the form data.
+    - If the API call succeeds, the new task is added to the list displayed on the page (without requiring a full page refresh). The list updates to include the newly created task.
+    - Basic validation: The form prevents submission of an empty title (if title is required by PRD). If an error occurs (e.g., API failure), an error message is shown to the user.
+    - (Verification: Using the running app, fill out the "Add Task" form and submit. The new task appears in the task list immediately. In the network dev tools, a successful POST request is seen. Also, confirming via a GET /tasks (or the UI list itself) that the task now exists. No errors appear in console upon submission.)
+- [ ]  **Mark Task as Complete (UI)**: Add functionality to mark a task as completed (or toggle its completed status) from the UI. For example, each task in the list could have a checkbox or "Complete" button. When used, it will update the task’s status via the API and update the UI accordingly.
+    
+    **Acceptance Criteria:**
+    
+    - Each task item in the list has a way to mark it complete/incomplete (e.g., a checkbox or toggle button reflecting the `completed` status).
+    - When the user marks a task as complete, the frontend sends a `PUT /tasks/{id}` request to update that task’s `completed` status to true (or false if unchecking).
+    - On success, the task’s display is updated in the UI without a full refresh (e.g., the task might show a strikethrough or a "Done" label). The change is persisted (refreshing the page would show the task in its new state, since the backend was updated).
+    - Completed tasks are visually distinguished from incomplete ones (for example, gray text or strikethrough for completed tasks, as per design guidelines).
+    - (Verification: In the running app, clicking the complete checkbox/button on a task triggers an API call (observable in network logs) which returns success. The UI immediately reflects the completed state (e.g., the task appears crossed out). If the page is refreshed or tasks re-fetched, the task remains marked as completed. No console errors occur during this interaction.)
+- [ ]  **Delete Task (UI)**: Provide a way to delete a task from the UI. Each task entry should have a delete option (e.g., a trash icon or "Delete" button). When clicked, it should ask for confirmation and then call the delete API.
+    
+    **Acceptance Criteria:**
+    
+    - Each task in the list has a delete control (button/icon).
+    - Clicking the delete initiates a confirmation prompt (to prevent accidental deletions). The user can confirm or cancel.
+    - On confirm, the frontend sends a `DELETE /tasks/{id}` request to the backend for that task.
+    - If the API responds with success, the task is removed from the UI list immediately.
+    - The deletion persists (the task is truly gone from backend; a refresh will not show it).
+    - (Verification: In the app, use the delete button on a task. Confirm the prompt, and observe a `DELETE` request in the network logs. The UI list no longer shows the task. Checking the backend (via GET /tasks or database) confirms the task is removed. Canceling the prompt should leave the task unchanged. No errors should occur during deletion operations.)
+
+## Testing and Finalization
+
+- [ ]  **Integration Testing**: Write automated tests to cover the end-to-end functionality of the core features (task creation, listing, updating, deletion). These tests ensure that the backend and database work together as expected. *(Note: Frontend functionality can be tested separately or manually, but here we focus on backend integration tests.)*
+    
+    **Acceptance Criteria:**
+    
+    - A test suite (e.g., additional pytest test functions) is implemented to simulate a full workflow: creating tasks, retrieving list of tasks, updating a task, and deleting a task.
+    - The tests cover normal cases (e.g., create and then read to verify data) and edge cases (e.g., updating or deleting a non-existent task returns correct error).
+    - The tests use the actual API endpoints (possibly via FastAPI’s TestClient or making HTTP calls to a test instance of the server) to closely mimic real usage.
+    - Running `pytest` executes all integration tests and they all pass.
+    - (Verification: When running the test suite now, all tests pass indicating that the create/list/update/delete operations function correctly in sequence. For example, a test might create 2 tasks, assert the list endpoint returns them, update one, assert the change, then delete and assert it’s removed. All assertions should succeed.)
+- [ ]  **Code Quality Check (Linting & Formatting)**: Ensure the codebase adheres to styling and quality standards for both Python and JavaScript code. This involves running linters/formatters and making any necessary adjustments.
+    
+    **Acceptance Criteria:**
+    
+    - Python code is formatted (e.g., using **black** or **autopep8**) and linted (using **flake8/pylint**) with no major warnings or errors. The code conforms to PEP8 style guidelines.
+    - JavaScript/TypeScript code is formatted (e.g., with **Prettier**) and linted (using **ESLint**) with no errors. All unused variables, etc., are cleaned up.
+    - No extraneous debug statements or commented-out blocks remain; the code is clean and production-ready.
+    - (Verification: Running formatting tools (e.g., `black .` for Python, `prettier --check .` for JS) results in no needed changes. Running linters (`flake8` and `eslint`) yields 0 errors. The repository shows consistent code style. Reviewing the code manually finds it well-organized and readable.)
+- [ ]  **Documentation and Final Review**: Prepare final documentation and review the project for completion. Create or update the `README.md` file to provide an overview and usage instructions. Perform a final run-through of the application to ensure everything works as expected.
+    
+    **Acceptance Criteria:**
+    
+    - A `README.md` exists (or is updated) at the project root with clear documentation. It includes:
+        - **Project Overview**: A brief description of what the product is and does.
+        - **Prerequisites**: What needs to be installed (Node, Python, etc.) and any setup steps (e.g., installing dependencies with `npm install` and `pip install`).
+        - **Installation & Setup**: Instructions to set up the development environment, how to initialize the database (if not auto-created), etc.
+        - **Running the Application**: How to start the backend server and the frontend development server, including any necessary environment variables or configuration.
+        - **Usage**: How to use the application once running (e.g., how to access the web UI, basic operations like adding a task).
+        - **Testing**: How to run the test suites for both backend and frontend.
+        - **Project Structure** (optional): Overview of the directories and key files (frontend, backend, docs, etc.).
+    - The documentation is written clearly and covers all the steps to get the product running from scratch.
+    - Final manual test: Start the backend and frontend following the README instructions and perform a quick end-to-end check (create a task via the UI, mark it complete, delete it) to ensure the application behaves as expected in a real scenario.
+    - (Verification: Opening `README.md` shows all the required sections (Installation, Usage, etc.) with appropriate content. Following the instructions in the README allows a new developer/user to set up and run the project successfully. The product features work in a final end-to-end manual test, confirming the project is complete.)
