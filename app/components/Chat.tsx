@@ -331,7 +331,7 @@ export default function Chat() {
               <span>{threadsError || messagesError}</span>
               <button className="rounded-md border border-brand-500 text-brand-500 px-2 py-1" onClick={() => { threadsError ? loadThreads() : reloadMessages() }}>Retry</button>
             </div>
-          )
+          )}
           {messagesError && (
             <div data-testid="error-state" role="alert" className="rounded-md border border-border bg-panel p-3">
               <div className="mb-2">{messagesError}</div>
