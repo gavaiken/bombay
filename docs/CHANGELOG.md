@@ -10,3 +10,4 @@
 - 2025-10-11: Implemented temporary Next API routes backed by fixtures; added SSE stub for POST /api/messages.
 - 2025-10-11: Added .env.example per docs/ENV.md; added simple app/page.tsx matching selectors.
 - 2025-10-11: Added Playwright config and minimal E2E spec (shell, threads, model switcher, send flow).
+- 2025-10-11: Completed Task 1 (Setup local PostgreSQL using Docker): container healthy, Prisma schema applied via `prisma db push`.

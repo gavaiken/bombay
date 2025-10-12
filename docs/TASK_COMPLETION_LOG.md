@@ -49,3 +49,31 @@
 
 ### Next Task:
 The first active task is now **Task 1: Setup local PostgreSQL using Docker** from Phase 1.
+
+---
+
+## Task: Setup local PostgreSQL using Docker
+
+**Completion Date:** 2025-10-11  
+**Status:** ✅ COMPLETED
+
+### What was accomplished
+
+- Verified docker-compose.yml defines a PostgreSQL 15 service with healthcheck and persistent volume.
+- Confirmed presence of .env.docker.example and used a local .env.docker (git-ignored) with:
+  - POSTGRES_DB=bombay_dev
+  - POSTGRES_USER=bombay
+  - POSTGRES_PASSWORD=•••••••• (local dev only)
+- Ensured .env.example includes a local Docker DATABASE_URL and docs/DEV.md documents Docker workflow.
+- Brought the database up and confirmed health via Docker.
+- Applied Prisma schema successfully against the running database.
+
+### Verification
+
+- docker compose up -d → container running and Health=healthy.
+- Prisma: `prisma db push` succeeded; Prisma Client generated.
+
+### Notes
+
+- No secrets committed. Local-only files: .env.local, .env.docker.
+- Next steps proceed to Task 2 once human operator checks the box in Tasks.md (per docs/AGENTS.md).
