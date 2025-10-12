@@ -18,3 +18,4 @@
 - 2025-10-12: Completed Task 5 (Auth middleware for API routes): added requireUser guard and standardized error envelope.
 - 2025-10-12: Completed Task 6 (Threads API database integration): GET/POST now backed by Prisma with Zod validation.
 - 2025-10-12: Completed Task 7 (Messages API with database persistence): GET queries DB, POST persists user message (SSE stub retained).
+- 2025-10-12: Completed Task 8 (OpenAI adapter non-streaming): provider interface + OpenAI adapter; POST /api/messages supports ?mode=json for validation.

@@ -215,3 +215,26 @@ The first active task is now **Task 1: Setup local PostgreSQL using Docker** fro
 ### Notes
 
 - Checkbox marked in docs/Tasks.md in the same commit.
+
+---
+
+## Task: OpenAI adapter implementation (non-streaming)
+
+**Completion Date:** 2025-10-12  
+**Status:** ✅ COMPLETED
+
+### What was accomplished
+
+- Implemented provider interface and OpenAI adapter with chatNonStreaming and chatStreaming stubs.
+- Added minimal provider registry (OpenAI mapped by model prefix).
+- Added non-streaming validation path to POST /api/messages via `?mode=json` that calls adapter and returns assistant message JSON, without changing the UI SSE path.
+
+### Verification
+
+- `npm run build` succeeds (adapter and registry compile).
+- Non-streaming path reachable with a request to `/api/messages?mode=json` (returns stubbed content without OPENAI_API_KEY); DB persists assistant message.
+
+### Notes
+
+- UI continues to use SSE stub until Task 10.
+- Checkbox marked in docs/Tasks.md in the same commit.

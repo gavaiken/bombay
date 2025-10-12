@@ -34,20 +34,35 @@ export async function POST(req: NextRequest) {
   const gate = await requireUser()
   if ('error' in gate) return gate.error
   try {
+    const url = new URL(req.url)
+    const mode = url.searchParams.get('mode') // optional non-stream validation path
     const { threadId, content } = await req.json()
     if (!threadId || !content) {
       return new Response(JSON.stringify({ error: { code: 'VALIDATION_ERROR', message: 'threadId and content required', details: null } }), { status: 400 })
     }
     // Ownership check
-    const own = await prisma.thread.findFirst({ where: { id: threadId, userId: gate.user.id }, select: { id: true } })
-    if (!own) {
+    const thread = await prisma.thread.findFirst({ where: { id: threadId, userId: gate.user.id }, select: { id: true, activeModel: true } })
+    if (!thread) {
       return new Response(JSON.stringify({ error: { code: 'FORBIDDEN', message: 'Forbidden', details: null } }), { status: 403 })
     }
     // Persist user message
-    await prisma.message.create({
-      data: { threadId, role: 'user', contentText: content }
-    })
+    await prisma.message.create({ data: { threadId, role: 'user', contentText: content } })
 
+    if (mode === 'json') {
+      // Non-streaming validation path for Task 8 (does not affect UI)
+      const { getAdapterForModel } = await import('lib/providers')
+      const adapter = getAdapterForModel(thread.activeModel || 'openai:gpt-4o')
+      if (!adapter) {
+        return new Response(JSON.stringify({ error: { code: 'VALIDATION_ERROR', message: 'Unsupported model', details: null } }), { status: 400 })
+      }
+      const res = await adapter.chatNonStreaming({ model: (thread.activeModel || '').split(':')[1] || 'gpt-4o', messages: [{ role: 'user', content }] })
+      const saved = await prisma.message.create({
+        data: { threadId, role: 'assistant', contentText: res.text, provider: adapter.name, model: (thread.activeModel || '').split(':')[1] || 'gpt-4o', usageJson: res.usage ?? undefined }
+      })
+      return new Response(JSON.stringify(saved), { headers: { 'Content-Type': 'application/json' } })
+    }
+
+    // Default SSE path (UI behavior unchanged)
     const encoder = new TextEncoder()
     const stream = new ReadableStream({
       start(controller) {
@@ -55,20 +70,14 @@ export async function POST(req: NextRequest) {
           controller.enqueue(encoder.encode(`event: ${event}\n`))
           controller.enqueue(encoder.encode(`data: ${data}\n\n`))
         }
-        // Minimal deterministic chunks (placeholder until streaming is implemented)
+        // Minimal deterministic chunks (placeholder until streaming is implemented in Task 10)
         send('delta', JSON.stringify('Okay — '))
         send('delta', JSON.stringify('working on it…'))
         send('done', JSON.stringify({ messageId: 'm_temp', usage: { input_tokens: 12, output_tokens: 18 } }))
         controller.close()
       }
     })
-    return new Response(stream, {
-      headers: {
-        'Content-Type': 'text/event-stream',
-        'Cache-Control': 'no-cache',
-        Connection: 'keep-alive'
-      }
-    })
+    return new Response(stream, { headers: { 'Content-Type': 'text/event-stream', 'Cache-Control': 'no-cache', Connection: 'keep-alive' } })
   } catch (e) {
     return new Response(JSON.stringify({ error: { code: 'INTERNAL_ERROR', message: 'Failed to stream response', details: null } }), { status: 500 })
   }
