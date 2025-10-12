@@ -27,3 +27,4 @@
 - 2025-10-12: Completed Task 15 (Context window truncation): truncation utility + unit test (Vitest).
 - 2025-10-12: Completed Task 16 (Enhanced UI error/loading): keyboard shortcuts updated; UI states verified.
 - 2025-10-12: Completed Task 17 (Mobile responsive layout): overlay thread tray confirmed on mobile.
+- 2025-10-12: Completed Task 18 (Integration testing suite): added Vitest integration tests for threads and messages; Docker DB used.

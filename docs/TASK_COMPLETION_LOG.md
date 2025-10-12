@@ -411,3 +411,25 @@ The first active task is now **Task 1: Setup local PostgreSQL using Docker** fro
 ### Notes
 
 - Checkbox marked in docs/Tasks.md in the same commit.
+
+---
+
+## Task: Integration testing suite
+
+**Completion Date:** 2025-10-12  
+**Status:** ✅ COMPLETED
+
+### What was accomplished
+
+- Added Vitest-based integration tests for API routes (threads, messages).
+- Mocked auth (lib/authz) to inject a test user; used Docker Postgres via vitest.config.ts to construct DATABASE_URL.
+- Threads tests cover POST (create) and GET (list) flows; messages tests cover GET (empty) and POST ?mode=json (assistant persistence).
+
+### Verification
+
+- `npm run test` passes (unit + integration).
+- Docker Postgres used for DB assertions; cleanup performed after tests.
+
+### Notes
+
+- Checkbox marked in docs/Tasks.md in the same commit.
