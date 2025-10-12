@@ -261,3 +261,25 @@ The first active task is now **Task 1: Setup local PostgreSQL using Docker** fro
 
 - No secrets committed; local Docker DB used.
 - Checkbox marked in docs/Tasks.md in the same commit.
+
+---
+
+## Task: Server-Sent Events streaming for OpenAI
+
+**Completion Date:** 2025-10-12  
+**Status:** ✅ COMPLETED
+
+### What was accomplished
+
+- Implemented SSE in POST /api/messages backed by OpenAI adapter streaming.
+- Persisted assistant message upon stream completion and emitted done event with usage shape.
+- Kept non-streaming validation path (?mode=json) for Task 8.
+
+### Verification
+
+- `npm run build` succeeds.
+- With no OPENAI_API_KEY, a deterministic stub stream is emitted; with a valid key, the adapter yields model output.
+
+### Notes
+
+- Checkbox marked in docs/Tasks.md in the same commit.

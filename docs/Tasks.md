@@ -109,7 +109,7 @@ Based on senior engineering feedback, these tasks are organized into phases that
     - Seed data appears via /api endpoints after sign-in
     - **Client Verification:** Fresh database can be seeded with test data for development
 
-- [ ] 10) Server-Sent Events streaming for OpenAI
+- [x] 10) Server-Sent Events streaming for OpenAI
     
     **Acceptance Criteria:**
     - Implement SSE on POST /api/messages route per docs/API.md specification

@@ -62,19 +62,40 @@ export async function POST(req: NextRequest) {
       return new Response(JSON.stringify(saved), { headers: { 'Content-Type': 'application/json' } })
     }
 
-    // Default SSE path (UI behavior unchanged)
+    // Default SSE path (UI behavior now uses OpenAI adapter streaming)
     const encoder = new TextEncoder()
-    const stream = new ReadableStream({
-      start(controller) {
+    const stream = new ReadableStream<Uint8Array>({
+      async start(controller) {
         function send(event: string, data: string) {
           controller.enqueue(encoder.encode(`event: ${event}\n`))
           controller.enqueue(encoder.encode(`data: ${data}\n\n`))
         }
-        // Minimal deterministic chunks (placeholder until streaming is implemented in Task 10)
-        send('delta', JSON.stringify('Okay — '))
-        send('delta', JSON.stringify('working on it…'))
-        send('done', JSON.stringify({ messageId: 'm_temp', usage: { input_tokens: 12, output_tokens: 18 } }))
-        controller.close()
+        try {
+          const { getAdapterForModel } = await import('lib/providers')
+          const adapter = getAdapterForModel(thread.activeModel || 'openai:gpt-4o')
+          const model = (thread.activeModel || '').split(':')[1] || 'gpt-4o'
+          let text = ''
+          if (!adapter || !adapter.chatStreaming) {
+            // Fallback deterministic chunks if adapter/streaming unavailable
+            send('delta', JSON.stringify('Okay — '))
+            send('delta', JSON.stringify('working on it…'))
+            send('done', JSON.stringify({ messageId: 'm_temp', usage: { input_tokens: 0, output_tokens: 0 } }))
+            controller.close()
+            return
+          }
+          for await (const chunk of adapter.chatStreaming({ model, messages: [{ role: 'user', content }] })) {
+            text += chunk
+            send('delta', JSON.stringify(chunk))
+          }
+          const saved = await prisma.message.create({
+            data: { threadId, role: 'assistant', contentText: text, provider: adapter.name, model }
+          })
+          send('done', JSON.stringify({ messageId: saved.id, usage: { input_tokens: 0, output_tokens: text.length } }))
+        } catch (err) {
+          send('error', JSON.stringify({ message: 'An error occurred. Please try again.' }))
+        } finally {
+          controller.close()
+        }
       }
     })
     return new Response(stream, { headers: { 'Content-Type': 'text/event-stream', 'Cache-Control': 'no-cache', Connection: 'keep-alive' } })
