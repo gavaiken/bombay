@@ -4,6 +4,22 @@ Below is a sequential list of all tasks required to go from an empty project dir
 
 ## Planning & Audit
 
+- [ ]  Audit and update plan outlined in Tasks to achieve PRD and Design
+
+    Acceptance Criteria:
+    
+    - Produce a revised, bite-sized “Next Tasks — Demo MVP Track (Revised)” plan focused on shipping the demo MVP per PRD.md and Design.md.
+    - Merge inputs from: current repo state (completed Tasks 1–18), the original plan in this file, and third-party recommendations (without copying verbatim).
+    - Ensure the revised plan is small, testable, and sequenced to deliver verifiable increments. Include:
+      - Remove the non-streaming validation path (mode=json) from POST /api/messages as tech-debt, with a dedicated task that includes verification steps and doc updates.
+      - Finalize and verify Anthropic streaming (end-to-end), or explicitly mark any remaining scope and a validation task.
+      - Testing tasks broken down explicitly: integration tests (auth, threads, messages) and E2E tests (login + chat shell, create thread, send message with SSE, model switch mid-thread), each with clear client verification.
+      - UI work limited to what the MVP actually requires; add componentization only if necessary for the demo and testability.
+      - Developer workflow tasks (seeding, .env templates, docs alignment) called out if gaps remain.
+    - For every new/updated task in the revised plan: include concise acceptance criteria and explicit client verification.
+    - Do not renumber past completed tasks; keep updates targeted to “Next Tasks — Demo MVP Track (Revised)”.
+    - Verification: Opening docs/Tasks.md shows the new revised section with concrete, verifiable tasks aligned to PRD/Design, a dedicated item to remove mode=json, and clearly split testing tasks.
+
 - [x]  **Audit and further breakdown Tasks.md**: Review all tasks for alignment with PRD.md, Design.md, API.md, Database.md, Providers.md, and docs/ui/*. Ensure the next 20 tasks are granular, verifiable steps toward a working demo. Remove or relocate inconsistent items and resolve duplicates.
 
     **Acceptance Criteria:**
