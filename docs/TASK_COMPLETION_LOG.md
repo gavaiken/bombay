@@ -433,3 +433,26 @@ The first active task is now **Task 1: Setup local PostgreSQL using Docker** fro
 ### Notes
 
 - Checkbox marked in docs/Tasks.md in the same commit.
+
+---
+
+## Task: Audit and update plan outlined in Tasks to achieve PRD and Design
+
+**Completion Date:** 2025-10-12  
+**Status:** ✅ COMPLETED
+
+### What was accomplished
+
+- Inserted “Next Tasks — Demo MVP Track (Revised)” focused on shipping the MVP per PRD/Design with bite-sized, verifiable tasks.
+- Chosen pragmatic approach for messages mode=json: gated to NODE_ENV=test to preserve integration tests while keeping production/dev API surface clean.
+- Captured E2E strategy: mocked auth in Playwright, real OAuth only in production smoke.
+- Clarified sequencing: secrets/env readiness → technical debt gating → Anthropic streaming verification → E2E and integration augmentations → Vercel deploy + domain + prod smoke.
+
+### Verification
+
+- docs/Tasks.md shows the new revised section and Planning & Audit task checked.
+- messages route now returns 400 for mode=json outside NODE_ENV=test; tests remain green.
+
+### Notes
+
+- Future: remove mode=json entirely after MVP if desired; update tests accordingly.

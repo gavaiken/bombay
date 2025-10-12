@@ -4,7 +4,7 @@ Below is a sequential list of all tasks required to go from an empty project dir
 
 ## Planning & Audit
 
-- [ ]  Audit and update plan outlined in Tasks to achieve PRD and Design
+- [x]  Audit and update plan outlined in Tasks to achieve PRD and Design
 
     Acceptance Criteria:
     
@@ -30,6 +30,94 @@ Below is a sequential list of all tasks required to go from an empty project dir
     - Existing later sections remain intact for future work.
     - (Verification: Opening `docs/Tasks.md` shows the new audit task, the new "Next 20 Tasks — Working Demo Track" section, no duplicate env template task, and no Tasks API section.)
     - _Confirmation:_ Task completed - restructured Tasks.md with proper Next 20 Tasks section, removed duplicate Environment Templates task, removed inconsistent Tasks API section, and ensured all tasks align with PRD.md and Design.md requirements.
+
+## Next Tasks — Demo MVP Track (Revised)
+
+R0. Prerequisites: Secrets and Environment
+
+- [ ] R0.1 Local secrets readiness
+  
+  Acceptance Criteria:
+  - .env.local contains: NEXTAUTH_SECRET (>=32 chars), NEXTAUTH_URL=http://localhost:3000, GOOGLE_CLIENT_ID/SECRET (localhost), OPENAI_API_KEY, ANTHROPIC_API_KEY, DATABASE_URL (Docker Postgres).
+  - Dev server builds and shows Sign in button; we will validate real OAuth in production smoke.
+  - Client Verification: You confirm .env.local readiness.
+
+- [ ] R0.2 Vercel project + env
+  
+  Acceptance Criteria:
+  - Vercel project connected; env set for Production/Preview: NEXTAUTH_URL (domain), NEXTAUTH_SECRET, GOOGLE_CLIENT_ID/SECRET (prod redirect), OPENAI_API_KEY, ANTHROPIC_API_KEY, DATABASE_URL (managed Postgres).
+  - Build on push succeeds with env present.
+  - Client Verification: You confirm Vercel env readiness.
+
+R1. Technical debt: messages mode=json (pragmatic gating)
+
+- [ ] R1.1 Gate mode=json to test-only
+  
+  Acceptance Criteria:
+  - In dev/prod, POST /api/messages?mode=json returns 400; in tests (NODE_ENV=test) path works for integration tests.
+  - Docs updated to note test-only status; CHANGELOG entry added.
+  - Client Verification: Confirm behavior aligns with plan.
+
+R2. Anthropic streaming end-to-end
+
+- [ ] R2.1 Verify/Finalize Anthropic streaming
+  
+  Acceptance Criteria:
+  - anthropic:* models stream deltas; assistant persisted on completion; standardized error envelope on failure.
+  - Document verification steps (stub vs real key) in CHANGELOG.
+  - Client Verification: Confirm smoke outcome.
+
+R3. E2E testing with Playwright (Mocked auth + MSW)
+
+- [ ] R3.1 E2E: Login and shell (mocked auth)
+  
+  Acceptance Criteria:
+  - Test renders core shell/selectors without real Google OAuth.
+  - Client Verification: Run npm run test:e2e and confirm green.
+
+- [ ] R3.2 E2E: Create new thread
+  
+  Acceptance Criteria:
+  - New Chat appears, composer focuses; list/title update asserted.
+
+- [ ] R3.3 E2E: Send message with SSE
+  
+  Acceptance Criteria:
+  - Typing indicator appears; deltas stream; done hides indicator.
+
+- [ ] R3.4 E2E: Model switch mid-thread
+  
+  Acceptance Criteria:
+  - Switch model; next message reflects provider/model; assertions pass.
+
+R4. Integration tests augmentation (Vitest)
+
+- [ ] R4.1 Auth guard coverage
+  
+  Acceptance Criteria:
+  - 401/403 assertions added across key endpoints.
+
+- [ ] R4.2 Streaming envelope sanity
+  
+  Acceptance Criteria:
+  - Minimal sanity coverage for streaming done/error envelope or DB side effect in test mode.
+
+R5. Deployment and production smoke
+
+- [ ] R5.1 Vercel deployment with real env
+  
+  Acceptance Criteria:
+  - Vercel deploy is Ready.
+
+- [ ] R5.2 Domain + Google OAuth redirects
+  
+  Acceptance Criteria:
+  - Domain live over HTTPS; OAuth redirect configured and functional.
+
+- [ ] R5.3 Production smoke (real E2E)
+  
+  Acceptance Criteria:
+  - Login with Google; create thread; send SSE message; optional model switch; results in CHANGELOG.
 
 ## Next 20 Tasks — Working Demo Track (Phase-Based)
 

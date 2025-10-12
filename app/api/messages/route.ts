@@ -50,7 +50,10 @@ export async function POST(req: NextRequest) {
     await prisma.message.create({ data: { threadId, role: 'user', contentText: content } })
 
     if (mode === 'json') {
-      // Non-streaming validation path for Task 8 (does not affect UI)
+      // Test-only non-streaming validation path
+      if (process.env.NODE_ENV !== 'test') {
+        return jsonError('VALIDATION_ERROR', 'mode=json is test-only', 400)
+      }
       const { getAdapterForModel } = await import('lib/providers')
       const adapter = getAdapterForModel(thread.activeModel || 'openai:gpt-4o')
       if (!adapter) {
