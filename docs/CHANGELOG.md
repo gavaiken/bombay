@@ -13,3 +13,4 @@
 - 2025-10-11: Completed Task 1 (Setup local PostgreSQL using Docker): container healthy, Prisma schema applied via `prisma db push`.
 - 2025-10-12: Updated AGENTS.md to include checking task boxes in the same commit; marked Task 1 checkbox.
 - 2025-10-12: Completed Task 2 (Extend Prisma schema for NextAuth): added Account/Session/VerificationToken models; migration applied.
+- 2025-10-12: Completed Task 3 (Configure NextAuth with Google provider): added App Router handler, auth helper, and Prisma client singleton.

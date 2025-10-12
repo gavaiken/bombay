@@ -101,3 +101,27 @@ The first active task is now **Task 1: Setup local PostgreSQL using Docker** fro
 
 - No secrets committed; used local Docker database via .env.docker.
 - Next task: Configure NextAuth with Google provider (route + adapter).
+
+---
+
+## Task: Configure NextAuth with Google provider
+
+**Completion Date:** 2025-10-12  
+**Status:** ✅ COMPLETED
+
+### What was accomplished
+
+- Added NextAuth App Router handler at app/api/auth/[...nextauth]/route.ts.
+- Created authOptions with Google provider and PrismaAdapter.
+- Added lib/auth.ts helper exporting auth() and authOptions.
+- Added lib/prisma.ts PrismaClient singleton.
+
+### Verification
+
+- `npm run build` succeeds (type-checks and route compilation OK).
+- Endpoints /api/auth/signin and /api/auth/signout are available when the dev server runs (no runtime secrets committed).
+
+### Notes
+
+- Checkbox marked in docs/Tasks.md in the same commit per updated AGENTS.md.
+- Next task: Create protected route with user display.

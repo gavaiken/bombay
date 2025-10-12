@@ -3,16 +3,17 @@ import path from 'node:path'
 
 export const runtime = 'nodejs'
 
-async function readJsonFile(file) {
+async function readJsonFile(file: string) {
   const p = path.join(process.cwd(), 'docs', 'ui', 'fixtures', file)
   const raw = await fs.readFile(p, 'utf-8')
   return JSON.parse(raw)
 }
 
-export async function PATCH(request: Request, { params }: { params: { id: string } }) {
+export async function PATCH(request: Request, context: any) {
   try {
     const body = await request.json()
     const { activeModel } = body
+    const params = context?.params as { id: string }
     if (!activeModel) {
       return new Response(JSON.stringify({ error: { code: 'VALIDATION_ERROR', message: 'activeModel required' } }), { status: 400 })
     }

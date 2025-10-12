@@ -3,7 +3,7 @@ import path from 'node:path'
 
 export const runtime = 'nodejs'
 
-async function readJsonFile(file) {
+async function readJsonFile(file: string) {
   const p = path.join(process.cwd(), 'docs', 'ui', 'fixtures', file)
   const raw = await fs.readFile(p, 'utf-8')
   return JSON.parse(raw)
