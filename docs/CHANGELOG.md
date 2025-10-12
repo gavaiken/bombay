@@ -11,3 +11,5 @@
 - 2025-10-11: Added .env.example per docs/ENV.md; added simple app/page.tsx matching selectors.
 - 2025-10-11: Added Playwright config and minimal E2E spec (shell, threads, model switcher, send flow).
 - 2025-10-11: Completed Task 1 (Setup local PostgreSQL using Docker): container healthy, Prisma schema applied via `prisma db push`.
+- 2025-10-12: Updated AGENTS.md to include checking task boxes in the same commit; marked Task 1 checkbox.
+- 2025-10-12: Completed Task 2 (Extend Prisma schema for NextAuth): added Account/Session/VerificationToken models; migration applied.

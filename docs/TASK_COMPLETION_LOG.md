@@ -76,4 +76,28 @@ The first active task is now **Task 1: Setup local PostgreSQL using Docker** fro
 ### Notes
 
 - No secrets committed. Local-only files: .env.local, .env.docker.
-- Next steps proceed to Task 2 once human operator checks the box in Tasks.md (per docs/AGENTS.md).
+- Checkbox in docs/Tasks.md marked in the same commit per updated AGENTS.md.
+
+---
+
+## Task: Extend Prisma schema for NextAuth
+
+**Completion Date:** 2025-10-12  
+**Status:** ✅ COMPLETED
+
+### What was accomplished
+
+- Extended prisma/schema.prisma with NextAuth models: Account, Session, VerificationToken.
+- Added relations from User → accounts and sessions.
+- Ensured onDelete: Cascade on linking relations for cleanup consistency.
+
+### Verification
+
+- Ran `npx prisma migrate dev -n auth_models` against local Docker Postgres.
+- Migration created and applied; Prisma Client generated successfully.
+- Checkbox in docs/Tasks.md marked in the same commit.
+
+### Notes
+
+- No secrets committed; used local Docker database via .env.docker.
+- Next task: Configure NextAuth with Google provider (route + adapter).

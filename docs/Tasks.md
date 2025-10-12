@@ -32,7 +32,7 @@ Based on senior engineering feedback, these tasks are organized into phases that
     - Include instructions for starting/stopping database in development docs
     - **Client Verification:** Database accessible at localhost:5432, Prisma connection test succeeds
 
-- [ ] 2) Extend Prisma schema for NextAuth
+- [x] 2) Extend Prisma schema for NextAuth
     
     **Acceptance Criteria:**
     - Add dependencies: next-auth, @next-auth/prisma-adapter
