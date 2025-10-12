@@ -4,6 +4,7 @@ import { NextRequest } from 'next/server'
 export const runtime = 'nodejs'
 
 import { requireUser } from 'lib/authz'
+import { jsonError } from 'lib/errors'
 
 export async function GET(req: NextRequest) {
   const gate = await requireUser()
@@ -12,12 +13,12 @@ export async function GET(req: NextRequest) {
     const url = new URL(req.url)
     const threadId = url.searchParams.get('threadId')
     if (!threadId) {
-      return new Response(JSON.stringify({ error: { code: 'VALIDATION_ERROR', message: 'threadId required', details: null } }), { status: 400 })
+      return jsonError('VALIDATION_ERROR', 'threadId required', 400)
     }
     // Ownership check
     const own = await prisma.thread.findFirst({ where: { id: threadId, userId: gate.user.id }, select: { id: true } })
     if (!own) {
-      return new Response(JSON.stringify({ error: { code: 'FORBIDDEN', message: 'Forbidden', details: null } }), { status: 403 })
+      return jsonError('FORBIDDEN', 'Forbidden', 403)
     }
     const data = await prisma.message.findMany({
       where: { threadId },
@@ -26,7 +27,7 @@ export async function GET(req: NextRequest) {
     })
     return new Response(JSON.stringify(data), { headers: { 'Content-Type': 'application/json' } })
   } catch (e) {
-    return new Response(JSON.stringify({ error: { code: 'INTERNAL_ERROR', message: 'Failed to load messages', details: null } }), { status: 500 })
+    return jsonError('INTERNAL_ERROR', 'Failed to load messages', 500)
   }
 }
 
@@ -38,12 +39,12 @@ export async function POST(req: NextRequest) {
     const mode = url.searchParams.get('mode') // optional non-stream validation path
     const { threadId, content } = await req.json()
     if (!threadId || !content) {
-      return new Response(JSON.stringify({ error: { code: 'VALIDATION_ERROR', message: 'threadId and content required', details: null } }), { status: 400 })
+      return jsonError('VALIDATION_ERROR', 'threadId and content required', 400)
     }
     // Ownership check
     const thread = await prisma.thread.findFirst({ where: { id: threadId, userId: gate.user.id }, select: { id: true, activeModel: true } })
     if (!thread) {
-      return new Response(JSON.stringify({ error: { code: 'FORBIDDEN', message: 'Forbidden', details: null } }), { status: 403 })
+      return jsonError('FORBIDDEN', 'Forbidden', 403)
     }
     // Persist user message
     await prisma.message.create({ data: { threadId, role: 'user', contentText: content } })
@@ -53,7 +54,7 @@ export async function POST(req: NextRequest) {
       const { getAdapterForModel } = await import('lib/providers')
       const adapter = getAdapterForModel(thread.activeModel || 'openai:gpt-4o')
       if (!adapter) {
-        return new Response(JSON.stringify({ error: { code: 'VALIDATION_ERROR', message: 'Unsupported model', details: null } }), { status: 400 })
+        return jsonError('VALIDATION_ERROR', 'Unsupported model', 400)
       }
       const res = await adapter.chatNonStreaming({ model: (thread.activeModel || '').split(':')[1] || 'gpt-4o', messages: [{ role: 'user', content }] })
       const saved = await prisma.message.create({
@@ -100,6 +101,6 @@ export async function POST(req: NextRequest) {
     })
     return new Response(stream, { headers: { 'Content-Type': 'text/event-stream', 'Cache-Control': 'no-cache', Connection: 'keep-alive' } })
   } catch (e) {
-    return new Response(JSON.stringify({ error: { code: 'INTERNAL_ERROR', message: 'Failed to stream response', details: null } }), { status: 500 })
+    return jsonError('INTERNAL_ERROR', 'Failed to stream response', 500)
   }
 }

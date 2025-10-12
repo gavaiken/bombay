@@ -1,12 +1,7 @@
 import { prisma } from 'lib/prisma'
 import { auth } from 'lib/auth'
 
-function jsonError(code: string, message: string, status: number) {
-  return new Response(
-    JSON.stringify({ error: { code, message, details: null } }),
-    { status, headers: { 'Content-Type': 'application/json' } }
-  )
-}
+import { jsonError } from 'lib/errors'
 
 export async function requireUser() {
   const session = await auth()

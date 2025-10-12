@@ -274,6 +274,7 @@ The first active task is now **Task 1: Setup local PostgreSQL using Docker** fro
 - Implemented SSE in POST /api/messages backed by OpenAI adapter streaming.
 - Persisted assistant message upon stream completion and emitted done event with usage shape.
 - Kept non-streaming validation path (?mode=json) for Task 8.
+- Introduced shared jsonError helper to standardize error envelopes.
 
 ### Verification
 
