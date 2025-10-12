@@ -46,13 +46,13 @@ This project is a monolithic Next.js application built with TypeScript. It's des
 
 ## AI Agent Execution Guide
 
-This repo uses an AI coding agent (e.g., Claude Code, Warp Agent). The agent must:
+4|This repo uses an AI coding agent (e.g., Claude Code, Warp Agent). The agent must:
 
 1.  Read docs/Tasks.md and take the next unchecked task (or approved batch).
 2.  Use docs/PRD.md and docs/Design.md as the source of truth.
 3.  Implement exactly what the task asks; keep changes small and focused.
-4.  Verify the task’s acceptance criteria (via tests or direct checks), commit, push, and pause.
-5.  Wait for the human operator to check the box in Tasks.md before proceeding.
+4.  Verify the task’s acceptance criteria (via tests or direct checks).
+5.  Mark the checkbox for the completed task in docs/Tasks.md and include it in the same commit. Push and report a summary.
 
 ### Guardrails
 
@@ -70,13 +70,13 @@ This repo uses an AI coding agent (e.g., Claude Code, Warp Agent). The agent mus
 -   Testing plan: docs/Testing.md.
 -   Deployment: docs/Deployment.md.
 
-Operating loop: “Read task → implement → verify → commit → push → pause”.
+Operating loop: “Read task → implement → verify → update Tasks.md (check box) → commit → push → pause”.
 
 ### Warp/GPT-5 Agent Addendum (execution & verification)
 
 -   Batching (with user approval): You may batch up to 5 small, related tasks. Pause after any large task or when input is needed. Summarize and verify each batch before proceeding.
 -   Verification-first: Every task or batch must be verified by running tests and/or directly exercising the app. Prefer automated checks; supplement with manual checks as needed.
--   Commit & push cadence: Commit and push after each small task. For a batch, still make one commit per task and push each commit immediately. Do not batch unrelated changes into a single commit.
+-   Commit & push cadence: Commit and push after each small task. Include the checkbox update in docs/Tasks.md in the same commit. For a batch, still make one commit per task and push each commit immediately. Do not batch unrelated changes into a single commit.
 -   Periodic manual verification: At least once every 10 tasks, request the user’s manual verification (e.g., run the demo or tests and confirm expected outcomes). Wait for explicit confirmation before continuing.
 -   Task list upkeep: At the end of each task/batch, update docs/Tasks.md as needed to add follow-on items. Keep the “Next 20 Tasks” small and verifiable. Do not rewrite the entire file—make targeted updates.
 -   Pause on ambiguity: If acceptance criteria are unclear or prerequisites are missing, stop and ask a concise question before making assumptions.
