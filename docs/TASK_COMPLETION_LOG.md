@@ -238,3 +238,26 @@ The first active task is now **Task 1: Setup local PostgreSQL using Docker** fro
 
 - UI continues to use SSE stub until Task 10.
 - Checkbox marked in docs/Tasks.md in the same commit.
+
+---
+
+## Task: Database seeding for development
+
+**Completion Date:** 2025-10-12  
+**Status:** ✅ COMPLETED
+
+### What was accomplished
+
+- Added prisma/seed.ts to create a dev user (SEED_USER_EMAIL), a sample thread, and two messages.
+- Added npm script `db:seed` and configured Prisma seed runner via ts-node.
+- Seed data aligns with DB schema and API expectations.
+
+### Verification
+
+- Ran `npx prisma db seed` against local Docker Postgres (DATABASE_URL from .env.docker) — seed completed.
+- Verified rows exist with psql count queries for User, Thread, Message.
+
+### Notes
+
+- No secrets committed; local Docker DB used.
+- Checkbox marked in docs/Tasks.md in the same commit.

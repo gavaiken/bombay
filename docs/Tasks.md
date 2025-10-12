@@ -100,7 +100,7 @@ Based on senior engineering feedback, these tasks are organized into phases that
     - Proper error envelope on provider failure; never expose raw API errors
     - **Client Verification:** Client can send message and receive OpenAI response
 
-- [ ] 9) Database seeding for development
+- [x] 9) Database seeding for development
     
     **Acceptance Criteria:**
     - Create prisma/seed.ts with dev user (from SEED_USER_EMAIL) and sample threads/messages
