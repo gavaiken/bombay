@@ -390,3 +390,24 @@ The first active task is now **Task 1: Setup local PostgreSQL using Docker** fro
 ### Notes
 
 - Checkbox marked in docs/Tasks.md in the same commit.
+
+---
+
+## Task: Mobile responsive layout
+
+**Completion Date:** 2025-10-12  
+**Status:** ✅ COMPLETED
+
+### What was accomplished
+
+- Confirmed thread tray becomes overlay/modal <768px with toggle control in header.
+- Ensured chat remains fully functional on mobile; touch targets are button-based.
+
+### Verification
+
+- `npm run build` succeeds.
+- Manual UI checks at small viewport widths confirm overlay behavior and toggleability.
+
+### Notes
+
+- Checkbox marked in docs/Tasks.md in the same commit.

@@ -176,7 +176,7 @@ Based on senior engineering feedback, these tasks are organized into phases that
     - Keyboard shortcuts: Cmd/Ctrl+N for new thread, Enter to send, Shift+Enter for newline
     - **Client Verification:** UI feels responsive and handles errors gracefully
 
-- [ ] 17) Mobile responsive layout
+- [x] 17) Mobile responsive layout
     
     **Acceptance Criteria:**
     - Thread tray becomes overlay/modal on mobile (<768px)
