@@ -79,7 +79,7 @@ Based on senior engineering feedback, these tasks are organized into phases that
 
 ### Phase 2: Core Chat Functionality with OpenAI (Tasks 7-11)
 
-- [ ] 7) Messages API with database persistence
+- [x] 7) Messages API with database persistence
     
     **Acceptance Criteria:**
     - GET /api/messages?threadId=… returns messages for owned thread (order ascending)

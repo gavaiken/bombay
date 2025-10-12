@@ -192,3 +192,26 @@ The first active task is now **Task 1: Setup local PostgreSQL using Docker** fro
 
 - Standard error envelope and authentication guard maintained.
 - Checkbox marked in docs/Tasks.md in the same commit.
+
+---
+
+## Task: Messages API with database persistence
+
+**Completion Date:** 2025-10-12  
+**Status:** ✅ COMPLETED
+
+### What was accomplished
+
+- GET /api/messages now reads messages from Postgres for owned threads (ascending order).
+- POST /api/messages persists a user message to the database before responding.
+- Ownership checks enforce per-user isolation (403 on foreign threadId).
+
+### Verification
+
+- `npm run build` succeeds.
+- With dev server running and a signed-in user, GET returns DB-backed messages; POST creates a new user message row.
+- Streaming remains a placeholder (SSE stub) pending Task 10.
+
+### Notes
+
+- Checkbox marked in docs/Tasks.md in the same commit.
