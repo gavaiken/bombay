@@ -69,7 +69,7 @@ Based on senior engineering feedback, these tasks are organized into phases that
     - Use standard error envelope: { error: { code, message, details } }
     - **Client Verification:** API routes return 401 when not authenticated
 
-- [ ] 6) Database integration for user-specific threads
+- [x] 6) Database integration for user-specific threads
     
     **Acceptance Criteria:**
     - Modify GET /api/threads to fetch user's threads from Postgres (Prisma)

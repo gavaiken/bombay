@@ -169,3 +169,26 @@ The first active task is now **Task 1: Setup local PostgreSQL using Docker** fro
 ### Notes
 
 - Checkbox marked in docs/Tasks.md in the same commit.
+
+---
+
+## Task: Database integration for user-specific threads
+
+**Completion Date:** 2025-10-12  
+**Status:** ✅ COMPLETED
+
+### What was accomplished
+
+- Replaced fixtures in /api/threads with Prisma-backed GET and POST handlers.
+- GET returns the authenticated user’s threads from Postgres (ordered by updatedAt desc).
+- POST validates input via Zod and creates a thread for the current user (activeModel defaults to openai:gpt-4o when omitted).
+
+### Verification
+
+- `npm run build` succeeds.
+- With dev server running and a signed-in user, GET returns an empty list initially; POST creates a new thread row that persists.
+
+### Notes
+
+- Standard error envelope and authentication guard maintained.
+- Checkbox marked in docs/Tasks.md in the same commit.

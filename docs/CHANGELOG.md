@@ -16,3 +16,4 @@
 - 2025-10-12: Completed Task 3 (Configure NextAuth with Google provider): added App Router handler, auth helper, and Prisma client singleton.
 - 2025-10-12: Completed Task 4 (Create protected route with user display): header auth controls and server-side redirect implemented.
 - 2025-10-12: Completed Task 5 (Auth middleware for API routes): added requireUser guard and standardized error envelope.
+- 2025-10-12: Completed Task 6 (Threads API database integration): GET/POST now backed by Prisma with Zod validation.
