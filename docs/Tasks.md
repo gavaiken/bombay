@@ -61,7 +61,7 @@ Based on senior engineering feedback, these tasks are organized into phases that
     - Keyboard/focus accessible; selectors documented if needed
     - **Client Verification:** Client can sign in with Google and see their email displayed
 
-- [ ] 5) Implement auth middleware for API routes
+- [x] 5) Implement auth middleware for API routes
     
     **Acceptance Criteria:**
     - Create requireUser() utility that returns current user or 401 with standard error envelope

@@ -9,26 +9,32 @@ async function readJsonFile(file: string) {
   return JSON.parse(raw)
 }
 
+import { requireUser } from 'lib/authz'
+
 export async function GET(req: Request) {
+  const gate = await requireUser()
+  if ('error' in gate) return gate.error
   try {
     const url = new URL(req.url)
     const threadId = url.searchParams.get('threadId')
     if (!threadId) {
-      return new Response(JSON.stringify({ error: { code: 'VALIDATION_ERROR', message: 'threadId required' } }), { status: 400 })
+      return new Response(JSON.stringify({ error: { code: 'VALIDATION_ERROR', message: 'threadId required', details: null } }), { status: 400 })
     }
     const messages = await readJsonFile('messages.json')
     const data = messages[threadId] ?? []
     return new Response(JSON.stringify(data), { headers: { 'Content-Type': 'application/json' } })
   } catch (e) {
-    return new Response(JSON.stringify({ error: { code: 'INTERNAL_ERROR', message: 'Failed to load messages' } }), { status: 500 })
+    return new Response(JSON.stringify({ error: { code: 'INTERNAL_ERROR', message: 'Failed to load messages', details: null } }), { status: 500 })
   }
 }
 
 export async function POST(req: Request) {
+  const gate = await requireUser()
+  if ('error' in gate) return gate.error
   try {
     const { threadId, content } = await req.json()
     if (!threadId || !content) {
-      return new Response(JSON.stringify({ error: { code: 'VALIDATION_ERROR', message: 'threadId and content required' } }), { status: 400 })
+      return new Response(JSON.stringify({ error: { code: 'VALIDATION_ERROR', message: 'threadId and content required', details: null } }), { status: 400 })
     }
     const encoder = new TextEncoder()
     const stream = new ReadableStream({

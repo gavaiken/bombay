@@ -9,22 +9,26 @@ async function readJsonFile(file: string) {
   return JSON.parse(raw)
 }
 
+import { requireUser } from 'lib/authz'
+
 export async function PATCH(request: Request, context: any) {
+  const gate = await requireUser()
+  if ('error' in gate) return gate.error
   try {
     const body = await request.json()
     const { activeModel } = body
     const params = context?.params as { id: string }
     if (!activeModel) {
-      return new Response(JSON.stringify({ error: { code: 'VALIDATION_ERROR', message: 'activeModel required' } }), { status: 400 })
+      return new Response(JSON.stringify({ error: { code: 'VALIDATION_ERROR', message: 'activeModel required', details: null } }), { status: 400 })
     }
     const threads = await readJsonFile('threads.json')
     const found = threads.find((t: any) => t.id === params.id)
     if (!found) {
-      return new Response(JSON.stringify({ error: { code: 'NOT_FOUND', message: 'Thread not found' } }), { status: 404 })
+      return new Response(JSON.stringify({ error: { code: 'NOT_FOUND', message: 'Thread not found', details: null } }), { status: 404 })
     }
     const updated = { ...found, activeModel }
     return new Response(JSON.stringify(updated), { headers: { 'Content-Type': 'application/json' } })
   } catch (e) {
-    return new Response(JSON.stringify({ error: { code: 'INTERNAL_ERROR', message: 'Failed to update thread' } }), { status: 500 })
+    return new Response(JSON.stringify({ error: { code: 'INTERNAL_ERROR', message: 'Failed to update thread', details: null } }), { status: 500 })
   }
 }

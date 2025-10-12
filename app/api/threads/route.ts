@@ -9,13 +9,17 @@ async function readJsonFile(file: string) {
   return JSON.parse(raw)
 }
 
+import { requireUser } from 'lib/authz'
+
 export async function GET() {
+  const gate = await requireUser()
+  if ('error' in gate) return gate.error
   try {
     const threads = await readJsonFile('threads.json')
     return new Response(JSON.stringify(threads), {
       headers: { 'Content-Type': 'application/json' }
     })
   } catch (e) {
-    return new Response(JSON.stringify({ error: { code: 'INTERNAL_ERROR', message: 'Failed to load threads' } }), { status: 500 })
+    return new Response(JSON.stringify({ error: { code: 'INTERNAL_ERROR', message: 'Failed to load threads', details: null } }), { status: 500 })
   }
 }

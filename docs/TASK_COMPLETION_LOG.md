@@ -147,3 +147,25 @@ The first active task is now **Task 1: Setup local PostgreSQL using Docker** fro
 ### Notes
 
 - Checkbox marked in docs/Tasks.md in the same commit.
+
+---
+
+## Task: Implement auth middleware for API routes
+
+**Completion Date:** 2025-10-12  
+**Status:** ✅ COMPLETED
+
+### What was accomplished
+
+- Added lib/authz.ts with requireUser() utility and standard JSON error envelope helper.
+- Protected /api/threads (GET, PATCH) and /api/messages (GET, POST) to return 401 when unauthenticated.
+- Error envelope shape: { error: { code, message, details } }.
+
+### Verification
+
+- `npm run build` succeeds; routes compile with the new guard.
+- When dev server runs, unauthenticated requests receive 401 with standard envelope.
+
+### Notes
+
+- Checkbox marked in docs/Tasks.md in the same commit.
