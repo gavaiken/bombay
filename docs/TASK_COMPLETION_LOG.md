@@ -327,3 +327,45 @@ The first active task is now **Task 1: Setup local PostgreSQL using Docker** fro
 ### Notes
 
 - Checkbox marked in docs/Tasks.md in the same commit.
+
+---
+
+## Task: Mid-conversation model switching
+
+**Completion Date:** 2025-10-12  
+**Status:** ✅ COMPLETED
+
+### What was accomplished
+
+- Messages API now builds the full conversation history and passes it to the provider adapter.
+- Added truncation utility (lib/context.ts) to maintain conservative token limits per model.
+- Assistant messages are persisted with provider and model metadata.
+
+### Verification
+
+- `npm run build` succeeds.
+- Verified runtime behavior with stubbed adapters; history is constructed and truncated when large.
+
+### Notes
+
+- Checkbox marked in docs/Tasks.md in the same commit.
+
+---
+
+## Task: Context window truncation logic
+
+**Completion Date:** 2025-10-12  
+**Status:** ✅ COMPLETED
+
+### What was accomplished
+
+- Implemented buildPromptWithTruncation with conservative per-model limits and headroom.
+- Added a unit test (Vitest) to verify truncation preserves the first system message and drops oldest turns.
+
+### Verification
+
+- `npm run test` passes (Vitest), excluding e2e suite via vitest.config.ts.
+
+### Notes
+
+- Checkbox marked in docs/Tasks.md in the same commit.

@@ -148,7 +148,7 @@ Based on senior engineering feedback, these tasks are organized into phases that
     - Display current model in thread header
     - **Client Verification:** Client can switch between OpenAI and Anthropic models
 
-- [ ] 14) Mid-conversation model switching
+- [x] 14) Mid-conversation model switching
     
     **Acceptance Criteria:**
     - Preserve conversation context when switching models mid-thread
@@ -157,7 +157,7 @@ Based on senior engineering feedback, these tasks are organized into phases that
     - Optional inline indicator when model is switched
     - **Client Verification:** Client can switch models mid-conversation and context is preserved
 
-- [ ] 15) Context window truncation logic
+- [x] 15) Context window truncation logic
     
     **Acceptance Criteria:**
     - Implement context truncation utility per Design.md specification

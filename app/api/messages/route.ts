@@ -56,7 +56,10 @@ export async function POST(req: NextRequest) {
       if (!adapter) {
         return jsonError('VALIDATION_ERROR', 'Unsupported model', 400)
       }
-      const res = await adapter.chatNonStreaming({ model: (thread.activeModel || '').split(':')[1] || 'gpt-4o', messages: [{ role: 'user', content }] })
+      const { buildPromptWithTruncation } = await import('lib/context')
+      const prior = await prisma.message.findMany({ where: { threadId }, orderBy: { createdAt: 'asc' } })
+      const messages = buildPromptWithTruncation({ model: (thread.activeModel || '').split(':')[1] || 'gpt-4o', prior, currentUserText: content })
+      const res = await adapter.chatNonStreaming({ model: (thread.activeModel || '').split(':')[1] || 'gpt-4o', messages })
       const saved = await prisma.message.create({
         data: { threadId, role: 'assistant', contentText: res.text, provider: adapter.name, model: (thread.activeModel || '').split(':')[1] || 'gpt-4o', usageJson: res.usage ?? undefined }
       })
@@ -84,7 +87,10 @@ export async function POST(req: NextRequest) {
             controller.close()
             return
           }
-          for await (const chunk of adapter.chatStreaming({ model, messages: [{ role: 'user', content }] })) {
+          const { buildPromptWithTruncation } = await import('lib/context')
+          const prior = await prisma.message.findMany({ where: { threadId }, orderBy: { createdAt: 'asc' } })
+          const messages = buildPromptWithTruncation({ model, prior, currentUserText: content })
+          for await (const chunk of adapter.chatStreaming({ model, messages })) {
             text += chunk
             send('delta', JSON.stringify(chunk))
           }
