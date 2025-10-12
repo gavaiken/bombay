@@ -302,6 +302,7 @@ export default function Chat() {
               Threads
             </button>
             <h1 data-testid="thread-title">{currentThreadTitle || 'bombay'}</h1>
+            <span className="text-xs text-text/60" aria-label="Current model">Model: {model}</span>
           </div>
           <select
             data-testid="model-switcher"

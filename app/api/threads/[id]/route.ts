@@ -1,33 +1,30 @@
-import fs from 'node:fs/promises'
-import path from 'node:path'
-
 export const runtime = 'nodejs'
 
-async function readJsonFile(file: string) {
-  const p = path.join(process.cwd(), 'docs', 'ui', 'fixtures', file)
-  const raw = await fs.readFile(p, 'utf-8')
-  return JSON.parse(raw)
-}
-
+import { prisma } from 'lib/prisma'
+import { z } from 'zod'
 import { requireUser } from 'lib/authz'
 import { jsonError } from 'lib/errors'
+
+const PatchSchema = z.object({ activeModel: z.string().min(1) })
 
 export async function PATCH(request: Request, context: any) {
   const gate = await requireUser()
   if ('error' in gate) return gate.error
   try {
     const body = await request.json()
-    const { activeModel } = body
+    const parsed = PatchSchema.safeParse(body)
+    if (!parsed.success) {
+      return jsonError('VALIDATION_ERROR', 'activeModel required', 400, parsed.error.flatten())
+    }
     const params = context?.params as { id: string }
-    if (!activeModel) {
-      return jsonError('VALIDATION_ERROR', 'activeModel required', 400)
-    }
-    const threads = await readJsonFile('threads.json')
-    const found = threads.find((t: any) => t.id === params.id)
-    if (!found) {
-      return jsonError('NOT_FOUND', 'Thread not found', 404)
-    }
-    const updated = { ...found, activeModel }
+    // ensure ownership
+    const thread = await prisma.thread.findFirst({ where: { id: params.id, userId: gate.user.id } })
+    if (!thread) return jsonError('NOT_FOUND', 'Thread not found', 404)
+
+    const updated = await prisma.thread.update({
+      where: { id: params.id },
+      data: { activeModel: parsed.data.activeModel }
+    })
     return new Response(JSON.stringify(updated), { headers: { 'Content-Type': 'application/json' } })
   } catch (e) {
     return jsonError('INTERNAL_ERROR', 'Failed to update thread', 500)

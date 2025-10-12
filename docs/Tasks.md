@@ -139,7 +139,7 @@ Based on senior engineering feedback, these tasks are organized into phases that
     - Error handling and timeout management
     - **Client Verification:** System can route to Anthropic when configured
 
-- [ ] 13) Provider routing and model switcher UI
+- [x] 13) Provider routing and model switcher UI
     
     **Acceptance Criteria:**
     - Implement PATCH /api/threads/:id to update activeModel (zod-validated, user-owned)

@@ -305,3 +305,25 @@ The first active task is now **Task 1: Setup local PostgreSQL using Docker** fro
 ### Notes
 
 - Provider routing in endpoints will be wired in Task 13 (model switch UI + routing).
+
+---
+
+## Task: Provider routing and model switcher UI
+
+**Completion Date:** 2025-10-12  
+**Status:** ✅ COMPLETED
+
+### What was accomplished
+
+- Converted PATCH /api/threads/:id to Prisma with auth and Zod validation; ensures only owner can update activeModel.
+- UI header now displays the current model next to the title; model switcher remains in header.
+- Ensured messages route already respects thread.activeModel for provider routing.
+
+### Verification
+
+- `npm run build` succeeds.
+- Manually verified PATCH updates thread.activeModel in DB and UI model label updates.
+
+### Notes
+
+- Checkbox marked in docs/Tasks.md in the same commit.
