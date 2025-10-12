@@ -167,7 +167,7 @@ Based on senior engineering feedback, these tasks are organized into phases that
     - Works for both OpenAI and Anthropic providers
     - **Client Verification:** Long conversations don't hit context window errors
 
-- [ ] 16) Enhanced UI error states and loading
+- [x] 16) Enhanced UI error states and loading
     
     **Acceptance Criteria:**
     - Loading states with aria-busy during async operations

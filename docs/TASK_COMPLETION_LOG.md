@@ -369,3 +369,24 @@ The first active task is now **Task 1: Setup local PostgreSQL using Docker** fro
 ### Notes
 
 - Checkbox marked in docs/Tasks.md in the same commit.
+
+---
+
+## Task: Enhanced UI error states and loading
+
+**Completion Date:** 2025-10-12  
+**Status:** ✅ COMPLETED
+
+### What was accomplished
+
+- Harmonized keyboard shortcuts: New Chat = Cmd/Ctrl+N; Enter to send; Shift+Enter newline (existing).
+- Verified aria-busy, error states with retry, and empty states already present in Chat UI.
+
+### Verification
+
+- `npm run build` succeeds.
+- Manual checks confirm keyboard shortcut behavior and UI states.
+
+### Notes
+
+- Checkbox marked in docs/Tasks.md in the same commit.

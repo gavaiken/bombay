@@ -71,8 +71,8 @@ export default function Chat() {
       const mod = isMac ? e.metaKey : e.ctrlKey
       const shift = e.shiftKey
       const key = e.key.toLowerCase()
-      // New chat: Cmd/Ctrl+Shift+O
-      if (mod && shift && key === 'o') {
+      // New chat: Cmd/Ctrl+N
+      if (mod && !shift && key === 'n') {
         e.preventDefault()
         newThread()
         setTimeout(() => composerRef.current?.focus(), 0)

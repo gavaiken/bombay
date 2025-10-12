@@ -25,3 +25,4 @@
 - 2025-10-12: Completed Task 13 (Provider routing and model switcher UI): DB-backed PATCH and header model display.
 - 2025-10-12: Completed Task 14 (Mid-conversation model switching): full history sent to adapters; messages annotated with provider/model.
 - 2025-10-12: Completed Task 15 (Context window truncation): truncation utility + unit test (Vitest).
+- 2025-10-12: Completed Task 16 (Enhanced UI error/loading): keyboard shortcuts updated; UI states verified.
