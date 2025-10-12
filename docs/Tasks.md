@@ -129,7 +129,7 @@ Based on senior engineering feedback, these tasks are organized into phases that
 
 ### Phase 3: Multi-Provider Support and Model Switching (Tasks 12-17)
 
-- [ ] 12) Anthropic adapter implementation
+- [x] 12) Anthropic adapter implementation
     
     **Acceptance Criteria:**
     - Install @anthropic-ai/sdk dependency

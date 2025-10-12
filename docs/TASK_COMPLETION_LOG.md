@@ -284,3 +284,24 @@ The first active task is now **Task 1: Setup local PostgreSQL using Docker** fro
 ### Notes
 
 - Checkbox marked in docs/Tasks.md in the same commit.
+
+---
+
+## Task: Anthropic adapter implementation
+
+**Completion Date:** 2025-10-12  
+**Status:** ✅ COMPLETED
+
+### What was accomplished
+
+- Implemented Anthropic adapter with non-streaming and streaming utilities.
+- Extended provider registry to recognize anthropic:* model IDs.
+
+### Verification
+
+- `npm run build` succeeds.
+- With no ANTHROPIC_API_KEY, deterministic stubs are returned/yielded.
+
+### Notes
+
+- Provider routing in endpoints will be wired in Task 13 (model switch UI + routing).

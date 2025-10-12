@@ -21,3 +21,4 @@
 - 2025-10-12: Completed Task 8 (OpenAI adapter non-streaming): provider interface + OpenAI adapter; POST /api/messages supports ?mode=json for validation.
 - 2025-10-12: Completed Task 9 (Database seeding): added prisma/seed.ts, seed script, and verified seed in Docker Postgres.
 - 2025-10-12: Completed Task 10 (SSE streaming for OpenAI): messages route now streams using adapter and persists assistant response; standardized error helper.
+- 2025-10-12: Completed Task 12 (Anthropic adapter implementation): adapter modules added and provider registry extended.
