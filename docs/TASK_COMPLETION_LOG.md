@@ -125,3 +125,25 @@ The first active task is now **Task 1: Setup local PostgreSQL using Docker** fro
 
 - Checkbox marked in docs/Tasks.md in the same commit per updated AGENTS.md.
 - Next task: Create protected route with user display.
+
+---
+
+## Task: Create protected route with user display
+
+**Completion Date:** 2025-10-12  
+**Status:** ✅ COMPLETED
+
+### What was accomplished
+
+- Updated app/layout.tsx to render a header with Sign in/Sign out controls and show session.user.email when authenticated.
+- Protected app/page.tsx: server-side check using auth(); redirects to NextAuth sign-in when unauthenticated.
+- Controls are standard buttons/links with focus styles for keyboard accessibility.
+
+### Verification
+
+- `npm run build` succeeds.
+- Sign-in link and sign-out form present; user email displays when authenticated (on running dev server).
+
+### Notes
+
+- Checkbox marked in docs/Tasks.md in the same commit.

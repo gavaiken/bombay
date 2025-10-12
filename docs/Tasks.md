@@ -52,7 +52,7 @@ Based on senior engineering feedback, these tasks are organized into phases that
     - Sign-in/sign-out endpoints work (HTTP 200/302)
     - **Client Verification:** Can sign in with Google account and see session data
 
-- [ ] 4) Create protected route with user display
+- [x] 4) Create protected route with user display
     
     **Acceptance Criteria:**
     - Add minimal auth UI (Sign in / Sign out) in header
