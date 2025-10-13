@@ -23,7 +23,7 @@ export async function GET(req: NextRequest) {
     const data = await prisma.message.findMany({
       where: { threadId },
       orderBy: { createdAt: 'asc' },
-      select: { id: true, role: true, contentText: true, createdAt: true }
+      select: { id: true, role: true, contentText: true, createdAt: true, provider: true, model: true }
     })
     return new Response(JSON.stringify(data), { headers: { 'Content-Type': 'application/json' } })
   } catch (e) {

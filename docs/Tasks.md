@@ -141,7 +141,7 @@ R3. E2E testing with Playwright (Mocked auth + MSW)
   Acceptance Criteria:
   - Typing indicator appears; deltas stream; done hides indicator.
 
-- [ ] R3.4 E2E: Model switch mid-thread
+- [x] R3.4 E2E: Model switch mid-thread
   
   Acceptance Criteria:
   - Switch model; next message reflects provider/model; assertions pass.
