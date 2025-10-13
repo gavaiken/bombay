@@ -32,7 +32,6 @@ Below is a sequential list of all tasks required to go from an empty project dir
     - _Confirmation:_ Task completed - restructured Tasks.md with proper Next 20 Tasks section, removed duplicate Environment Templates task, removed inconsistent Tasks API section, and ensured all tasks align with PRD.md and Design.md requirements.
 
 ## Next Tasks — Demo MVP Track (Revised)
-
 R0. Prerequisites: Secrets and Environment
 
 - [x] R0.1 Local secrets readiness
@@ -48,6 +47,14 @@ R0. Prerequisites: Secrets and Environment
   - Vercel project connected; env set for Production/Preview: NEXTAUTH_URL (domain), NEXTAUTH_SECRET, GOOGLE_CLIENT_ID/SECRET (prod redirect), OPENAI_API_KEY, ANTHROPIC_API_KEY, DATABASE_URL (managed Postgres).
   - Build on push succeeds with env present.
   - Client Verification: You confirm Vercel env readiness.
+
+- [x] R0.3 Integration test: NextAuth PrismaAdapter createUser
+  
+  Acceptance Criteria:
+  - Add tests/integration/auth.adapter.int.test.ts that uses PrismaAdapter.createUser to create a user with name, image, and emailVerified=null; asserts persistence and cleans up.
+  - Include a direct prisma.user.create sanity check with these optional fields.
+  - Tests run successfully via npm run test.
+- Client Verification: You see the new test passing locally.
 
 R1. Technical debt: messages mode=json (pragmatic gating)
 
