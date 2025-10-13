@@ -89,6 +89,15 @@ R0. Prerequisites: Secrets and Environment
   - Remove any other swatch instances if present.
   - Client Verification: In dev, the swatch displays lowercase "bombay" centered with legible contrast across the gradient.
 
+- [ ] R0.8 UX: Brand swatch relocation (header only)
+  
+  Acceptance Criteria:
+  - Remove swatch from the left chat list header (next to New Chat).
+  - Add a single brand swatch in the global header (top-left), with overlaid lowercase "bombay" text for legibility.
+  - Keep Sign out on the opposite side (right) of the same header row.
+  - Preserve data-testid="brand-swatch" and remove duplicates elsewhere.
+  - Client Verification: Swatch appears only once, top-left in header, with readable text.
+
 R1. Technical debt: messages mode=json (pragmatic gating)
 
 - [ ] R1.1 Gate mode=json to test-only
