@@ -195,6 +195,12 @@ export default function Chat() {
     setMessages((prev) => [...prev, userMsg])
     setInput('')
     setTyping(true)
+    const typingStartedAt = Date.now()
+    const finishTyping = () => {
+      const elapsed = Date.now() - typingStartedAt
+      const remain = elapsed < 150 ? 150 - elapsed : 0
+      setTimeout(() => setTyping(false), remain)
+    }
 
     const res = await fetch('/api/messages', {
       method: 'POST',
@@ -202,7 +208,7 @@ export default function Chat() {
       body: JSON.stringify({ threadId, content: userMsg.contentText })
     })
     if (!res.body) {
-      setTyping(false)
+      finishTyping()
       return
     }
     const reader = res.body.getReader()
@@ -232,9 +238,9 @@ export default function Chat() {
             })
           } catch {}
         } else if (ev.event === 'done') {
-          setTyping(false)
+          finishTyping()
         } else if (ev.event === 'error') {
-          setTyping(false)
+          finishTyping()
         }
       }
     }
@@ -260,6 +266,8 @@ export default function Chat() {
     setCurrentThreadTitle(t.title)
     setMessages([])
     setMessagesError(null)
+    // Focus composer to meet UX acceptance
+    setTimeout(() => composerRef.current?.focus(), 0)
   }
 
   const activeThread = useMemo(() => threads.find(t => t.id === currentThreadId) || null, [threads, currentThreadId])
