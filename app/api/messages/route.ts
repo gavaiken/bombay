@@ -82,10 +82,12 @@ export async function POST(req: NextRequest) {
           const adapter = getAdapterForModel(thread.activeModel || 'openai:gpt-4o')
           const model = (thread.activeModel || '').split(':')[1] || 'gpt-4o'
           let text = ''
-          if (!adapter || !adapter.chatStreaming) {
-            // Fallback deterministic chunks if adapter/streaming unavailable
+          if (process.env.E2E_STUB_PROVIDER === '1' || !adapter || !adapter.chatStreaming) {
+            // Deterministic stub for E2E and when adapter/streaming unavailable
             send('delta', JSON.stringify('Okay — '))
+await new Promise((r) => setTimeout(r, 200))
             send('delta', JSON.stringify('working on it…'))
+            await new Promise((r) => setTimeout(r, 60))
             send('done', JSON.stringify({ messageId: 'm_temp', usage: { input_tokens: 0, output_tokens: 0 } }))
             controller.close()
             return
@@ -104,7 +106,7 @@ export async function POST(req: NextRequest) {
         } catch (err) {
           send('error', JSON.stringify({ error: { code: 'PROVIDER_ERROR', message: 'An error occurred. Please try again.', details: null } }))
         } finally {
-          controller.close()
+          try { controller.close() } catch {}
         }
       }
     })
