@@ -81,6 +81,14 @@ R0. Prerequisites: Secrets and Environment
   - Do not change data-testid values; may reuse `empty-state` for the main pane.
   - Client Verification: With no threads, the main pane shows the CTA; clicking it creates a new thread and focuses the composer.
 
+- [x] R0.7 UX: Brand swatch — overlay brand text for legibility
+  
+  Acceptance Criteria:
+  - In the top-left (thread tray header), overlay the brand text "bombay" on the existing brand swatch gradient, ensuring readable contrast over white and pink segments.
+  - Preserve data-testid="brand-swatch"; do not add duplicate brand labels elsewhere.
+  - Remove any other swatch instances if present.
+  - Client Verification: In dev, the swatch displays lowercase "bombay" centered with legible contrast across the gradient.
+
 R1. Technical debt: messages mode=json (pragmatic gating)
 
 - [ ] R1.1 Gate mode=json to test-only
