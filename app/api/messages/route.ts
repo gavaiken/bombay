@@ -102,7 +102,7 @@ export async function POST(req: NextRequest) {
           })
           send('done', JSON.stringify({ messageId: saved.id, usage: { input_tokens: 0, output_tokens: text.length } }))
         } catch (err) {
-          send('error', JSON.stringify({ message: 'An error occurred. Please try again.' }))
+          send('error', JSON.stringify({ error: { code: 'PROVIDER_ERROR', message: 'An error occurred. Please try again.', details: null } }))
         } finally {
           controller.close()
         }

@@ -107,7 +107,7 @@ R0. Prerequisites: Secrets and Environment
 
 R1. Technical debt: messages mode=json (pragmatic gating)
 
-- [ ] R1.1 Gate mode=json to test-only
+- [x] R1.1 Gate mode=json to test-only
   
   Acceptance Criteria:
   - In dev/prod, POST /api/messages?mode=json returns 400; in tests (NODE_ENV=test) path works for integration tests.
