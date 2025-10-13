@@ -131,7 +131,7 @@ R3. E2E testing with Playwright (Mocked auth + MSW)
   - Test renders core shell/selectors without real Google OAuth.
   - Client Verification: Run npm run test:e2e and confirm green.
 
-- [ ] R3.2 E2E: Create new thread
+- [x] R3.2 E2E: Create new thread
   
   Acceptance Criteria:
   - New Chat appears, composer focuses; list/title update asserted.
