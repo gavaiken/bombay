@@ -41,12 +41,12 @@ R0. Prerequisites: Secrets and Environment
   - Dev server builds and shows Sign in button; we will validate real OAuth in production smoke.
   - Client Verification: You confirm .env.local readiness.
 
-- [ ] R0.2 Vercel project + env
+- [x] R0.2 Vercel project + env
   
   Acceptance Criteria:
   - Vercel project connected; env set for Production/Preview: NEXTAUTH_URL (domain), NEXTAUTH_SECRET, GOOGLE_CLIENT_ID/SECRET (prod redirect), OPENAI_API_KEY, ANTHROPIC_API_KEY, DATABASE_URL (managed Postgres).
   - Build on push succeeds with env present.
-  - Client Verification: You confirm Vercel env readiness.
+  - Client Verification: Verified via Vercel CLI (whoami, projects ls, env ls production/preview, deployments status).
 
 - [x] R0.3 Integration test: NextAuth PrismaAdapter createUser
   
