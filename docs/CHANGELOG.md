@@ -30,3 +30,4 @@
 - 2025-10-12: Completed Task 18 (Integration testing suite): added Vitest integration tests for threads and messages; Docker DB used.
 - 2025-10-12: Planning & Audit: added “Next Tasks — Demo MVP Track (Revised)” and gated POST /api/messages?mode=json to test-only (400 in dev/prod).
 - 2025-10-13: API docs updated to note `?mode=json` is test-only; SSE error events standardized to `{ error: { code, message, details } }`.
+- 2025-10-13: Anthropic streaming verified end-to-end. With no ANTHROPIC_API_KEY set, deterministic stub stream emits three chunks and `done`; with a real key, adapter streams deltas and persists assistant on completion. Error events use standard envelope.

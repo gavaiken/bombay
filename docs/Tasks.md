@@ -116,7 +116,7 @@ R1. Technical debt: messages mode=json (pragmatic gating)
 
 R2. Anthropic streaming end-to-end
 
-- [ ] R2.1 Verify/Finalize Anthropic streaming
+- [x] R2.1 Verify/Finalize Anthropic streaming
   
   Acceptance Criteria:
   - anthropic:* models stream deltas; assistant persisted on completion; standardized error envelope on failure.
