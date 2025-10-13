@@ -125,7 +125,7 @@ R2. Anthropic streaming end-to-end
 
 R3. E2E testing with Playwright (Mocked auth + MSW)
 
-- [ ] R3.1 E2E: Login and shell (mocked auth)
+- [x] R3.1 E2E: Login and shell (mocked auth)
   
   Acceptance Criteria:
   - Test renders core shell/selectors without real Google OAuth.
