@@ -12,7 +12,8 @@ export default defineConfig({
     command: 'npm run dev',
     url: 'http://localhost:3000',
     reuseExistingServer: true,
-    timeout: 120_000
+    timeout: 120_000,
+    env: { E2E_AUTH: '1', E2E_STUB_PROVIDER: '1' }
   },
   projects: [
     { name: 'chromium', use: { ...devices['Desktop Chrome'] } }
