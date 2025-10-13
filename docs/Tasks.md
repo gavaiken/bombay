@@ -98,6 +98,13 @@ R0. Prerequisites: Secrets and Environment
   - Preserve data-testid="brand-swatch" and remove duplicates elsewhere.
   - Client Verification: Swatch appears only once, top-left in header, with readable text.
 
+- [x] R0.9 UX: Auto-create thread on first send
+  
+  Acceptance Criteria:
+  - If the user hits Send with no current thread (or a local stub), create a real server thread via POST /api/threads, update state, and proceed with sending.
+  - Do not change any data-testid values.
+  - Client Verification: Typing directly into the composer and pressing Send creates a thread and sends successfully.
+
 R1. Technical debt: messages mode=json (pragmatic gating)
 
 - [ ] R1.1 Gate mode=json to test-only

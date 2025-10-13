@@ -158,9 +158,40 @@ export default function Chat() {
     return events
   }
 
+  async function ensureThread(): Promise<string | null> {
+    // If we already have a real server thread id, reuse it. Treat local stub ids (e.g., "t_...") as not real.
+    if (currentThreadId && !currentThreadId.startsWith('t_')) return currentThreadId
+    try {
+      const res = await fetch('/api/threads', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title: currentThreadTitle || 'New chat' })
+      })
+      if (!res.ok) throw new Error('Failed to create thread')
+      const t = await res.json()
+      setThreads((prev) => [t, ...prev])
+      setCurrentThreadId(t.id)
+      setCurrentThreadTitle(t.title || 'Untitled')
+      if (t.activeModel) setModel(t.activeModel)
+      return t.id
+    } catch (e: any) {
+      setMessagesError(e?.message || 'Failed to create thread')
+      return null
+    }
+  }
+
   async function sendCurrentInput() {
-    if (!input.trim() || !currentThreadId) return
-    const userMsg: Message = { id: `u_${Date.now()}`, role: 'user', contentText: input }
+    const text = input.trim()
+    if (!text) return
+
+    // Ensure there is a real server thread before sending
+    let threadId = currentThreadId as string | null
+    if (!threadId || threadId.startsWith('t_')) {
+      threadId = await ensureThread()
+    }
+    if (!threadId) return
+
+    const userMsg: Message = { id: `u_${Date.now()}`, role: 'user', contentText: text }
     setMessages((prev) => [...prev, userMsg])
     setInput('')
     setTyping(true)
@@ -168,7 +199,7 @@ export default function Chat() {
     const res = await fetch('/api/messages', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ threadId: currentThreadId, content: userMsg.contentText })
+      body: JSON.stringify({ threadId, content: userMsg.contentText })
     })
     if (!res.body) {
       setTyping(false)
@@ -251,21 +282,7 @@ export default function Chat() {
         aria-busy={isLoadingThreads || undefined}
       >
         <div className="flex items-center justify-between mb-2">
-            <div className="flex items-center gap-2">
-              <div
-                data-testid="brand-swatch"
-                aria-label="bombay brand"
-                className="relative h-5 w-16 rounded-sm overflow-hidden"
-                style={{ background: 'var(--gradient-brand)' }}
-              >
-                <span
-                  className="absolute inset-0 flex items-center justify-center text-[10px] sm:text-xs font-mono lowercase text-black"
-                  style={{ textShadow: '0 1px 0 rgba(255,255,255,0.6)' }}
-                >
-                  bombay
-                </span>
-              </div>
-            </div>
+          <div className="flex-1" />
           <button
             data-testid="new-thread"
             className="mb-0 rounded-md border border-brand-500 text-brand-500 hover:bg-brand-100/10 focus:outline-none focus:ring-4 focus:ring-pink-400/40 px-2 py-1"
