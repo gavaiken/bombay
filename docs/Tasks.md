@@ -56,6 +56,31 @@ R0. Prerequisites: Secrets and Environment
   - Tests run successfully via npm run test.
 - Client Verification: You see the new test passing locally.
 
+- [ ] R0.4 UX: Improve message composer layout and affordances
+  
+  Acceptance Criteria:
+  - Composer is not flush against window edge; has comfortable padding and clear separation from transcript.
+  - Textarea supports multi-line (Shift+Enter) with visible size/spacing (min height, no cramped gutter).
+  - Send button has clear size/contrast; disabled when no input or while typing.
+  - Do not change data-testid values (composer, composer-input, composer-send).
+  - Client Verification: In dev, composer looks spacious, supports multi-line, and Enter/Shift+Enter behaviors work.
+
+- [ ] R0.5 UX: Deduplicate brand/model labels
+  
+  Acceptance Criteria:
+  - Remove redundant "bombay" text label in the left nav (keep brand swatch).
+  - Remove the header "Model: …" text so model appears only once via the model-switcher dropdown.
+  - Do not change data-testid values (thread-title, model-switcher, brand-swatch).
+  - Client Verification: Only one brand label (in header) and single model display (dropdown) are visible.
+
+- [ ] R0.6 UX: Main-pane empty state with clear CTA
+  
+  Acceptance Criteria:
+  - When there are no threads, the main chat pane shows an empty state with primary CTA "Start a chat" that creates a new thread and focuses the composer.
+  - Keep existing left-rail message if present, but ensure the primary CTA is visible in the main pane.
+  - Do not change data-testid values; may reuse `empty-state` for the main pane.
+  - Client Verification: With no threads, the main pane shows the CTA; clicking it creates a new thread and focuses the composer.
+
 R1. Technical debt: messages mode=json (pragmatic gating)
 
 - [ ] R1.1 Gate mode=json to test-only
