@@ -251,10 +251,9 @@ export default function Chat() {
         aria-busy={isLoadingThreads || undefined}
       >
         <div className="flex items-center justify-between mb-2">
-          <div className="flex items-center gap-2">
-            <div data-testid="brand-swatch" aria-label="bombay brand" className="h-4 w-12 rounded-sm" style={{ background: 'var(--gradient-brand)' }} />
-            <span className="text-text/60 text-xs">bombay</span>
-          </div>
+            <div className="flex items-center gap-2">
+              <div data-testid="brand-swatch" aria-label="bombay brand" className="h-4 w-12 rounded-sm" style={{ background: 'var(--gradient-brand)' }} />
+            </div>
           <button
             data-testid="new-thread"
             className="mb-0 rounded-md border border-brand-500 text-brand-500 hover:bg-brand-100/10 focus:outline-none focus:ring-4 focus:ring-pink-400/40 px-2 py-1"
@@ -302,7 +301,6 @@ export default function Chat() {
               Threads
             </button>
             <h1 data-testid="thread-title">{currentThreadTitle || 'bombay'}</h1>
-            <span className="text-xs text-text/60" aria-label="Current model">Model: {model}</span>
           </div>
           <select
             data-testid="model-switcher"
@@ -348,6 +346,14 @@ export default function Chat() {
             </div>
           )}
 
+          {!isLoadingThreads && !threadsError && threads.length === 0 && (
+            <div data-testid="empty-state" className="h-full flex flex-col items-center justify-center text-center text-text/70">
+              <h2 className="text-lg mb-2">Start your first chat</h2>
+              <p className="text-sm mb-4">Choose a model and send your first message.</p>
+              <button className="rounded-md border border-brand-500 text-brand-500 hover:bg-brand-100/10 px-3 py-2" onClick={() => { newThread(); setTimeout(() => composerRef.current?.focus(), 0) }}>Start a chat</button>
+            </div>
+          )}
+
           {!messagesError && !isLoadingMessages && currentThreadId && messages.length === 0 && (
             <div className="text-sm text-text/70">Welcome — start by sending a message.</div>
           )}
@@ -361,21 +367,21 @@ export default function Chat() {
         </section>
 
         {/* Composer */}
-        <form data-testid="composer" className="border-t p-3 flex gap-2" onSubmit={onSend}>
+        <form data-testid="composer" className="sticky bottom-0 border-t bg-panel/80 backdrop-blur supports-[backdrop-filter]:bg-panel/60 p-4 md:p-3 flex gap-2" onSubmit={onSend}>
           <label className="sr-only" htmlFor="composer-input">Message</label>
           <textarea
             id="composer-input"
             ref={composerRef}
             data-testid="composer-input"
-            rows={2}
+            rows={3}
             placeholder="Message…"
-            className="flex-1 bg-panel text-text placeholder:text-text/50 border border-border rounded-md p-2 focus:outline-none focus:border-brand-500 focus:ring-4 focus:ring-pink-400/40"
+            className="flex-1 resize-none min-h-[44px] max-h-40 overflow-y-auto bg-panel text-text placeholder:text-text/50 border border-border rounded-md p-2 focus:outline-none focus:border-brand-500 focus:ring-4 focus:ring-pink-400/40"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={onComposerKeyDown}
             disabled={typing}
           />
-          <button data-testid="composer-send" type="submit" disabled={typing || !input.trim()} className="border px-3">Send</button>
+          <button data-testid="composer-send" type="submit" disabled={typing || !input.trim()} className="rounded-md border border-brand-500 bg-brand-500 text-white hover:bg-brand-600 disabled:opacity-50 px-4 py-2">Send</button>
         </form>
 
       </main>

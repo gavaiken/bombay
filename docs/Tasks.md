@@ -56,7 +56,7 @@ R0. Prerequisites: Secrets and Environment
   - Tests run successfully via npm run test.
 - Client Verification: You see the new test passing locally.
 
-- [ ] R0.4 UX: Improve message composer layout and affordances
+- [x] R0.4 UX: Improve message composer layout and affordances
   
   Acceptance Criteria:
   - Composer is not flush against window edge; has comfortable padding and clear separation from transcript.
@@ -65,7 +65,7 @@ R0. Prerequisites: Secrets and Environment
   - Do not change data-testid values (composer, composer-input, composer-send).
   - Client Verification: In dev, composer looks spacious, supports multi-line, and Enter/Shift+Enter behaviors work.
 
-- [ ] R0.5 UX: Deduplicate brand/model labels
+- [x] R0.5 UX: Deduplicate brand/model labels
   
   Acceptance Criteria:
   - Remove redundant "bombay" text label in the left nav (keep brand swatch).
@@ -73,7 +73,7 @@ R0. Prerequisites: Secrets and Environment
   - Do not change data-testid values (thread-title, model-switcher, brand-swatch).
   - Client Verification: Only one brand label (in header) and single model display (dropdown) are visible.
 
-- [ ] R0.6 UX: Main-pane empty state with clear CTA
+- [x] R0.6 UX: Main-pane empty state with clear CTA
   
   Acceptance Criteria:
   - When there are no threads, the main chat pane shows an empty state with primary CTA "Start a chat" that creates a new thread and focuses the composer.
