@@ -35,7 +35,7 @@ Below is a sequential list of all tasks required to go from an empty project dir
 
 R0. Prerequisites: Secrets and Environment
 
-- [ ] R0.1 Local secrets readiness
+- [x] R0.1 Local secrets readiness
   
   Acceptance Criteria:
   - .env.local contains: NEXTAUTH_SECRET (>=32 chars), NEXTAUTH_URL=http://localhost:3000, GOOGLE_CLIENT_ID/SECRET (localhost), OPENAI_API_KEY, ANTHROPIC_API_KEY, DATABASE_URL (Docker Postgres).
