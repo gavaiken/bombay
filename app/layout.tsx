@@ -33,8 +33,19 @@ export default async function RootLayout({
       <body className={`${plex.variable} font-mono`} data-theme="dark">
         <header className="flex items-center justify-between border-b p-3">
           <div className="flex items-center gap-2">
-            <div aria-label="bombay brand" className="h-4 w-12 rounded-sm" style={{ background: 'var(--gradient-brand)' }} />
-            <span className="text-text/60 text-xs">bombay</span>
+            <div
+              data-testid="brand-swatch"
+              aria-label="bombay brand"
+              className="relative h-5 w-16 rounded-sm overflow-hidden"
+              style={{ background: 'var(--gradient-brand)' }}
+            >
+              <span
+                className="absolute inset-0 flex items-center justify-center text-[10px] sm:text-xs font-mono lowercase text-black"
+                style={{ textShadow: '0 1px 0 rgba(255,255,255,0.6)' }}
+              >
+                bombay
+              </span>
+            </div>
           </div>
           <nav>
             {session?.user?.email ? (
