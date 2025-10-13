@@ -89,7 +89,7 @@ R0. Prerequisites: Secrets and Environment
   - Remove any other swatch instances if present.
   - Client Verification: In dev, the swatch displays lowercase "bombay" centered with legible contrast across the gradient.
 
-- [ ] R0.8 UX: Brand swatch relocation (header only)
+- [x] R0.8 UX: Brand swatch relocation (header only)
   
   Acceptance Criteria:
   - Remove swatch from the left chat list header (next to New Chat).
