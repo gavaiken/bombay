@@ -160,7 +160,7 @@ R4. Integration tests augmentation (Vitest)
 
 R5. Deployment and production smoke
 
-- [ ] R5.1 Vercel deployment with real env
+- [x] R5.1 Vercel deployment with real env
   
   Acceptance Criteria:
   - Vercel deploy is Ready.

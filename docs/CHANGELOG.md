@@ -31,3 +31,4 @@
 - 2025-10-12: Planning & Audit: added “Next Tasks — Demo MVP Track (Revised)” and gated POST /api/messages?mode=json to test-only (400 in dev/prod).
 - 2025-10-13: API docs updated to note `?mode=json` is test-only; SSE error events standardized to `{ error: { code, message, details } }`.
 - 2025-10-13: Anthropic streaming verified end-to-end. With no ANTHROPIC_API_KEY set, deterministic stub stream emits three chunks and `done`; with a real key, adapter streams deltas and persists assistant on completion. Error events use standard envelope.
+- 2025-10-13: Vercel production deployment created via CLI; domain added; DNS A record configured. Postinstall runs `prisma generate` for fresh Prisma client. R5.1 completed.
