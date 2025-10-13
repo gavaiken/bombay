@@ -136,7 +136,7 @@ R3. E2E testing with Playwright (Mocked auth + MSW)
   Acceptance Criteria:
   - New Chat appears, composer focuses; list/title update asserted.
 
-- [ ] R3.3 E2E: Send message with SSE
+- [x] R3.3 E2E: Send message with SSE
   
   Acceptance Criteria:
   - Typing indicator appears; deltas stream; done hides indicator.
