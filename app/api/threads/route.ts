@@ -8,10 +8,11 @@ import { requireUser } from 'lib/authz'
 
 export async function GET() {
   const gate = await requireUser()
-  if ('error' in gate) return gate.error
+  if (!gate.ok) return gate.error
+  const userId = gate.user.id
   try {
     const threads = await prisma.thread.findMany({
-      where: { userId: gate.user.id },
+      where: { userId },
       orderBy: { updatedAt: 'desc' },
       select: { id: true, title: true, activeModel: true, createdAt: true, updatedAt: true }
     })
@@ -32,7 +33,8 @@ import { jsonError } from 'lib/errors'
 
 export async function POST(req: NextRequest) {
   const gate = await requireUser()
-  if ('error' in gate) return gate.error
+  if (!gate.ok) return gate.error
+  const userId = gate.user.id
   try {
     const json = await req.json()
     const parsed = CreateThreadSchema.safeParse(json)
@@ -42,7 +44,7 @@ export async function POST(req: NextRequest) {
     const { title, activeModel } = parsed.data
     const created = await prisma.thread.create({
       data: {
-        userId: gate.user.id,
+        userId,
         title: title ?? null,
         activeModel: activeModel ?? 'openai:gpt-4o'
       },

@@ -8,7 +8,8 @@ import { jsonError } from 'lib/errors'
 
 export async function GET(req: NextRequest) {
   const gate = await requireUser()
-  if ('error' in gate) return gate.error
+  if (!gate.ok) return gate.error
+  const userId = gate.user.id
   try {
     const url = new URL(req.url)
     const threadId = url.searchParams.get('threadId')
@@ -16,7 +17,7 @@ export async function GET(req: NextRequest) {
       return jsonError('VALIDATION_ERROR', 'threadId required', 400)
     }
     // Ownership check
-    const own = await prisma.thread.findFirst({ where: { id: threadId, userId: gate.user.id }, select: { id: true } })
+    const own = await prisma.thread.findFirst({ where: { id: threadId, userId }, select: { id: true } })
     if (!own) {
       return jsonError('FORBIDDEN', 'Forbidden', 403)
     }
@@ -33,7 +34,8 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   const gate = await requireUser()
-  if ('error' in gate) return gate.error
+  if (!gate.ok) return gate.error
+  const userId = gate.user.id
   try {
     const url = new URL(req.url)
     const mode = url.searchParams.get('mode') // optional non-stream validation path
@@ -42,7 +44,7 @@ export async function POST(req: NextRequest) {
       return jsonError('VALIDATION_ERROR', 'threadId and content required', 400)
     }
     // Ownership check
-    const thread = await prisma.thread.findFirst({ where: { id: threadId, userId: gate.user.id }, select: { id: true, activeModel: true } })
+    const thread = await prisma.thread.findFirst({ where: { id: threadId, userId }, select: { id: true, activeModel: true } })
     if (!thread) {
       return jsonError('FORBIDDEN', 'Forbidden', 403)
     }

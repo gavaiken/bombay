@@ -1,13 +1,17 @@
 import { prisma } from 'lib/prisma'
 import { auth } from 'lib/auth'
+import type { User } from '@prisma/client'
 
 import { jsonError } from 'lib/errors'
 
-export async function requireUser() {
+export type RequireUserOk = { ok: true; user: User }
+export type RequireUserErr = { ok: false; error: Response }
+
+export async function requireUser(): Promise<RequireUserOk | RequireUserErr> {
   const session = await auth()
   const email = session?.user?.email || null
   if (!email) {
-    return { error: jsonError('AUTH_REQUIRED', 'Not authenticated', 401) }
+    return { ok: false, error: jsonError('AUTH_REQUIRED', 'Not authenticated', 401) }
   }
   let user = await prisma.user.findUnique({ where: { email } })
   if (!user) {
@@ -24,8 +28,9 @@ export async function requireUser() {
         user = await prisma.user.findUnique({ where: { email } })
       }
     } else {
-      return { error: jsonError('AUTH_REQUIRED', 'Not authenticated', 401) }
+      return { ok: false, error: jsonError('AUTH_REQUIRED', 'Not authenticated', 401) }
     }
   }
-  return { user }
+  // At this point user must be non-null
+  return { ok: true, user: user! }
 }
