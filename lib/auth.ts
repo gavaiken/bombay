@@ -35,6 +35,20 @@ export const authOptions: NextAuthOptions = {
       }
       return session
     }
+  },
+  logger: {
+    async error(code, metadata) {
+      const { logError } = await import('lib/logger')
+      await logError('nextauth logger error', { code, metadata })
+    },
+    async warn(code) {
+      const { logInfo } = await import('lib/logger')
+      await logInfo('nextauth logger warn', { code })
+    },
+    async debug(code, metadata) {
+      const { logInfo } = await import('lib/logger')
+      await logInfo('nextauth logger debug', { code, metadata })
+    }
   }
 }
 

@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation"
 import { auth } from "lib/auth"
+import SignInClient from './SignInClient'
 
 export default async function SignIn() {
   const session = await auth()
@@ -16,15 +17,8 @@ export default async function SignIn() {
           <p className="text-sm text-gray-600">Connect with AI models securely</p>
         </div>
         <div className="mt-8 flex justify-center">
-          {/* Link directly to the Google provider to avoid custom sign-in redirect loop */}
-          {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
-          <a
-            href="/api/auth/signin/google?callbackUrl=/"
-            className="inline-flex items-center justify-center rounded-xl border border-brand-500 bg-brand-500 text-white hover:bg-brand-600 px-6 py-3 shadow-panel"
-            aria-label="Sign in with Google"
-          >
-            Sign in with Google
-          </a>
+          {/* Use NextAuth client to avoid CSRF/state issues */}
+          <SignInClient />
         </div>
       </div>
     </div>

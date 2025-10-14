@@ -118,7 +118,8 @@ await new Promise((r) => setTimeout(r, 200))
             code = 'MODEL_NOT_FOUND'
             userMessage = 'Selected model is not available for this API key. Try another model.'
           }
-          console.error('messages SSE provider error', { message: masked })
+          const { logError } = await import('lib/logger')
+          await logError('messages SSE provider error', { message: masked })
           send('error', JSON.stringify({ error: { code, message: userMessage, details: null } }))
         } finally {
           try { controller.close() } catch {}

@@ -4,6 +4,20 @@ Below is a sequential list of all tasks required to go from an empty project dir
 
 ## Urgent — Production Issues (Top Priority)
 
+- [ ] U4. PROD sign-in broken (NextAuth/Google) — fix
+  
+  Acceptance Criteria:
+  - Signing in on https://bombay.chat works end-to-end (no generic "something went wrong").
+  - Button uses the official NextAuth client signIn() flow; error state shows a readable message.
+  - Verification: Manual sign-in on PROD succeeds.
+
+- [ ] U5. Persist runtime logs (24h+)
+  
+  Acceptance Criteria:
+  - Server logs are persisted to a 3rd-party sink (e.g., Better Stack Logtail or Sentry) without manual tailing.
+  - Add an opt-in env (LOGTAIL_SOURCE_TOKEN or SENTRY_DSN). When present, errors from API routes and NextAuth events are captured.
+  - Verification: Trigger a known error and view it in the external system after the fact.
+
 - [x] U1. New chat shows false error
   
   Acceptance Criteria:
