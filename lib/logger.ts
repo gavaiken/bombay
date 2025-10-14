@@ -3,7 +3,7 @@ export type LogLevel = 'info' | 'error' | 'warn'
 const LOGTAIL_URL = 'https://in.logtail.com'
 
 function getToken(): string | null {
-  const raw = process.env.LOGTAIL_SOURCE_TOKEN || ''
+  const raw = process.env.LOGTAIL_SOURCE_TOKEN || process.env.BETTERSTACK_SOURCE_TOKEN || ''
   const token = raw.replace(/[\r\n]/g, '').trim()
   return token || null
 }
