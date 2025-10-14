@@ -2,6 +2,30 @@
 
 Below is a sequential list of all tasks required to go from an empty project directory to a complete product. Each task is bite-sized with clear acceptance criteria that can be verified (often by running commands or tests). The development will pause after each task for review before proceeding.
 
+## Urgent — Production Issues (Top Priority)
+
+- [ ] P0. Prod: No assistant responses (SSE) after "Agent is typing…"
+  
+  Acceptance Criteria:
+  - Sending a message on https://bombay.chat streams deltas and completes with a final assistant message (OpenAI path).
+  - Switching to Anthropic (Claude 3.5 Sonnet/Haiku) also streams and completes.
+  - Switching models mid-thread continues to work; replies appear with the new model.
+  - Verification: Manual smoke on production; entry added to docs/CHANGELOG.md.
+
+- [ ] P1. Prod: Surface provider errors in UI
+  
+  Acceptance Criteria:
+  - When the SSE stream emits an `error` event, the chat pane shows an inline error bubble (role="alert") with a Retry button.
+  - Retry re-sends the last user message to the current thread/model.
+  - E2E: Extend or add a spec that exercises error UI in stub mode, or an integration test asserts error path (already present) and UI is manually verified.
+
+- [ ] P2. Domain flagged by Google Safe Browsing
+  
+  Acceptance Criteria:
+  - Chrome no longer shows the "Dangerous site" interstitial for https://bombay.chat.
+  - Steps documented in docs/Deployment.md: verify domain in Search Console, check "Security issues", request review, and keep HTTPS/HSTS.
+  - Verification: Load bombay.chat in Chrome clean profile → no warning; note added to docs/CHANGELOG.md.
+
 ## Planning & Audit
 
 - [x]  Audit and update plan outlined in Tasks to achieve PRD and Design

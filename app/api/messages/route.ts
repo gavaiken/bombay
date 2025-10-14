@@ -106,6 +106,8 @@ await new Promise((r) => setTimeout(r, 200))
           })
           send('done', JSON.stringify({ messageId: saved.id, usage: { input_tokens: 0, output_tokens: text.length } }))
         } catch (err) {
+          // Log on server for diagnosis while keeping error envelope safe for clients
+          console.error('messages SSE provider error', err)
           send('error', JSON.stringify({ error: { code: 'PROVIDER_ERROR', message: 'An error occurred. Please try again.', details: null } }))
         } finally {
           try { controller.close() } catch {}

@@ -243,6 +243,13 @@ export default function Chat() {
         } else if (ev.event === 'done') {
           finishTyping()
         } else if (ev.event === 'error') {
+          try {
+            const payload = JSON.parse(ev.data) as { error?: { message?: string } }
+            const msg = payload?.error?.message || 'Provider error. Please try again.'
+            setMessagesError(msg)
+          } catch {
+            setMessagesError('Provider error. Please try again.')
+          }
           finishTyping()
         }
       }

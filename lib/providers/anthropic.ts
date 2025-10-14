@@ -9,6 +9,17 @@ function ensureClient(): Anthropic | null {
   return client
 }
 
+function normalizeAnthropicModelId(model: string): string {
+  switch (model) {
+    case 'claude-3-5-sonnet':
+      return 'claude-3-5-sonnet-latest'
+    case 'claude-3-5-haiku':
+      return 'claude-3-5-haiku-latest'
+    default:
+      return model
+  }
+}
+
 function toAnthropic(messages: ChatMessage[]): Anthropic.Messages.MessageParam[] {
   return messages.map((m) => ({ role: m.role as any, content: m.content }))
 }
@@ -20,8 +31,8 @@ export const anthropicAdapter: ProviderAdapter = {
     if (!cli) {
       return { text: '[stub] hello from anthropic:' + model, usage: { input_tokens: 1, output_tokens: 2 } }
     }
-    const res = await cli.messages.create({
-      model,
+const res = await cli.messages.create({
+      model: normalizeAnthropicModelId(model),
       max_tokens: 512,
       messages: toAnthropic(messages)
     })
@@ -38,8 +49,8 @@ export const anthropicAdapter: ProviderAdapter = {
       yield 'response'
       return
     }
-    const stream = await cli.messages.stream({
-      model,
+const stream = await cli.messages.stream({
+      model: normalizeAnthropicModelId(model),
       max_tokens: 512,
       messages: toAnthropic(messages)
     })
