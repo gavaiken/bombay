@@ -32,3 +32,8 @@
 - 2025-10-13: API docs updated to note `?mode=json` is test-only; SSE error events standardized to `{ error: { code, message, details } }`.
 - 2025-10-13: Anthropic streaming verified end-to-end. With no ANTHROPIC_API_KEY set, deterministic stub stream emits three chunks and `done`; with a real key, adapter streams deltas and persists assistant on completion. Error events use standard envelope.
 - 2025-10-13: Vercel production deployment created via CLI; domain added; DNS A record configured. Postinstall runs `prisma generate` for fresh Prisma client. R5.1 completed.
+- 2025-10-14: R4.1 Auth guard coverage added (integration tests for 401/403/404 across /api/threads, /api/messages, /api/threads/:id). All tests passing.
+- 2025-10-14: R4.2 Streaming envelope sanity added (SSE emits delta/done; error path emits error envelope). Providers refactored to lazy-init SDK clients when API keys exist; deterministic stubs when keys are absent.
+- 2025-10-14: E2E: Added mobile overlay test; full E2E suite green with mocked auth/provider.
+- 2025-10-14: R5.2 Domain + Google OAuth redirects verified — https://bombay.chat live over HTTPS, sign-in works (user-confirmed). Note: Chrome Safe Browsing may briefly warn on a brand-new domain; expected to clear after reputation warms up or via review.
+- 2025-10-14: Production deployment checklist confirmed: API keys present (OpenAI, Anthropic), environment variables configured for Production/Preview, Vercel project linked, custom domain configured, and production database operational (user-confirmed).

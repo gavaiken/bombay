@@ -165,7 +165,7 @@ R5. Deployment and production smoke
   Acceptance Criteria:
   - Vercel deploy is Ready.
 
-- [ ] R5.2 Domain + Google OAuth redirects
+- [x] R5.2 Domain + Google OAuth redirects
   
   Acceptance Criteria:
   - Domain live over HTTPS; OAuth redirect configured and functional.
@@ -719,7 +719,7 @@ The following sections contain additional tasks for future development and deplo
 
 ### API Keys and External Services
 
-- [ ]  **Generate AI Provider API Keys**: Request user to create API keys for OpenAI and Anthropic services.
+- [x]  **Generate AI Provider API Keys**: Request user to create API keys for OpenAI and Anthropic services.
     
     **Acceptance Criteria:**
     
@@ -735,7 +735,7 @@ The following sections contain additional tasks for future development and deplo
 
 ### Hosting Platform Setup
 
-- [ ]  **Set Up Vercel Account and Project**: Request user to create Vercel account and connect GitHub repository.
+- [x]  **Set Up Vercel Account and Project**: Request user to create Vercel account and connect GitHub repository.
     
     **Acceptance Criteria:**
     
@@ -749,7 +749,7 @@ The following sections contain additional tasks for future development and deplo
     - Initial deployment should succeed (may have missing env vars)
     - (Verification: User confirms Vercel project exists and initial deployment completed.)
 
-- [ ]  **Configure Production Environment Variables**: Set up API keys and database connection in Vercel dashboard.
+- [x]  **Configure Production Environment Variables**: Set up API keys and database connection in Vercel dashboard.
     
     **Acceptance Criteria:**
     
@@ -769,7 +769,7 @@ The following sections contain additional tasks for future development and deplo
 
 ### Domain Configuration
 
-- [ ]  **Configure Custom Domain**: Set up bombay.chat domain to point to Vercel deployment.
+- [x]  **Configure Custom Domain**: Set up bombay.chat domain to point to Vercel deployment.
     
     **Acceptance Criteria:**
     
@@ -788,7 +788,7 @@ The following sections contain additional tasks for future development and deplo
 
 ### Database Setup
 
-- [ ]  **Set Up Production Database**: Configure managed Postgres database for production use.
+- [x]  **Set Up Production Database**: Configure managed Postgres database for production use.
     
     **Acceptance Criteria:**
     
