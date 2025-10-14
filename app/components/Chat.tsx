@@ -95,6 +95,16 @@ export default function Chat() {
 
   async function reloadMessages() {
     if (!currentThreadId) return
+    if (currentThreadId.startsWith('t_')) {
+      setMessagesError(null)
+      setMessages([])
+      return
+    }
+    if (currentThreadId.startsWith('t_')) {
+      setMessagesError(null)
+      setMessages([])
+      return
+    }
     try {
       setIsLoadingMessages(true)
       setMessagesError(null)
@@ -116,6 +126,11 @@ export default function Chat() {
   // Load messages when thread changes
   useEffect(() => {
     if (!currentThreadId) return
+    if (currentThreadId.startsWith('t_')) {
+      setMessagesError(null)
+      setMessages([])
+      return
+    }
     reloadMessages()
   }, [currentThreadId])
 
@@ -158,6 +173,25 @@ export default function Chat() {
       if (event && data) events.push({ event, data })
     }
     return events
+  }
+
+  async function renameThread(id: string) {
+    const t = threads.find(x => x.id === id)
+    const current = t?.title || ''
+    const next = window.prompt('Rename chat', current)
+    if (!next || !next.trim()) return
+    if (id.startsWith('t_')) {
+      setThreads(prev => prev.map(x => x.id === id ? { ...x, title: next.trim() } : x))
+      if (id === currentThreadId) setCurrentThreadTitle(next.trim())
+      return
+    }
+    await fetch(`/api/threads/${encodeURIComponent(id)}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ title: next.trim() })
+    })
+    setThreads(prev => prev.map(x => x.id === id ? { ...x, title: next.trim() } : x))
+    if (id === currentThreadId) setCurrentThreadTitle(next.trim())
   }
 
   async function ensureThread(): Promise<string | null> {
@@ -268,9 +302,22 @@ export default function Chat() {
     }
   }
 
+  function formatDateTime(dt: Date) {
+    const y = dt.getFullYear()
+    const m = String(dt.getMonth() + 1).padStart(2, '0')
+    const d = String(dt.getDate()).padStart(2, '0')
+    const h = dt.getHours()
+    const am = h < 12
+    const hour12 = h % 12 === 0 ? 12 : h % 12
+    const min = String(dt.getMinutes()).padStart(2, '0')
+    const ap = am ? 'AM' : 'PM'
+    return `${y}-${m}-${d} ${hour12}:${min}${ap}`
+  }
+
   function newThread() {
     const id = `t_${Date.now()}`
-    const t: Thread = { id, title: 'New chat', activeModel: model, updatedAt: new Date().toISOString() }
+    const defaultTitle = formatDateTime(new Date())
+    const t: Thread = { id, title: defaultTitle, activeModel: model, updatedAt: new Date().toISOString() }
     setThreads((prev) => [t, ...prev])
     setCurrentThreadId(id)
     setCurrentThreadTitle(t.title)
@@ -331,9 +378,17 @@ export default function Chat() {
 
         <ul data-testid="thread-list" className="space-y-1">
           {threads.map((t) => (
-            <li key={t.id} data-testid="thread-item" data-thread-id={t.id} data-active={t.id === currentThreadId || undefined}>
-              <button onClick={() => onSelectThread(t.id)} className="w-full text-left">
+            <li key={t.id} className="group flex items-center justify-between" data-testid="thread-item" data-thread-id={t.id} data-active={t.id === currentThreadId || undefined}>
+              <button onClick={() => onSelectThread(t.id)} className="flex-1 text-left truncate">
                 {t.title}
+              </button>
+              <button
+                aria-label="Rename thread"
+                title="Rename"
+                className="opacity-0 group-hover:opacity-100 transition-opacity text-xs border border-border rounded px-1 ml-2"
+                onClick={(e) => { e.stopPropagation(); void renameThread(t.id) }}
+              >
+                ✏️
               </button>
             </li>
           ))}
@@ -375,12 +430,6 @@ export default function Chat() {
             <div data-testid="error-state" role="alert" className="rounded-md border border-brand-500 text-brand-500 bg-panel p-3 flex items-center justify-between">
               <span>{threadsError || messagesError}</span>
               <button className="rounded-md border border-brand-500 text-brand-500 px-2 py-1" onClick={() => { if (threadsError) { void loadThreads() } else { void reloadMessages() } }}>Retry</button>
-            </div>
-          )}
-          {messagesError && (
-            <div data-testid="error-state" role="alert" className="rounded-md border border-border bg-panel p-3">
-              <div className="mb-2">{messagesError}</div>
-              <button className="rounded-md border border-border px-2 py-1" onClick={reloadMessages}>Retry</button>
             </div>
           )}
 

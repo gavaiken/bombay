@@ -4,6 +4,25 @@ Below is a sequential list of all tasks required to go from an empty project dir
 
 ## Urgent — Production Issues (Top Priority)
 
+- [x] U1. New chat shows false error
+  
+  Acceptance Criteria:
+  - Creating a local stub thread does not fetch messages from the server; no error bubble appears until an actual failure occurs after a real thread exists.
+  - Verified in dev and prod by starting a new chat and seeing no error.
+
+- [x] U2. Duplicate error bubbles
+  
+  Acceptance Criteria:
+  - Only the pink-bordered error bubble is shown in the main chat pane; the secondary gray error box is removed.
+  - Verified visually; tests unaffected.
+
+- [x] U3. Thread titles and rename
+  
+  Acceptance Criteria:
+  - Default thread title is a timestamp like "2025-10-10 8:22PM" when created locally.
+  - A pencil icon appears on hover in the thread list to rename; clicking opens a prompt and calls PATCH /api/threads/:id { title } for real threads or updates local state for stubs.
+  - Verified by creating and renaming a thread in dev and prod.
+
 - [ ] P0. Prod: No assistant responses (SSE) after "Agent is typing…"
   
   Acceptance Criteria:
