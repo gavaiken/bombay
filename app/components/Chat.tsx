@@ -418,6 +418,27 @@ export default function Chat() {
             <option value="anthropic:claude-3-5-sonnet">Claude — 3.5 Sonnet</option>
             <option value="anthropic:claude-3-5-haiku">Claude — 3.5 Haiku</option>
           </select>
+          <button
+            className="ml-2 rounded-md border border-border px-2 py-1 text-xs"
+            onClick={async () => {
+              try {
+                const res = await fetch('/api/providers/models', { cache: 'no-store' })
+                const json = await res.json()
+                const lines = [
+                  'OpenAI:',
+                  ...(json.openai || []).map((x: string) => `  - ${x}`),
+                  'Anthropic:',
+                  ...(json.anthropic || []).map((x: string) => `  - ${x}`)
+                ]
+                alert(lines.join('\n'))
+              } catch {
+                alert('Failed to fetch model list')
+              }
+            }}
+            aria-label="List provider models"
+          >
+            Models
+          </button>
         </header>
 
         {/* Messages/transcript */}
