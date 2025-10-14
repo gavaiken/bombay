@@ -148,12 +148,12 @@ R3. E2E testing with Playwright (Mocked auth + MSW)
 
 R4. Integration tests augmentation (Vitest)
 
-- [ ] R4.1 Auth guard coverage
+- [x] R4.1 Auth guard coverage
   
   Acceptance Criteria:
   - 401/403 assertions added across key endpoints.
 
-- [ ] R4.2 Streaming envelope sanity
+- [x] R4.2 Streaming envelope sanity
   
   Acceptance Criteria:
   - Minimal sanity coverage for streaming done/error envelope or DB side effect in test mode.

@@ -1,7 +1,13 @@
 import OpenAI from 'openai'
 import type { ProviderAdapter, ChatMessage } from './types'
 
-const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
+let client: OpenAI | null = null
+function ensureClient(): OpenAI | null {
+  if (!client && process.env.OPENAI_API_KEY) {
+    client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
+  }
+  return client
+}
 
 function toOpenAI(messages: ChatMessage[]): OpenAI.Chat.ChatCompletionMessageParam[] {
   return messages.map((m) => ({ role: m.role, content: m.content })) as any
@@ -10,11 +16,12 @@ function toOpenAI(messages: ChatMessage[]): OpenAI.Chat.ChatCompletionMessagePar
 export const openaiAdapter: ProviderAdapter = {
   name: 'openai',
   async chatNonStreaming({ model, messages }) {
-    if (!process.env.OPENAI_API_KEY) {
+    const cli = ensureClient()
+    if (!cli) {
       // Deterministic stub when no key provided
       return { text: '[stub] hello from openai:' + model, usage: { input_tokens: 1, output_tokens: 2 } }
     }
-    const res = await client.chat.completions.create({
+    const res = await cli.chat.completions.create({
       model,
       messages: toOpenAI(messages),
       temperature: 0.3
@@ -24,13 +31,14 @@ export const openaiAdapter: ProviderAdapter = {
     return { text, usage }
   },
   async *chatStreaming({ model, messages }) {
-    if (!process.env.OPENAI_API_KEY) {
+    const cli = ensureClient()
+    if (!cli) {
       yield '[stub-stream] '
       yield 'streaming '
       yield 'response'
       return
     }
-    const stream = await client.chat.completions.create({
+    const stream = await cli.chat.completions.create({
       model,
       messages: toOpenAI(messages),
       stream: true,
