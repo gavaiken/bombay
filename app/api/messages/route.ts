@@ -106,12 +106,20 @@ await new Promise((r) => setTimeout(r, 200))
           })
           send('done', JSON.stringify({ messageId: saved.id, usage: { input_tokens: 0, output_tokens: text.length } }))
         } catch (err: unknown) {
-          // Log on server for diagnosis while keeping error envelope safe for clients and masking secrets
-          const msg = err && typeof err === 'object' && 'message' in err ? String((err as { message?: string }).message || 'error') : 'error'
-          const masked = msg.replace(/sk-[a-zA-Z0-9_-]+/g, 'sk-***').replace(/sk-ant-[a-zA-Z0-9_-]+/g, 'sk-ant-***')
-          const name = err && typeof err === 'object' && 'name' in err ? String((err as { name?: string }).name || 'Error') : 'Error'
-          console.error('messages SSE provider error', { name, message: masked })
-          send('error', JSON.stringify({ error: { code: 'PROVIDER_ERROR', message: 'An error occurred. Please try again.', details: null } }))
+          // Friendly error mapping + masked logs
+          const raw = err && typeof err === 'object' && 'message' in err ? String((err as { message?: string }).message || 'error') : 'error'
+          const masked = raw.replace(/sk-[a-zA-Z0-9_-]+/g, 'sk-***').replace(/sk-ant-[a-zA-Z0-9_-]+/g, 'sk-ant-***')
+          let code = 'PROVIDER_ERROR'
+          let userMessage = 'An error occurred. Please try again.'
+          if (/\b429\b/.test(raw) && /quota/i.test(raw)) {
+            code = 'QUOTA_EXCEEDED'
+            userMessage = 'Provider quota exceeded. Please try again later or switch models.'
+          } else if (/not_found_error/i.test(raw) && /model/i.test(raw)) {
+            code = 'MODEL_NOT_FOUND'
+            userMessage = 'Selected model is not available for this API key. Try another model.'
+          }
+          console.error('messages SSE provider error', { message: masked })
+          send('error', JSON.stringify({ error: { code, message: userMessage, details: null } }))
         } finally {
           try { controller.close() } catch {}
         }
