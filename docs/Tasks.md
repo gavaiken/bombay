@@ -823,7 +823,7 @@ The following sections contain additional tasks for future development and deplo
 
 ### Local Development Setup
 
-- [ ]  **Document Local Development Process**: Create clear instructions for running bombay locally.
+- [x]  **Document Local Development Process**: Create clear instructions for running bombay locally.
     
     **Acceptance Criteria:**
     
