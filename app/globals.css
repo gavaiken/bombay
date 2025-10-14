@@ -111,5 +111,18 @@ body {
 /* Minimal chat “tails” and alignment */
 .msg { display: flex; gap: 8px; }
 .msg .content { white-space: pre-wrap; word-break: break-word; }
-.msg-ai .content::before { content: "┌─"; color: var(--color-brand-300); margin-right: 8px; }
-.msg-user .content::after { content: "─┐"; color: var(--color-brand-500); margin-left: 8px; }
+/* Assistant tail on its own line above the text */
+.msg-ai .content::before {
+  content: "┌─\A";
+  white-space: pre;
+  display: block;
+  color: var(--color-brand-300);
+}
+/* User tail on its own line above the text, right-aligned */
+.msg-user .content::before {
+  content: "─┐\A";
+  white-space: pre;
+  display: block;
+  color: var(--color-brand-500);
+  text-align: right;
+}

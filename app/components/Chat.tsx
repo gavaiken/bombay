@@ -126,6 +126,8 @@ export default function Chat() {
   // Load messages when thread changes
   useEffect(() => {
     if (!currentThreadId) return
+    // Always clear typing when switching threads
+    setTyping(false)
     if (currentThreadId.startsWith('t_')) {
       setMessagesError(null)
       setMessages([])
@@ -147,6 +149,7 @@ export default function Chat() {
     setCurrentThreadTitle(t?.title || 'Untitled')
     setModel(t?.activeModel || model)
     setIsTrayOpen(false)
+    setTyping(false)
   }
 
   async function onChangeModel(next: string) {
@@ -467,10 +470,12 @@ export default function Chat() {
               {m.role === 'user' && <div className="select-none ml-1">🐸</div>}
             </div>
           ))}
-          <div data-testid="typing-indicator" hidden={!typing} aria-live="polite" className="msg msg-ai items-start">
-            <div className="select-none mr-1">🤖</div>
-            <div className="content animate-pulse-subtle">…</div>
-          </div>
+          {typing && (
+            <div data-testid="typing-indicator" aria-live="polite" className="msg msg-ai items-start">
+              <div className="select-none mr-1">🤖</div>
+              <div className="content animate-pulse-subtle">…</div>
+            </div>
+          )}
         </section>
 
         {/* Composer */}
