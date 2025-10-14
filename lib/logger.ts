@@ -12,14 +12,18 @@ async function send(level: LogLevel, message: string, context?: Record<string, u
   const token = getToken()
   if (!token) return
   try {
+    const ctrl = new AbortController()
+    const t = setTimeout(() => ctrl.abort(), 1500)
     await fetch(LOGTAIL_URL, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ dt: new Date().toISOString(), level, message, context })
-    })
+      body: JSON.stringify({ dt: new Date().toISOString(), level, message, context }),
+      signal: ctrl.signal
+    }).catch(() => {})
+    clearTimeout(t)
   } catch {}
 }
 

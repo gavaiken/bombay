@@ -1,3 +1,27 @@
+# Deployment
+
+## Persistent logging (24h+)
+
+We persist runtime logs to Better Stack (Logtail). This lets us inspect errors after the fact (no tailing on the CLI required).
+
+### Setup (once)
+1) Create a source at https://logs.betterstack.com and copy the Source token.
+2) In Vercel → Project → Settings → Environment Variables, add:
+   - LOGTAIL_SOURCE_TOKEN = <your-source-token> (Production + Preview)
+3) Redeploy.
+
+### What is logged
+- NextAuth logger events (error/warn/debug)
+- API errors from /api/messages (SSE provider errors)
+- You can also instrument more code by importing logError/logInfo from lib/logger.
+
+### Notes
+- Logging is non-blocking: requests to Logtail abort after ~1.5s and failures are ignored.
+- You can use a different sink (e.g., Sentry or Datadog log drain) by swapping lib/logger.ts implementation.
+
+## Vercel Log Drains (alternative)
+If you prefer a drain for platform logs, add a Log Drain integration in Vercel (Datadog, New Relic, Better Stack). This forwards function logs directly without code changes.
+
 Deployment Runbook (Vercel + Porkbun)
 
 This document outlines how to deploy the bombay.chat application to production. The target production environment is Vercel (for hosting the Next.js app and serverless functions), with the custom domain bombay.chat managed via Porkbun (domain registrar and DNS). Below are the steps and configurations for a successful deployment.
