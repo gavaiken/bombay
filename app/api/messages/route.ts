@@ -105,9 +105,12 @@ await new Promise((r) => setTimeout(r, 200))
             data: { threadId, role: 'assistant', contentText: text, provider: adapter.name, model }
           })
           send('done', JSON.stringify({ messageId: saved.id, usage: { input_tokens: 0, output_tokens: text.length } }))
-        } catch (err) {
-          // Log on server for diagnosis while keeping error envelope safe for clients
-          console.error('messages SSE provider error', err)
+        } catch (err: unknown) {
+          // Log on server for diagnosis while keeping error envelope safe for clients and masking secrets
+          const msg = err && typeof err === 'object' && 'message' in err ? String((err as { message?: string }).message || 'error') : 'error'
+          const masked = msg.replace(/sk-[a-zA-Z0-9_-]+/g, 'sk-***').replace(/sk-ant-[a-zA-Z0-9_-]+/g, 'sk-ant-***')
+          const name = err && typeof err === 'object' && 'name' in err ? String((err as { name?: string }).name || 'Error') : 'Error'
+          console.error('messages SSE provider error', { name, message: masked })
           send('error', JSON.stringify({ error: { code: 'PROVIDER_ERROR', message: 'An error occurred. Please try again.', details: null } }))
         } finally {
           try { controller.close() } catch {}

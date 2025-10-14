@@ -3,8 +3,12 @@ import type { ProviderAdapter, ChatMessage } from './types'
 
 let client: OpenAI | null = null
 function ensureClient(): OpenAI | null {
-  if (!client && process.env.OPENAI_API_KEY) {
-    client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
+  if (!client) {
+    const raw = process.env.OPENAI_API_KEY || ''
+    const apiKey = raw.replace(/[\r\n]/g, '').trim()
+    if (apiKey) {
+      client = new OpenAI({ apiKey })
+    }
   }
   return client
 }

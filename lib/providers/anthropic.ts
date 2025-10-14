@@ -3,8 +3,12 @@ import type { ProviderAdapter, ChatMessage } from './types'
 
 let client: Anthropic | null = null
 function ensureClient(): Anthropic | null {
-  if (!client && process.env.ANTHROPIC_API_KEY) {
-    client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
+  if (!client) {
+    const raw = process.env.ANTHROPIC_API_KEY || ''
+    const apiKey = raw.replace(/[\r\n]/g, '').trim()
+    if (apiKey) {
+      client = new Anthropic({ apiKey })
+    }
   }
   return client
 }
