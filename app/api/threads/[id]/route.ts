@@ -7,6 +7,7 @@ import { jsonError } from 'lib/errors'
 
 const PatchSchema = z.object({ activeModel: z.string().min(1) })
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function PATCH(request: Request, context: any) {
   const gate = await requireUser()
   if ('error' in gate) return gate.error

@@ -56,8 +56,9 @@ export default function Chat() {
         setCurrentThreadId(null)
         setCurrentThreadTitle('')
       }
-    } catch (e: any) {
-      setThreadsError(e?.message || 'Failed to load threads')
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Failed to load threads'
+      setThreadsError(msg)
     } finally {
       setIsLoadingThreads(false)
     }
@@ -100,11 +101,12 @@ export default function Chat() {
       const url = `/api/messages?threadId=${encodeURIComponent(currentThreadId)}`
       const res = await fetch(url, { cache: 'no-store' })
       if (!res.ok) throw new Error('Failed to load messages')
-      const data: any[] = await res.json()
-      const mapped: Message[] = data.map((m) => ({ id: m.id, role: m.role, contentText: m.content || m.contentText }))
+      const data = await res.json() as Array<{ id: string; role: 'user'|'assistant'|'system'; content?: string; contentText?: string }>
+      const mapped: Message[] = data.map((m) => ({ id: m.id, role: m.role, contentText: m.content ?? m.contentText ?? '' }))
       setMessages(mapped)
-    } catch (e: any) {
-      setMessagesError(e?.message || 'Failed to load messages')
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Failed to load messages'
+      setMessagesError(msg)
       setMessages([])
     } finally {
       setIsLoadingMessages(false)
@@ -174,8 +176,9 @@ export default function Chat() {
       setCurrentThreadTitle(t.title || 'Untitled')
       if (t.activeModel) setModel(t.activeModel)
       return t.id
-    } catch (e: any) {
-      setMessagesError(e?.message || 'Failed to create thread')
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Failed to create thread'
+      setMessagesError(msg)
       return null
     }
   }
@@ -270,7 +273,6 @@ export default function Chat() {
     setTimeout(() => composerRef.current?.focus(), 0)
   }
 
-  const activeThread = useMemo(() => threads.find(t => t.id === currentThreadId) || null, [threads, currentThreadId])
 
   return (
     <div
@@ -365,7 +367,7 @@ export default function Chat() {
           {(threadsError || messagesError) && (
             <div data-testid="error-state" role="alert" className="rounded-md border border-brand-500 text-brand-500 bg-panel p-3 flex items-center justify-between">
               <span>{threadsError || messagesError}</span>
-              <button className="rounded-md border border-brand-500 text-brand-500 px-2 py-1" onClick={() => { threadsError ? loadThreads() : reloadMessages() }}>Retry</button>
+              <button className="rounded-md border border-brand-500 text-brand-500 px-2 py-1" onClick={() => { if (threadsError) { void loadThreads() } else { void reloadMessages() } }}>Retry</button>
             </div>
           )}
           {messagesError && (

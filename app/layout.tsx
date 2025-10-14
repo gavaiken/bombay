@@ -56,6 +56,7 @@ export default async function RootLayout({
                 </button>
               </form>
             ) : (
+              // eslint-disable-next-line @next/next/no-html-link-for-pages
               <a href="/api/auth/signin" className="rounded-md border border-border px-2 py-1 focus:outline-none focus:ring-4 focus:ring-pink-400/40" aria-label="Sign in">
                 Sign in
               </a>

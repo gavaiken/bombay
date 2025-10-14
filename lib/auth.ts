@@ -17,7 +17,7 @@ export const authOptions: NextAuthOptions = {
 
 export function auth() {
   if (process.env.E2E_AUTH === '1') {
-    return Promise.resolve({ user: { email: 'e2e@example.com' } } as any)
+    return Promise.resolve({ user: { email: 'e2e@example.com' } } as unknown as import('next-auth').Session)
   }
   return getServerSession(authOptions)
 }
