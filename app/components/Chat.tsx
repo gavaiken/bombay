@@ -454,11 +454,23 @@ export default function Chat() {
           )}
 
           {messages.map((m) => (
-            <div key={m.id} data-testid="message" data-message-id={m.id} data-role={m.role}>
-              {m.contentText}
+            <div
+              key={m.id}
+              data-testid="message"
+              data-message-id={m.id}
+              data-role={m.role}
+              className={`msg ${m.role === 'assistant' ? 'msg-ai justify-start' : 'msg-user justify-end'} items-start`}
+              aria-label={m.role === 'assistant' ? 'assistant message' : 'user message'}
+            >
+              {m.role === 'assistant' && <div className="select-none mr-1">🤖</div>}
+              <div className="content">{m.contentText}</div>
+              {m.role === 'user' && <div className="select-none ml-1">🐸</div>}
             </div>
           ))}
-          <div data-testid="typing-indicator" hidden={!typing} aria-live="polite">Assistant is typing…</div>
+          <div data-testid="typing-indicator" hidden={!typing} aria-live="polite" className="msg msg-ai items-start">
+            <div className="select-none mr-1">🤖</div>
+            <div className="content animate-pulse-subtle">…</div>
+          </div>
         </section>
 
         {/* Composer */}
