@@ -169,9 +169,23 @@ export default function Chat() {
     setTyping(false)
   }
 
+  /**
+   * Handle model switching for the current thread
+   * 
+   * Updates both local state and persists the change to the database.
+   * When a model is switched mid-conversation, the next AI response will:
+   * 1. Use the new provider/model
+   * 2. Receive the full conversation history for context
+   * 3. Continue the conversation seamlessly
+   * 
+   * @param next - New model ID in format "provider:model-name"
+   */
   async function onChangeModel(next: string) {
     setModel(next)
+    // Skip API call if no active thread (local stub)
     if (!currentThreadId) return
+    
+    // Persist model change to database for the current thread
     await fetch(`/api/threads/${encodeURIComponent(currentThreadId)}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
@@ -423,6 +437,15 @@ export default function Chat() {
             </button>
             <h1 data-testid="thread-title">{currentThreadTitle || 'bombay'}</h1>
           </div>
+          {/* Model Selector - Static list of available AI models
+              Format: "provider:model-name" 
+              - test: No API costs, echoes back user input for testing
+              - openai: GPT models with API usage
+              - anthropic: Claude models with API usage
+              
+              Switching models mid-conversation preserves context by sending
+              the full message history to the new model.
+          */}
           <select
             data-testid="model-switcher"
             aria-label="Model selector"
