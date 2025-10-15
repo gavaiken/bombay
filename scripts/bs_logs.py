@@ -18,10 +18,10 @@ import argparse, json, os, sys, textwrap
 from typing import Iterable, List, Tuple, Optional
 import requests
 
-CONNECT_HOST=os.environ.get("BS_CONNECT_HOST")
-CONNECT_USER=os.environ.get("BS_CONNECT_USER")
-CONNECT_PASS=os.environ.get("BS_CONNECT_PASS")
-TABLE_PREFIX=os.environ.get("BS_TABLE_PREFIX")
+CONNECT_HOST=os.environ.get("BETTERSTACK_CONNECT_HOST")
+CONNECT_USER=os.environ.get("BETTERSTACK_CONNECT_USER")
+CONNECT_PASS=os.environ.get("BETTERSTACK_CONNECT_PASS")
+TABLE_PREFIX=os.environ.get("BETTERSTACK_TABLE_PREFIX")
 
 SQL_BASE = """
 SELECT dt, raw
@@ -289,7 +289,7 @@ def print_table(rows: List[Tuple[str, str, str, str, str, str]]):
 def main():
     if not all([CONNECT_HOST, CONNECT_USER, CONNECT_PASS, TABLE_PREFIX]):
         print("Error: One or more required environment variables are not set.", file=sys.stderr)
-        print("Please create a .env file with BS_CONNECT_HOST, BS_CONNECT_USER, BS_CONNECT_PASS, and BS_TABLE_PREFIX.", file=sys.stderr)
+        print("Please create a .env.local file with BETTERSTACK_CONNECT_HOST, BETTERSTACK_CONNECT_USER, BETTERSTACK_CONNECT_PASS, and BETTERSTACK_TABLE_PREFIX.", file=sys.stderr)
         sys.exit(1)
     ap = argparse.ArgumentParser(
         description="Query Better Stack logs with time/level and HTTP/Vercel filters.",
