@@ -4,7 +4,7 @@ Below is a sequential list of all tasks required to go from an empty project dir
 
 ## Urgent — Production Issues (Top Priority)
 
-- [ ] U6. Simplify chat header: remove 'models' section and use static model list
+- [x] U6. Simplify chat header: remove 'models' section and use static model list
   
   Acceptance Criteria:
   - Chat header shows only `chat title` - `model selector` (remove the separate 'models' section)
