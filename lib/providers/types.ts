@@ -1,7 +1,7 @@
 export type ChatMessage = { role: 'system' | 'user' | 'assistant'; content: string }
 
 export interface ProviderAdapter {
-  name: 'openai' | 'anthropic'
+  name: 'openai' | 'anthropic' | 'test'
   chatNonStreaming(opts: {
     model: string
     messages: ChatMessage[]

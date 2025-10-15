@@ -430,6 +430,7 @@ export default function Chat() {
             value={model}
             onChange={(e) => onChangeModel(e.target.value)}
           >
+            <option value="test:repeat-after-me">Test — Repeat After Me</option>
             <option value="openai:gpt-4o">OpenAI — gpt-4o</option>
             <option value="openai:gpt-4o-mini">OpenAI — gpt-4o-mini</option>
             <option value="anthropic:claude-3-5-haiku-20241022">Claude — 3.5 Haiku</option>
