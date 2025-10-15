@@ -15,6 +15,26 @@ We persist runtime logs to Better Stack (Logtail). This lets us inspect errors a
 - API errors from /api/messages (SSE provider errors)
 - You can also instrument more code by importing logError/logInfo from lib/logger.
 
+### Accessing production logs
+
+To view production logs, use the `scripts/bs_logs.py` script:
+
+```bash
+# View last 100 logs
+python scripts/bs_logs.py --limit 100
+
+# View logs from a specific time
+python scripts/bs_logs.py --limit 100 --since "2025-10-15T00:00:00Z"
+
+# Filter by error level and status codes
+python scripts/bs_logs.py --min-level error --status-class 5xx
+
+# View logs for specific API paths
+python scripts/bs_logs.py --path-like "/api" --contains "nextauth"
+```
+
+The script requires environment variables: `BETTERSTACK_CONNECT_HOST`, `BETTERSTACK_CONNECT_USER`, `BETTERSTACK_CONNECT_PASS`, and `BETTERSTACK_TABLE_PREFIX`. Add these to your `.env.local` file for log access.
+
 ### Notes
 - Logging is non-blocking: requests to Logtail abort after ~1.5s and failures are ignored.
 - You can use a different sink (e.g., Sentry or Datadog log drain) by swapping lib/logger.ts implementation.

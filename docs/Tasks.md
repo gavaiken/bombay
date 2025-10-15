@@ -20,7 +20,7 @@ Below is a sequential list of all tasks required to go from an empty project dir
   - Button uses the official NextAuth client signIn() flow; error state shows a readable message.
   - Verification: Manual sign-in on PROD succeeds.
 
-- [ ] U5. Persist runtime logs (24h+)
+- [x] U5. Persist runtime logs (24h+)
   
   Acceptance Criteria:
   - Server logs are persisted to a 3rd-party sink (e.g., Better Stack Logtail or Sentry) without manual tailing.
@@ -46,7 +46,7 @@ Below is a sequential list of all tasks required to go from an empty project dir
   - A pencil icon appears on hover in the thread list to rename; clicking opens a prompt and calls PATCH /api/threads/:id { title } for real threads or updates local state for stubs.
   - Verified by creating and renaming a thread in dev and prod.
 
-- [ ] P0. Prod: No assistant responses (SSE) after "Agent is typing…"
+- [x] P0. Prod: No assistant responses (SSE) after "Agent is typing…"
   
   Acceptance Criteria:
   - Sending a message on https://bombay.chat streams deltas and completes with a final assistant message (OpenAI path).
