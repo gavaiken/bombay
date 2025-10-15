@@ -13,7 +13,7 @@ Below is a sequential list of all tasks required to go from an empty project dir
   - Remove any existing code that fetches models dynamically from providers
   - Verification: Chat header is simplified and model switching works with static list
 
-- [ ] U4. PROD sign-in broken (NextAuth/Google) — fix
+- [x] U4. PROD sign-in broken (NextAuth/Google) — fix
   
   Acceptance Criteria:
   - Signing in on https://bombay.chat works end-to-end (no generic "something went wrong").
