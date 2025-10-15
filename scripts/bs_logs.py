@@ -36,8 +36,8 @@ def build_query(args) -> str:
     return "*"
 
 def fetch_logs(token: str, query: str, hours: int, limit: int, source_id: str | None) -> dict:
-    to = dt.datetime.utcnow()
-    frm = to - dt.timedelta(hours=hours)
+to = dt.datetime.now(dt.timezone.utc)
+frm = to - dt.timedelta(hours=hours)
 
     params = {
         "query": query,
@@ -63,7 +63,7 @@ def fetch_logs(token: str, query: str, hours: int, limit: int, source_id: str | 
         sys.exit(2)
 
 def to_iso(d: dt.datetime) -> str:
-    return d.replace(microsecond=0).isoformat() + "Z"
+    return d.astimezone(dt.timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
 
 def main():
     parser = argparse.ArgumentParser(description="Fetch Better Stack logs")
