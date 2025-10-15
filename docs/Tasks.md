@@ -9,7 +9,7 @@ Below is a sequential list of all tasks required to go from an empty project dir
   Acceptance Criteria:
   - Chat header shows only `chat title` - `model selector` (remove the separate 'models' section)
   - Model selector uses a static list of available models from OpenAI and Anthropic (no API calls)
-  - Static model list includes: gpt-4o, gpt-4o-mini, claude-3-5-sonnet-20241022, claude-3-5-haiku-20241022
+  - Static model list includes current available models: gpt-4o, gpt-4o-mini, claude-3-5-haiku-20241022, and one other Claude model from current API availability
   - Remove any existing code that fetches models dynamically from providers
   - Verification: Chat header is simplified and model switching works with static list
 

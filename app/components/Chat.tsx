@@ -415,30 +415,9 @@ export default function Chat() {
           >
             <option value="openai:gpt-4o">OpenAI — gpt-4o</option>
             <option value="openai:gpt-4o-mini">OpenAI — gpt-4o-mini</option>
-            <option value="anthropic:claude-3-5-sonnet">Claude — 3.5 Sonnet</option>
-            <option value="anthropic:claude-3-5-haiku">Claude — 3.5 Haiku</option>
+            <option value="anthropic:claude-3-5-haiku-20241022">Claude — 3.5 Haiku</option>
+            <option value="anthropic:claude-sonnet-4-20250514">Claude — Sonnet 4</option>
           </select>
-          <button
-            className="ml-2 rounded-md border border-border px-2 py-1 text-xs"
-            onClick={async () => {
-              try {
-                const res = await fetch('/api/providers/models', { cache: 'no-store' })
-                const json = await res.json()
-                const lines = [
-                  'OpenAI:',
-                  ...(json.openai || []).map((x: string) => `  - ${x}`),
-                  'Anthropic:',
-                  ...(json.anthropic || []).map((x: string) => `  - ${x}`)
-                ]
-                alert(lines.join('\n'))
-              } catch {
-                alert('Failed to fetch model list')
-              }
-            }}
-            aria-label="List provider models"
-          >
-            Models
-          </button>
         </header>
 
         {/* Messages/transcript */}
