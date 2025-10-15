@@ -10,6 +10,8 @@
     "test:e2e": "playwright test",
     "test:e2e:prod": "playwright test --config playwright.prod.config.ts",
     "test:e2e:prod:headed": "playwright test --config playwright.prod.config.ts --headed",
+    "test:e2e:prod:auth-setup": "MANUAL_AUTH=1 playwright test --project=setup --config playwright.prod.config.ts --headed",
+    "test:e2e:prod:authenticated": "playwright test --project=authenticated --config playwright.prod.config.ts",
     "db:seed": "prisma db seed",
     "test": "vitest run",
     "postinstall": "prisma generate"

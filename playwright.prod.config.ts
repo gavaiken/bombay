@@ -22,13 +22,35 @@ export default defineConfig({
   },
   // No webServer - testing against live production site
   projects: [
+    // Setup project for authentication
+    {
+      name: 'setup',
+      testMatch: '**/auth-setup.ts',
+      teardown: 'cleanup'
+    },
+    // Cleanup project
+    {
+      name: 'cleanup',
+      testMatch: '**/auth-cleanup.ts'
+    },
+    // Unauthenticated tests (existing)
     { 
-      name: 'chromium-prod', 
+      name: 'unauthenticated', 
+      testIgnore: '**/authenticated-*.spec.ts',
       use: { 
         ...devices['Desktop Chrome'],
-        // Slower navigation for production testing
         navigationTimeout: 30_000
-      } 
+      }
+    },
+    // Authenticated tests (require setup)
+    {
+      name: 'authenticated',
+      testMatch: '**/authenticated-*.spec.ts',
+      dependencies: ['setup'],
+      use: {
+        ...devices['Desktop Chrome'],
+        navigationTimeout: 30_000
+      }
     }
   ]
 });

@@ -13,16 +13,22 @@ We have two Playwright configurations:
 ### Basic Commands
 
 ```bash
+# Run unauthenticated tests (public pages, sign-in flow)
+npx playwright test --project=unauthenticated --config playwright.prod.config.ts
+
+# Setup authentication (run once)
+MANUAL_AUTH=1 npx playwright test --project=setup --config playwright.prod.config.ts --headed
+
+# Run authenticated tests (requires setup first)
+npx playwright test --project=authenticated --config playwright.prod.config.ts
+
 # Run all production tests
 npx playwright test --config playwright.prod.config.ts
-
-# Run production tests with visible browser (useful for OAuth)
-npx playwright test --config playwright.prod.config.ts --headed
 
 # Run specific test file
 npx playwright test --config playwright.prod.config.ts e2e-prod/p2-domain-safety.spec.ts
 
-# Run tests with debug mode
+# Debug mode
 npx playwright test --config playwright.prod.config.ts --debug
 ```
 
@@ -39,17 +45,43 @@ npx playwright test --config playwright.prod.config.ts --debug
 - Ensures no "Dangerous site" interstitials appear
 
 **R5.3: Production Smoke (`e2e-prod/r5.3-production-smoke.spec.ts`)**
-- Complete end-to-end production verification
+- Complete end-to-end production verification  
 - Tests authentication flow (requires manual OAuth completion)
 - Verifies chat interface functionality
 
-## Authentication in Production Tests
+**Authenticated Flow (`e2e-prod/authenticated-flow.spec.ts`)**
+- Full chat functionality with real authentication
+- Message sending and receiving with SSE streaming
+- Model switching and thread management  
+- Thread persistence and rename functionality
 
-Production tests use **real Google OAuth**, not mocked authentication. This means:
+## Authentication Strategies
 
-1. **Manual Authentication Required**: Run tests with `--headed` flag and complete OAuth flow manually when prompted
-2. **Session Persistence**: Once authenticated in a browser session, subsequent tests can reuse the session
-3. **Test Design**: Tests check for both authenticated and non-authenticated states
+### Recommended: Hybrid Approach
+
+We use a **three-tier testing strategy**:
+
+1. **Local Development**: Mocked auth (`E2E_AUTH=1`) for fast iteration
+2. **Production Unauthenticated**: Public pages and sign-in flow testing  
+3. **Production Authenticated**: Full feature testing with persistent sessions
+
+### Production Authentication Setup
+
+For testing authenticated features in production:
+
+```bash
+# One-time setup: Authenticate manually and save session
+MANUAL_AUTH=1 npx playwright test --project=setup --config playwright.prod.config.ts --headed
+
+# Ongoing: Run authenticated tests using saved session
+npx playwright test --project=authenticated --config playwright.prod.config.ts
+```
+
+**How it works:**
+1. `auth-setup.ts` handles initial OAuth flow (run once manually)
+2. Session saved to `playwright/.auth/user.json` (gitignored)
+3. `authenticated-*.spec.ts` tests reuse the saved session
+4. Session persists for weeks/months until Google expires it
 
 ### Authentication Flow Example
 

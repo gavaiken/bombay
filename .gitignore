@@ -29,6 +29,10 @@ logs/
 build/
 dist/
 
+# Playwright
+playwright/.auth/
+test-results/
+
 # Python (not used in app, but ignored for safety)
 __pycache__/
 *.py[cod]
