@@ -48,6 +48,24 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Mobile viewport fixes */
+@supports (height: 100dvh) {
+  html {
+    height: 100dvh;
+  }
+  body {
+    height: 100dvh;
+  }
+}
+
+/* Ensure composer stays at bottom on mobile */
+@media (max-width: 767px) {
+  [data-testid="chat-pane"] {
+    min-height: 100vh;
+    min-height: 100dvh;
+  }
+}
+
 /* Custom scrollbar for dark theme */
 [data-theme="dark"] ::-webkit-scrollbar {
   width: 6px;

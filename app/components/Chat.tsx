@@ -139,9 +139,26 @@ export default function Chat() {
   // Auto-scroll transcript
   useEffect(() => {
     if (transcriptRef.current) {
-      transcriptRef.current.scrollTop = transcriptRef.current.scrollHeight
+      // Use requestAnimationFrame to ensure DOM has updated
+      requestAnimationFrame(() => {
+        if (transcriptRef.current) {
+          transcriptRef.current.scrollTop = transcriptRef.current.scrollHeight
+        }
+      })
     }
   }, [messages, typing])
+
+  // Auto-scroll when thread changes
+  useEffect(() => {
+    if (transcriptRef.current && currentThreadId) {
+      // Scroll to bottom when thread changes
+      requestAnimationFrame(() => {
+        if (transcriptRef.current) {
+          transcriptRef.current.scrollTop = transcriptRef.current.scrollHeight
+        }
+      })
+    }
+  }, [currentThreadId])
 
   async function onSelectThread(id: string) {
     setCurrentThreadId(id)
@@ -398,7 +415,7 @@ export default function Chat() {
         </ul>
       </aside>
 
-      <main data-testid="chat-pane" role="main" className="flex flex-col">
+      <main data-testid="chat-pane" role="main" className="flex flex-col h-screen md:h-auto">
         <header className="flex items-center justify-between border-b p-3">
           <div className="flex items-center gap-2">
             <button className="md:hidden rounded-md border border-border px-2 py-1" aria-controls="thread-tray" aria-expanded={isTrayOpen} onClick={() => setIsTrayOpen(true)}>
@@ -427,7 +444,7 @@ export default function Chat() {
           role="log"
           aria-label="Chat messages"
           aria-live="polite"
-          className="flex-1 overflow-y-auto p-4 space-y-2"
+          className="flex-1 overflow-y-auto p-4 space-y-2 min-h-0"
         >
           {(threadsError || messagesError) && (
             <div data-testid="error-state" role="alert" className="rounded-md border border-brand-500 text-brand-500 bg-panel p-3 flex items-center justify-between">
@@ -479,7 +496,7 @@ export default function Chat() {
         </section>
 
         {/* Composer */}
-        <form data-testid="composer" className="sticky bottom-0 border-t bg-panel/80 backdrop-blur supports-[backdrop-filter]:bg-panel/60 p-4 md:p-3 flex gap-2" onSubmit={onSend}>
+        <form data-testid="composer" className="border-t bg-panel/80 backdrop-blur supports-[backdrop-filter]:bg-panel/60 p-4 md:p-3 flex gap-2 sticky bottom-0 md:static" onSubmit={onSend}>
           <label className="sr-only" htmlFor="composer-input">Message</label>
           <textarea
             id="composer-input"
