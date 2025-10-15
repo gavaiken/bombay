@@ -8,6 +8,8 @@
     "start": "next start",
     "lint": "next lint",
     "test:e2e": "playwright test",
+    "test:e2e:prod": "playwright test --config playwright.prod.config.ts",
+    "test:e2e:prod:headed": "playwright test --config playwright.prod.config.ts --headed",
     "db:seed": "prisma db seed",
     "test": "vitest run",
     "postinstall": "prisma generate"

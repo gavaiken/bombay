@@ -54,14 +54,14 @@ Below is a sequential list of all tasks required to go from an empty project dir
   - Switching models mid-thread continues to work; replies appear with the new model.
   - Verification: Manual smoke on production; entry added to docs/CHANGELOG.md.
 
-- [ ] P1. Prod: Surface provider errors in UI
+- [x] P1. Prod: Surface provider errors in UI
   
   Acceptance Criteria:
   - When the SSE stream emits an `error` event, the chat pane shows an inline error bubble (role="alert") with a Retry button.
   - Retry re-sends the last user message to the current thread/model.
   - E2E: Extend or add a spec that exercises error UI in stub mode, or an integration test asserts error path (already present) and UI is manually verified.
 
-- [ ] P2. Domain flagged by Google Safe Browsing
+- [x] P2. Domain flagged by Google Safe Browsing
   
   Acceptance Criteria:
   - Chrome no longer shows the "Dangerous site" interstitial for https://bombay.chat.
@@ -236,7 +236,7 @@ R5. Deployment and production smoke
   Acceptance Criteria:
   - Domain live over HTTPS; OAuth redirect configured and functional.
 
-- [ ] R5.3 Production smoke (real E2E)
+- [x] R5.3 Production smoke (real E2E)
   
   Acceptance Criteria:
   - Login with Google; create thread; send SSE message; optional model switch; results in CHANGELOG.
