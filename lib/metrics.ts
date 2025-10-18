@@ -31,6 +31,7 @@ const metricsStore = {
   dailyUsers: new Set<string>(),
   modelCounts: new Map<string, number>(),
   providerResponseTimes: new Map<string, { total: number; count: number }>(),
+  providerTTFT: new Map<string, { total: number; count: number }>(),
   tokenUsage: { input: 0, output: 0 },
   // Scopes metrics
   scopeToggleCount: 0,
@@ -127,6 +128,14 @@ export async function getUsageMetrics(): Promise<UsageMetrics & { avgScopesEnabl
       };
     }
 
+    const providerTTFT: Record<string, { avg: number; count: number }> = {};
+    for (const [provider, data] of metricsStore.providerTTFT.entries()) {
+      providerTTFT[provider] = {
+        avg: data.count > 0 ? data.total / data.count : 0,
+        count: data.count,
+      };
+    }
+
     // Compute scopes metrics
     let totalScopes = 0;
     let scopeSamples = 0;
@@ -155,6 +164,7 @@ export async function getUsageMetrics(): Promise<UsageMetrics & { avgScopesEnabl
       zeroScopePercent,
       scopeToggleCount: metricsStore.scopeToggleCount,
       recallUsage,
+      providerTTFT,
     };
   } catch (error) {
     console.warn('Error fetching metrics:', error);
@@ -174,6 +184,7 @@ export async function getUsageMetrics(): Promise<UsageMetrics & { avgScopesEnabl
       zeroScopePercent: 0,
       scopeToggleCount: metricsStore.scopeToggleCount,
       recallUsage: {},
+      providerTTFT: {},
     };
   }
 }
@@ -218,6 +229,14 @@ export const Metrics = {
   trackResponseTime: (provider: string, timeMs: number) =>
     recordMetric({
       event: 'provider_response_time',
+      value: timeMs,
+      metadata: { provider },
+    }),
+
+  // Track time-to-first-token (TTFT)
+  trackTTFT: (provider: string, timeMs: number) =>
+    recordMetric({
+      event: 'provider_ttft',
       value: timeMs,
       metadata: { provider },
     }),

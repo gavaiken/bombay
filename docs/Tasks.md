@@ -460,7 +460,7 @@ This section breaks down implementing Scopes per docs/Scopes Feature - PRD.md an
 
 ### Phase S10 — Performance and Rollout Verification
 
-- [ ] S10.1 Latency budget verification
+- [x] S10.1 Latency budget verification
   
   Acceptance Criteria:
   - Measure added overhead for 0/1/2+ scopes; ≤ ~500ms median delta; record time-to-first-token; CHANGELOG note.
