@@ -8,6 +8,7 @@ import { jsonError } from 'lib/errors'
 import { CreateThreadSchema } from 'lib/schemas'
 import { checkRateLimit, RATE_LIMITS } from 'lib/rate-limit'
 import { logEvent, Events } from 'lib/logger'
+import { Metrics } from 'lib/metrics'
 
 export async function GET() {
   const gate = await requireUser()
@@ -64,6 +65,10 @@ export async function POST(req: NextRequest) {
       threadId: created.id,
       model: created.activeModel
     });
+    
+    // Track metrics
+    await Metrics.trackActiveUser(userId);
+    await Metrics.trackThreadCreated(userId, created.activeModel);
     
     return new Response(JSON.stringify(created), { headers: { 'Content-Type': 'application/json' } })
   } catch (e) {

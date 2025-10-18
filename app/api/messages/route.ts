@@ -8,6 +8,7 @@ import { jsonError } from 'lib/errors'
 import { SendMessageSchema } from 'lib/schemas'
 import { checkRateLimit, RATE_LIMITS } from 'lib/rate-limit'
 import { logEvent, Events } from 'lib/logger'
+import { Metrics } from 'lib/metrics'
 
 export async function GET(req: NextRequest) {
   const gate = await requireUser()
@@ -111,6 +112,11 @@ export async function POST(req: NextRequest) {
       threadId,
       model: thread.activeModel || 'unknown'
     });
+    
+    // Track metrics
+    await Metrics.trackActiveUser(userId);
+    await Metrics.trackMessage(userId, thread.activeModel || 'unknown');
+    await Metrics.trackModelUsage(thread.activeModel || 'unknown');
 
     if (mode === 'json') {
       // Test-only non-streaming validation path
@@ -158,10 +164,20 @@ await new Promise((r) => setTimeout(r, 200))
           const { buildPromptWithTruncation } = await import('lib/context')
           const prior = await prisma.message.findMany({ where: { threadId }, orderBy: { createdAt: 'asc' } })
           const messages = buildPromptWithTruncation({ model, prior, currentUserText: content })
+          
+          // Track response time
+          const responseStart = Date.now();
+          
           for await (const chunk of adapter.chatStreaming({ model, messages })) {
             text += chunk
             send('delta', JSON.stringify(chunk))
           }
+          
+          const responseTime = Date.now() - responseStart;
+          
+          // Track provider response time metrics
+          await Metrics.trackResponseTime(adapter.name, responseTime);
+          
           const saved = await prisma.message.create({
             data: { threadId, role: 'assistant', contentText: text, provider: adapter.name, model }
           })

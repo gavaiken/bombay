@@ -285,7 +285,7 @@ Based on comprehensive analysis of PRD.md, Design.md, and supporting documentati
   - Use consistent JSON log format with timestamp, level, event, userId fields
   - Client Verification: Production logs show structured events in Logtail
 
-- [ ] OBS.2 Add basic usage metrics collection
+- [x] OBS.2 Add basic usage metrics collection
   
   Acceptance Criteria:
   - Track token usage per user/session in aggregate (no individual message content)
