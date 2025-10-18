@@ -380,7 +380,7 @@ This section breaks down implementing Scopes per docs/Scopes Feature - PRD.md an
   Acceptance Criteria:
   - When usedScopes non-empty, render prefix “Recalled from: {Scope(s)} 🛈”; data-testid=scope-annotation; supports multi-scope.
 
-- [ ] S5.3 Quick action: “Exclude {Scope}”
+- [x] S5.3 Quick action: “Exclude {Scope}”
   
   Acceptance Criteria:
   - Inline action disables that scope immediately and updates server; next assistant reply reflects change.
