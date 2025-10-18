@@ -43,3 +43,4 @@
 - 2025-10-18: Scopes S1.1 — Added Thread.activeScopeKeys String[] to Prisma schema, default []. Threads API conditionally includes `activeScopeKeys` when feature flag enabled. Integration test added at tests/integration/scopes.threads.api.int.test.ts (uses computed default array).
 - 2025-10-18: Scopes S1.3 — Added Message.metaJson Json? for attribution (usedScopes, sources). Update docs/Database.md. Migration required in dev/prod before usage.
 - 2025-10-18: Scopes S1.4 — Seed: Added a "Scopes Sample" thread with Work/Personal/Health tagged notes for dev seeding. Run `npm run db:seed` to populate.
+- 2025-10-18: Scopes S2.1 — Extended Zod Thread schema to include optional activeScopeKeys and UpdateThreadSchema to accept activeScopeKeys. Added unit tests.

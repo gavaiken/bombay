@@ -48,11 +48,12 @@ export const UpdateThreadSchema = z.object({
   activeModel: z.string().min(1, 'Active model is required').refine(
     (model) => isValidModel(model),
     'Invalid model specified'
-  ),
+  ).optional(),
   title: z.string()
     .max(MAX_THREAD_TITLE_LENGTH, `Thread title must be ${MAX_THREAD_TITLE_LENGTH} characters or less`)
-    .optional()
-});
+    .optional(),
+  activeScopeKeys: z.array(z.string()).optional()
+}).refine((d) => d.activeModel || d.title || d.activeScopeKeys, { message: 'At least one field is required' });
 
 export const SendMessageSchema = z.object({
   threadId: z.string().cuid('Invalid thread ID format'),

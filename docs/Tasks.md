@@ -293,7 +293,7 @@ This section breaks down implementing Scopes per docs/Scopes Feature - PRD.md an
 
 ### Phase S2 — API Contract and Zod Schemas
 
-- [ ] S2.1 Extend Thread API for scopes
+- [x] S2.1 Extend Thread API for scopes
   
   Acceptance Criteria:
   - Zod Thread schema includes activeScopeKeys: string[]; UpdateThread allows partial update with activeScopeKeys.
