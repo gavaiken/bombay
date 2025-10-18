@@ -85,6 +85,10 @@ export const Events = {
   CONTEXT_TRUNCATED: 'context.truncated',
   RATE_LIMITED: 'rate.limited',
   API_ERROR: 'api.error',
+  // Scopes-related events (S8.1)
+  SCOPE_TOGGLED: 'scope.toggled',
+  SCOPE_CONSENT: 'scope.consent',
+  RECALL_USED: 'recall.used',
 } as const;
 
 export type EventType = typeof Events[keyof typeof Events];

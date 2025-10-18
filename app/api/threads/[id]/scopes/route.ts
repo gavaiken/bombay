@@ -56,6 +56,13 @@ export async function POST(req: NextRequest, context: { params: { id: string } }
     } catch {
       // ignore if column not present yet
     }
+
+    // Structured log + metrics (S8.1/S8.2)
+    const { logEvent, Events } = await import('lib/logger')
+    const { Metrics } = await import('lib/metrics')
+    await logEvent(Events.SCOPE_TOGGLED, 'info', { userId, threadId: tid, activeCount: activeScopeKeys.length, scopeKeys: activeScopeKeys })
+    await Metrics.trackScopeToggle(userId, tid, activeScopeKeys.length)
+
     return new Response(JSON.stringify({ id: tid, activeScopeKeys }), { headers: { 'Content-Type': 'application/json' } })
   } catch (e) {
     return jsonError('INTERNAL_ERROR', 'Failed to update scopes', 500)

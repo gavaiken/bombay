@@ -49,6 +49,10 @@ export async function POST(req: NextRequest, context: { params: { id: string } }
       // ignore if table not present
     }
 
+    // Structured log + metrics (S8.1/S8.2)
+    const { logEvent, Events } = await import('lib/logger')
+    await logEvent(Events.SCOPE_CONSENT, 'info', { userId, threadId: tid, scopeKey, consent })
+
     return new Response(JSON.stringify({ id: tid, scopeKey, consented: consent }), { headers: { 'Content-Type': 'application/json' } })
   } catch (e) {
     return jsonError('INTERNAL_ERROR', 'Failed to record consent', 500)

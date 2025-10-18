@@ -431,12 +431,12 @@ This section breaks down implementing Scopes per docs/Scopes Feature - PRD.md an
 
 ### Phase S8 — Observability and Metrics
 
-- [ ] S8.1 Structured logs for scopes
+- [x] S8.1 Structured logs for scopes
   
   Acceptance Criteria:
   - Log scope_toggled, scope_consent, recall_used with scope keys only (no content); respects existing logging sink.
 
-- [ ] S8.2 Metrics
+- [x] S8.2 Metrics
   
   Acceptance Criteria:
   - Track toggles/session, avg scopes enabled per thread, % zero-scope chats, latency deltas; admin/ops visibility.

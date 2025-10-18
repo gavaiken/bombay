@@ -32,6 +32,11 @@ const metricsStore = {
   modelCounts: new Map<string, number>(),
   providerResponseTimes: new Map<string, { total: number; count: number }>(),
   tokenUsage: { input: 0, output: 0 },
+  // Scopes metrics
+  scopeToggleCount: 0,
+  threadScopeCounts: new Map<string, number>(),
+  zeroScopeThreads: new Set<string>(),
+  recallUsage: new Map<string, number>(),
 };
 
 /**
@@ -89,10 +94,17 @@ function updateInMemoryMetrics(event: MetricEvent): void {
   }
 }
 
+// Scopes metrics helpers (S8.2)
+function updateThreadScopeCount(threadId: string, count: number) {
+  metricsStore.threadScopeCounts.set(threadId, count);
+  if (count === 0) metricsStore.zeroScopeThreads.add(threadId);
+  else metricsStore.zeroScopeThreads.delete(threadId);
+}
+
 /**
  * Get current usage metrics
  */
-export async function getUsageMetrics(): Promise<UsageMetrics> {
+export async function getUsageMetrics(): Promise<UsageMetrics & { avgScopesEnabledPerThread: number; zeroScopePercent: number; scopeToggleCount: number; recallUsage: Record<string, number> }> {
   try {
     // Get persistent counts from database
     const [userCount, messageCount, threadCount] = await Promise.all([
@@ -115,6 +127,19 @@ export async function getUsageMetrics(): Promise<UsageMetrics> {
       };
     }
 
+    // Compute scopes metrics
+    let totalScopes = 0;
+    let scopeSamples = 0;
+    for (const [, n] of metricsStore.threadScopeCounts.entries()) {
+      totalScopes += n;
+      scopeSamples += 1;
+    }
+    const avgScopesEnabledPerThread = scopeSamples > 0 ? totalScopes / scopeSamples : 0;
+    const zeroScopePercent = scopeSamples > 0 ? (metricsStore.zeroScopeThreads.size / scopeSamples) * 100 : 0;
+
+    const recallUsage: Record<string, number> = {};
+    for (const [k, v] of metricsStore.recallUsage.entries()) recallUsage[k] = v;
+
     return {
       totalUsers: userCount,
       totalMessages: messageCount,
@@ -126,6 +151,10 @@ export async function getUsageMetrics(): Promise<UsageMetrics> {
         totalInputTokens: metricsStore.tokenUsage.input,
         totalOutputTokens: metricsStore.tokenUsage.output,
       },
+      avgScopesEnabledPerThread,
+      zeroScopePercent,
+      scopeToggleCount: metricsStore.scopeToggleCount,
+      recallUsage,
     };
   } catch (error) {
     console.warn('Error fetching metrics:', error);
@@ -141,6 +170,10 @@ export async function getUsageMetrics(): Promise<UsageMetrics> {
         totalInputTokens: metricsStore.tokenUsage.input,
         totalOutputTokens: metricsStore.tokenUsage.output,
       },
+      avgScopesEnabledPerThread: 0,
+      zeroScopePercent: 0,
+      scopeToggleCount: metricsStore.scopeToggleCount,
+      recallUsage: {},
     };
   }
 }
@@ -218,6 +251,26 @@ export const Metrics = {
       event: 'daily_active_user',
       value: 1,
     });
+  },
+
+  // Scopes metrics (S8.2)
+  trackScopeToggle: (userId: string, threadId: string, activeCount: number) => {
+    metricsStore.scopeToggleCount += 1;
+    updateThreadScopeCount(threadId, activeCount);
+    return recordMetric({ event: 'scope_toggle', value: 1, metadata: { threadId, activeCount } });
+  },
+
+  trackScopeState: (threadId: string, activeCount: number) => {
+    updateThreadScopeCount(threadId, activeCount);
+    return Promise.resolve();
+  },
+
+  trackRecallUsed: (usedScopes: string[]) => {
+    for (const k of usedScopes) {
+      const cur = metricsStore.recallUsage.get(k) || 0;
+      metricsStore.recallUsage.set(k, cur + 1);
+    }
+    return recordMetric({ event: 'recall_used', value: usedScopes.length, metadata: { usedScopes } });
   },
 };
 

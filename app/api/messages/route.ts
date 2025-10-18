@@ -190,6 +190,11 @@ export async function POST(req: NextRequest) {
             } catch {
               saved = await prisma.message.create({ data: { threadId, role: 'assistant', contentText: 'Okay — working on it…', provider: adapter ? adapter.name : 'test', model } })
             }
+            // Log recall usage (S8.1/S8.2)
+            const { logEvent, Events } = await import('lib/logger')
+            const { Metrics } = await import('lib/metrics')
+            await logEvent(Events.RECALL_USED, 'info', { userId, threadId, usedScopes })
+            await Metrics.trackRecallUsed(usedScopes)
             send('done', JSON.stringify({ messageId: saved.id, usage: { input_tokens: 0, output_tokens: 0 }, usedScopes }))
             controller.close()
             return
@@ -225,6 +230,11 @@ export async function POST(req: NextRequest) {
           } catch {
             saved = await prisma.message.create({ data: { threadId, role: 'assistant', contentText: text, provider: adapter.name, model } })
           }
+          // Log recall usage (S8.1/S8.2)
+          const { logEvent, Events } = await import('lib/logger')
+          const { Metrics } = await import('lib/metrics')
+          await logEvent(Events.RECALL_USED, 'info', { userId, threadId, usedScopes })
+          await Metrics.trackRecallUsed(usedScopes)
           send('done', JSON.stringify({ messageId: saved.id, usage: { input_tokens: 0, output_tokens: text.length }, usedScopes }))
         } catch (err: unknown) {
           // Friendly error mapping + masked logs
