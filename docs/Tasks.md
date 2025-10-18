@@ -315,17 +315,6 @@ Based on senior engineering feedback, these tasks are organized into phases that
     - Proper user/thread ownership validation; 403 if not owned by user
     - **Client Verification:** User messages are saved to database and persist
 
-- [ ] 8) OpenAI adapter implementation (non-streaming)
-    
-    **Acceptance Criteria:**
-    - Install openai SDK dependency
-    - Create server-only OpenAI adapter module implementing ProviderAdapter interface
-    - Add OPENAI_API_KEY to environment variables
-    - Implement adapter.chat() for gpt-4o and gpt-4o-mini models
-    - POST /api/messages triggers OpenAI call and returns assistant message (non-streaming first)
-    - Proper error envelope on provider failure; never expose raw API errors
-    - **Client Verification:** Client can send message and receive OpenAI response
-
 - [x] 9) Database seeding for development
     
     **Acceptance Criteria:**
