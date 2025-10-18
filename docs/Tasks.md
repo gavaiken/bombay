@@ -404,7 +404,7 @@ This section breaks down implementing Scopes per docs/Scopes Feature - PRD.md an
   Acceptance Criteria:
   - With all OFF, personal queries produce no recalled data; no scope annotations; assertions verify absence.
 
-- [ ] S7.2 Scoped recall accuracy
+- [x] S7.2 Scoped recall accuracy
   
   Acceptance Criteria:
   - With only Work ON (Personal has matching data), answer uses only Work; usedScopes === ["work"].
@@ -414,7 +414,7 @@ This section breaks down implementing Scopes per docs/Scopes Feature - PRD.md an
   Acceptance Criteria:
   - OFF → ask (no recall); enable Health → ask (recall present); disable again → next answer excludes Health.
 
-- [ ] S7.4 Consent prompt behavior
+- [x] S7.4 Consent prompt behavior
   
   Acceptance Criteria:
   - First enable prompts; accepted once per thread; new thread prompts again.
@@ -424,7 +424,7 @@ This section breaks down implementing Scopes per docs/Scopes Feature - PRD.md an
   Acceptance Criteria:
   - Redaction rules mask PII/secrets before prompt and UI; tests include seeded sensitive strings.
 
-- [ ] S7.6 No cross-scope leakage
+- [x] S7.6 No cross-scope leakage
   
   Acceptance Criteria:
   - Disabled scope content never appears even when highly relevant; logs/metrics show only enabled scopes accessed.
