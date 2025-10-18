@@ -36,3 +36,55 @@ export async function logInfo(message: string, context?: Record<string, unknown>
   console.log(message, context || {})
   await send('info', message, context)
 }
+
+export async function logWarn(message: string, context?: Record<string, unknown>) {
+  console.warn(message, context || {})
+  await send('warn', message, context)
+}
+
+// Structured event logging for key application events
+export interface EventContext {
+  userId?: string;
+  threadId?: string;
+  provider?: string;
+  model?: string;
+  tokenCount?: number;
+  latencyMs?: number;
+  userAgent?: string;
+  ip?: string;
+}
+
+export async function logEvent(
+  event: string,
+  level: LogLevel = 'info',
+  context?: EventContext
+) {
+  const logData = {
+    event,
+    timestamp: new Date().toISOString(),
+    level,
+    ...context
+  };
+  
+  // Console output for development
+  const logFn = level === 'error' ? console.error : level === 'warn' ? console.warn : console.log;
+  logFn(`[${event}]`, logData);
+  
+  await send(level, `Event: ${event}`, logData);
+}
+
+// Convenience methods for common events
+export const Events = {
+  USER_SIGNED_IN: 'user.signed_in',
+  USER_SIGNED_OUT: 'user.signed_out',
+  THREAD_CREATED: 'thread.created',
+  THREAD_UPDATED: 'thread.updated',
+  MESSAGE_SENT: 'message.sent',
+  MESSAGE_RECEIVED: 'message.received',
+  PROVIDER_ERROR: 'provider.error',
+  CONTEXT_TRUNCATED: 'context.truncated',
+  RATE_LIMITED: 'rate.limited',
+  API_ERROR: 'api.error',
+} as const;
+
+export type EventType = typeof Events[keyof typeof Events];

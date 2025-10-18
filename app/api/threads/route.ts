@@ -7,6 +7,7 @@ import { requireUser } from 'lib/authz'
 import { jsonError } from 'lib/errors'
 import { CreateThreadSchema } from 'lib/schemas'
 import { checkRateLimit, RATE_LIMITS } from 'lib/rate-limit'
+import { logEvent, Events } from 'lib/logger'
 
 export async function GET() {
   const gate = await requireUser()
@@ -56,6 +57,14 @@ export async function POST(req: NextRequest) {
       },
       select: { id: true, title: true, activeModel: true, createdAt: true, updatedAt: true }
     })
+    
+    // Log thread creation
+    await logEvent(Events.THREAD_CREATED, 'info', {
+      userId,
+      threadId: created.id,
+      model: created.activeModel
+    });
+    
     return new Response(JSON.stringify(created), { headers: { 'Content-Type': 'application/json' } })
   } catch (e) {
     return jsonError('INTERNAL_ERROR', 'Failed to create thread', 500)

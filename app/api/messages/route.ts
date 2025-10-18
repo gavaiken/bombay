@@ -7,6 +7,7 @@ import { requireUser } from 'lib/authz'
 import { jsonError } from 'lib/errors'
 import { SendMessageSchema } from 'lib/schemas'
 import { checkRateLimit, RATE_LIMITS } from 'lib/rate-limit'
+import { logEvent, Events } from 'lib/logger'
 
 export async function GET(req: NextRequest) {
   const gate = await requireUser()
@@ -89,6 +90,11 @@ export async function POST(req: NextRequest) {
     })
     
     if (!rateLimit.success) {
+      // Log rate limiting
+      await logEvent(Events.RATE_LIMITED, 'warn', {
+        userId,
+        threadId
+      });
       return jsonError('RATE_LIMITED', 'Too many messages. Please wait before sending again.', 429)
     }
     // Ownership check
@@ -98,6 +104,13 @@ export async function POST(req: NextRequest) {
     }
     // Persist user message
     await prisma.message.create({ data: { threadId, role: 'user', contentText: content } })
+    
+    // Log message sent
+    await logEvent(Events.MESSAGE_SENT, 'info', {
+      userId,
+      threadId,
+      model: thread.activeModel || 'unknown'
+    });
 
     if (mode === 'json') {
       // Test-only non-streaming validation path
