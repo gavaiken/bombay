@@ -465,7 +465,7 @@ This section breaks down implementing Scopes per docs/Scopes Feature - PRD.md an
   Acceptance Criteria:
   - Measure added overhead for 0/1/2+ scopes; ≤ ~500ms median delta; record time-to-first-token; CHANGELOG note.
 
-- [ ] S10.2 Progressive rollout
+- [x] S10.2 Progressive rollout
   
   Acceptance Criteria:
   - Enable behind flag in preview; smoke zero/one/multi-scope flows; then enable in production with monitoring.
