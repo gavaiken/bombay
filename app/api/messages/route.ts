@@ -99,7 +99,7 @@ export async function POST(req: NextRequest) {
       return jsonError('RATE_LIMITED', 'Too many messages. Please wait before sending again.', 429)
     }
     // Ownership check and get thread model
-    const thread = await prisma.thread.findFirst({ where: { id: threadId, userId }, select: { id: true, activeModel: true } })
+    const thread = await prisma.thread.findFirst({ where: { id: threadId, userId }, select: { id: true, activeModel: true, activeScopeKeys: true } })
     if (!thread) {
       return jsonError('FORBIDDEN', 'Forbidden', 403)
     }
@@ -132,19 +132,26 @@ export async function POST(req: NextRequest) {
       if (!adapter) {
         return jsonError('VALIDATION_ERROR', 'Unsupported model', 400)
       }
-      const { buildPromptWithTruncation } = await import('lib/context')
-      const { getProviderModelName } = await import('lib/models')
-      const prior = await prisma.message.findMany({ where: { threadId }, orderBy: { createdAt: 'asc' } })
-      const messages = await buildPromptWithTruncation({ 
-        model: getProviderModelName(selectedModel), 
-        prior, 
-        currentUserText: content,
-        userId 
-      })
-      const res = await adapter.chatNonStreaming({ model: getProviderModelName(selectedModel), messages })
-      const saved = await prisma.message.create({
-        data: { threadId, role: 'assistant', contentText: res.text, provider: adapter.name, model: getProviderModelName(selectedModel), usageJson: res.usage ?? undefined }
-      })
+          const { buildPromptWithTruncation, buildScopedContext } = await import('lib/context')
+          const { getProviderModelName } = await import('lib/models')
+          const prior = await prisma.message.findMany({ where: { threadId }, orderBy: { createdAt: 'asc' } })
+          const modelName = getProviderModelName(selectedModel)
+          let messages = await buildPromptWithTruncation({ model: modelName, prior, currentUserText: content, userId })
+          let usedScopes: string[] = []
+          if (process.env.NEXT_PUBLIC_SCOPES_ENABLED === '1' || process.env.NEXT_PUBLIC_SCOPES_ENABLED === 'true') {
+            const scoped = await buildScopedContext({ model: modelName, prior, currentUserText: content, userId, threadId, enabledScopeKeys: thread.activeScopeKeys || [] })
+            messages = scoped.messages
+            usedScopes = scoped.usedScopes
+          }
+          const res = await adapter.chatNonStreaming({ model: modelName, messages })
+          let saved: any
+          try {
+            saved = await prisma.message.create({
+              data: { threadId, role: 'assistant', contentText: res.text, provider: adapter.name, model: modelName, usageJson: res.usage ?? undefined, metaJson: usedScopes.length ? { usedScopes } : undefined } as any
+            })
+          } catch {
+            saved = await prisma.message.create({ data: { threadId, role: 'assistant', contentText: res.text, provider: adapter.name, model: modelName } })
+          }
       return new Response(JSON.stringify(saved), { headers: { 'Content-Type': 'application/json' } })
     }
 
@@ -164,22 +171,38 @@ export async function POST(req: NextRequest) {
           let text = ''
           if (process.env.E2E_STUB_PROVIDER === '1' || !adapter || !adapter.chatStreaming) {
             // Deterministic stub for E2E and when adapter/streaming unavailable
+            let usedScopes: string[] = []
+            if (process.env.NEXT_PUBLIC_SCOPES_ENABLED === '1' || process.env.NEXT_PUBLIC_SCOPES_ENABLED === 'true') {
+              const { buildScopedContext } = await import('lib/context')
+              const prior = await prisma.message.findMany({ where: { threadId }, orderBy: { createdAt: 'asc' } })
+              const scoped = await buildScopedContext({ model, prior, currentUserText: content, userId, threadId, enabledScopeKeys: thread.activeScopeKeys || [] })
+              usedScopes = scoped.usedScopes
+            }
             send('delta', JSON.stringify('Okay — '))
-await new Promise((r) => setTimeout(r, 200))
+            await new Promise((r) => setTimeout(r, 200))
             send('delta', JSON.stringify('working on it…'))
             await new Promise((r) => setTimeout(r, 60))
-            send('done', JSON.stringify({ messageId: 'm_temp', usage: { input_tokens: 0, output_tokens: 0 }, usedScopes: [] }))
+            let saved: any
+            try {
+              saved = await prisma.message.create({
+                data: { threadId, role: 'assistant', contentText: 'Okay — working on it…', provider: adapter ? adapter.name : 'test', model, metaJson: usedScopes.length ? { usedScopes } : undefined } as any
+              })
+            } catch {
+              saved = await prisma.message.create({ data: { threadId, role: 'assistant', contentText: 'Okay — working on it…', provider: adapter ? adapter.name : 'test', model } })
+            }
+            send('done', JSON.stringify({ messageId: saved.id, usage: { input_tokens: 0, output_tokens: 0 }, usedScopes }))
             controller.close()
             return
           }
-          const { buildPromptWithTruncation } = await import('lib/context')
+          const { buildPromptWithTruncation, buildScopedContext } = await import('lib/context')
           const prior = await prisma.message.findMany({ where: { threadId }, orderBy: { createdAt: 'asc' } })
-          const messages = await buildPromptWithTruncation({ 
-            model, 
-            prior, 
-            currentUserText: content,
-            userId 
-          })
+          let messages = await buildPromptWithTruncation({ model, prior, currentUserText: content, userId })
+          let usedScopes: string[] = []
+          if (process.env.NEXT_PUBLIC_SCOPES_ENABLED === '1' || process.env.NEXT_PUBLIC_SCOPES_ENABLED === 'true') {
+            const scoped = await buildScopedContext({ model, prior, currentUserText: content, userId, threadId, enabledScopeKeys: thread.activeScopeKeys || [] })
+            messages = scoped.messages
+            usedScopes = scoped.usedScopes
+          }
           
           // Track response time
           const responseStart = Date.now();
@@ -194,10 +217,15 @@ await new Promise((r) => setTimeout(r, 200))
           // Track provider response time metrics
           await Metrics.trackResponseTime(adapter.name, responseTime);
           
-          const saved = await prisma.message.create({
-            data: { threadId, role: 'assistant', contentText: text, provider: adapter.name, model }
-          })
-          send('done', JSON.stringify({ messageId: saved.id, usage: { input_tokens: 0, output_tokens: text.length }, usedScopes: [] }))
+          let saved: any
+          try {
+            saved = await prisma.message.create({
+              data: { threadId, role: 'assistant', contentText: text, provider: adapter.name, model, metaJson: usedScopes.length ? { usedScopes } : undefined } as any
+            })
+          } catch {
+            saved = await prisma.message.create({ data: { threadId, role: 'assistant', contentText: text, provider: adapter.name, model } })
+          }
+          send('done', JSON.stringify({ messageId: saved.id, usage: { input_tokens: 0, output_tokens: text.length }, usedScopes }))
         } catch (err: unknown) {
           // Friendly error mapping + masked logs
           const raw = err && typeof err === 'object' && 'message' in err ? String((err as { message?: string }).message || 'error') : 'error'

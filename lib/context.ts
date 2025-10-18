@@ -142,3 +142,26 @@ export async function buildPromptWithTruncation(opts: {
   
   return result
 }
+
+export async function buildScopedContext(opts: {
+  model: string
+  prior: Message[]
+  currentUserText?: string
+  userId: string
+  threadId: string
+  enabledScopeKeys: string[]
+}): Promise<{ messages: ProviderMessage[]; usedScopes: string[] }> {
+  // Build base prompt (truncation without extra context)
+  const base = await buildPromptWithTruncation({ model: opts.model, prior: opts.prior, currentUserText: opts.currentUserText, userId: opts.userId })
+  // If no scopes enabled, return base
+  if (!opts.enabledScopeKeys || opts.enabledScopeKeys.length === 0) {
+    return { messages: base, usedScopes: [] }
+  }
+  const { recallProvider } = await import('./recall')
+  const recall = await recallProvider.getScopedContext({ userId: opts.userId, threadId: opts.threadId, enabledScopeKeys: opts.enabledScopeKeys, query: opts.currentUserText })
+  const contextLines = recall.snippets.map((s) => `(${s.scopeKey}) ${s.content}`)
+  const preface: ProviderMessage = { role: 'system', content: `Use only the following scopes: ${opts.enabledScopeKeys.join(', ')}.` }
+  const memory: ProviderMessage = { role: 'system', content: `Scoped context:\n${contextLines.join('\n')}` }
+  const messages: ProviderMessage[] = [preface, memory, ...base]
+  return { messages, usedScopes: recall.usedScopes }
+}
