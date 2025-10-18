@@ -1,62 +1,46 @@
-Prisma Schema and Database Structure
+# Database Overview
 
-The bombay.chat application uses PostgreSQL as the database, accessed via Prisma ORM. The Prisma schema defines three models (User, Thread, Message) and one enum (Role). Below is the finalized Prisma schema for MVP with cascade cleanup and helpful indexes:
+The application stores all persistent state in **PostgreSQL** and interacts with it exclusively through [Prisma](https://www.prisma.io/). The authoritative definition of every table, column, index, and relation lives in [`prisma/schema.prisma`](../prisma/schema.prisma); consult that file whenever you need precise details or to introduce schema changes.
 
-```prisma
-// prisma/schema.prisma
-_datasource db { provider = "postgresql"; url = env("DATABASE_URL") }
-_generator client { provider = "prisma-client-js" }
+## High-level architecture
 
-model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  createdAt DateTime @default(now())
-  threads   Thread[]
-}
-
-model Thread {
-  id          String    @id @default(cuid())
-  userId      String
-  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  title       String?
-  activeModel String
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  messages    Message[]
-
-  @@index([userId, updatedAt])
-}
-
-enum Role {
-  system
-  user
-  assistant
-}
-
-model Message {
-  id          String    @id @default(cuid())
-  threadId    String
-  thread      Thread    @relation(fields: [threadId], references: [id], onDelete: Cascade)
-  role        Role
-  contentText String
-  provider    String?
-  model       String?
-  usageJson   Json?
-  createdAt   DateTime  @default(now())
-
-  @@index([threadId, createdAt])
-}
+```mermaid
+flowchart LR
+  App[Next.js API routes] --> Prisma
+  Prisma -->|Prisma Client| Neon[(Neon PostgreSQL)]
 ```
 
-Updates (Scopes):
+- **Prisma Client** is generated from the schema and used in API routes, background jobs, and tests to run typed database queries.
+- **Neon** hosts the managed PostgreSQL instance for staging and production environments. Local development can target either Neon (shared dev branch) or a Docker/Postgres instance via the `DATABASE_URL`.
+- **Connection strings** follow the standard PostgreSQL format and are injected via environment variables (`DATABASE_URL`, `SHADOW_DATABASE_URL` for migrations).
 
-- Added Thread.activeScopeKeys String[] with default [] (PostgreSQL array) to persist per-thread active scopes.
-- Added ScopeConsent table (userId, threadId, scopeKey, grantedAt, revokedAt?) to track consent per sensitive scope.
-- Added Message.metaJson Json? for storing attribution (usedScopes, sources) of recalled content.
+## Core domain models
 
-Notes
+The data model centers on a few core entities:
 
-- Cascade on User→Thread and Thread→Message prevents orphans when cleaning up test data.
-- Keep message size limits enforced at API layer (see docs/API.md) to prevent bloat.
-- Dev migrations: `npx prisma migrate dev`. Prod: `npx prisma migrate deploy` (or `db push` for MVP-only).
-- Optional seed: create one user, 1–2 threads, and a few messages for smoke tests.
+- `User` — primary identity with OAuth account and session records managed by NextAuth. Cascading relations ensure dependent data is cleaned up automatically.
+- `Thread` — conversation container scoped to a single user. Threads track the active model and the active scopes applied to that conversation.
+- `Message` — ordered transcript entries associated with a thread and tagged with provider/model metadata and optional usage payloads.
+- `ScopeConsent` — records per-thread consent decisions for sensitive scopes to satisfy privacy requirements.
+
+Refer to the schema file for additional authentication helper tables (`Account`, `Session`, `VerificationToken`) and indexes that support application workflows.
+
+## Scope data storage
+
+Scopes are defined in [`lib/scopes.ts`](../lib/scopes.ts) and surfaced through the API contract documented in [`docs/API.md`](./API.md). The database persists scope state in two places:
+
+- `Thread.activeScopeKeys` stores the current set of scopes (as a PostgreSQL text array) that should be applied when the user interacts with the thread.
+- `ScopeConsent` tracks when a user grants or revokes consent for each scope within a thread, enabling auditing and compliance checks.
+- `Message.metaJson` can capture attribution data such as which scopes were consulted when generating a response.
+
+These structures keep the runtime scope registry in sync with persisted consent history without duplicating scope metadata in the database.
+
+## Working with migrations
+
+Prisma migrations are the source of truth for schema evolution:
+
+- Run `npx prisma migrate dev` during development to create new migrations and apply them to your local database (or dev Neon branch).
+- Deploy schema changes with `npx prisma migrate deploy` in production environments targeting Neon.
+- Use `npx prisma db push` only for bootstrapping disposable environments where you do not need to generate migration files.
+
+Before shipping schema updates, inspect the generated SQL to ensure compatibility with Neon’s managed PostgreSQL features (branching, connection limits, storage quotas). Keep the schema file as the canonical reference and update this document only when workflows or high-level architecture change.
