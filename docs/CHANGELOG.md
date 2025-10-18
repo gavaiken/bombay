@@ -46,3 +46,4 @@
 - 2025-10-18: Scopes S2.1 — Extended Zod Thread schema to include optional activeScopeKeys and UpdateThreadSchema to accept activeScopeKeys. Added unit tests.
 - 2025-10-18: Scopes S2.2 — Implemented GET /api/scopes with feature flag gating; returns registry and optional thread info/consents. Integration test added.
 - 2025-10-18: Scopes S2.3 — Implemented POST /api/threads/:id/scopes (flag-gated). Validates keys, rejects sensitive without consent, best-effort persist to Thread.activeScopeKeys. Unit tests added.
+- 2025-10-18: Scopes S2.4 — Implemented POST /api/threads/:id/scopes/consent (flag-gated). Validates sensitive scopeKey and records consent (best-effort). Unit tests added.

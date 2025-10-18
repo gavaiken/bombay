@@ -311,7 +311,7 @@ This section breaks down implementing Scopes per docs/Scopes Feature - PRD.md an
   - Body { activeScopeKeys: string[] }; validates allowed keys and required consents; persists to Thread.activeScopeKeys.
   - Returns updated thread; error envelope on violation.
 
-- [ ] S2.4 POST /api/threads/:id/scopes/consent
+- [x] S2.4 POST /api/threads/:id/scopes/consent
   
   Acceptance Criteria:
   - Body { scopeKey, consent: true }; upserts ScopeConsent(grantedAt) for this thread/scope.
