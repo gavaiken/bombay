@@ -305,7 +305,7 @@ This section breaks down implementing Scopes per docs/Scopes Feature - PRD.md an
   - Returns scope registry; if ?threadId provided, include consent states and activeScopeKeys for that thread.
   - 401/404 enforced; Zod response schema added; docs/API.md updated with examples.
 
-- [ ] S2.3 POST /api/threads/:id/scopes
+- [x] S2.3 POST /api/threads/:id/scopes
   
   Acceptance Criteria:
   - Body { activeScopeKeys: string[] }; validates allowed keys and required consents; persists to Thread.activeScopeKeys.
