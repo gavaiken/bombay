@@ -21,7 +21,11 @@ export async function GET() {
       orderBy: { updatedAt: 'desc' },
       select: { id: true, title: true, activeModel: true, createdAt: true, updatedAt: true }
     })
-    return new Response(JSON.stringify(threads), {
+    const { isScopesFeatureEnabled, DEFAULT_ACTIVE_SCOPE_KEYS } = await import('lib/scopes')
+    const payload = isScopesFeatureEnabled()
+      ? threads.map((t) => ({ ...t, activeScopeKeys: [...DEFAULT_ACTIVE_SCOPE_KEYS] }))
+      : threads
+    return new Response(JSON.stringify(payload), {
       headers: { 'Content-Type': 'application/json' }
     })
   } catch (e) {
@@ -59,6 +63,10 @@ export async function POST(req: NextRequest) {
       },
       select: { id: true, title: true, activeModel: true, createdAt: true, updatedAt: true }
     })
+    const { isScopesFeatureEnabled, DEFAULT_ACTIVE_SCOPE_KEYS } = await import('lib/scopes')
+    const responseBody = isScopesFeatureEnabled()
+      ? { ...created, activeScopeKeys: [...DEFAULT_ACTIVE_SCOPE_KEYS] }
+      : created
     
     // Log thread creation
     await logEvent(Events.THREAD_CREATED, 'info', {
@@ -71,7 +79,7 @@ export async function POST(req: NextRequest) {
     await Metrics.trackActiveUser(userId);
     await Metrics.trackThreadCreated(userId, created.activeModel);
     
-    return new Response(JSON.stringify(created), { headers: { 'Content-Type': 'application/json' } })
+    return new Response(JSON.stringify(responseBody), { headers: { 'Content-Type': 'application/json' } })
   } catch (e) {
     return jsonError('INTERNAL_ERROR', 'Failed to create thread', 500)
   }

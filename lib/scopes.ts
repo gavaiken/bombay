@@ -36,3 +36,9 @@ export function requiresConsent(key: ScopeKey): boolean {
 export const SENSITIVE_SCOPE_KEYS: ReadonlyArray<ScopeKey> = Object.freeze(
   (SCOPES_REGISTRY as ScopeDef[]).filter((s) => s.sensitive).map((s) => s.key as ScopeKey)
 );
+
+export const SCOPES_FLAG_ENV = 'NEXT_PUBLIC_SCOPES_ENABLED' as const;
+export function isScopesFeatureEnabled(): boolean {
+  const v = process.env[SCOPES_FLAG_ENV];
+  return v === '1' || v === 'true';
+}
