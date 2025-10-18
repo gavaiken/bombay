@@ -584,7 +584,19 @@ async function toggleScope(key: string, enable: boolean) {
               {m.role === 'assistant' && <div className="select-none mr-1">🤖</div>}
 <div className="flex flex-col">
                 {Array.isArray((m as any).metaUsedScopes) && (m as any).metaUsedScopes.length > 0 && (
-                  <div data-testid="scope-annotation" className="text-xs text-text/60 mb-1">Recalled from: {(m as any).metaUsedScopes.join(', ')}</div>
+<div data-testid="scope-annotation" className="text-xs text-text/60 mb-1">
+                  Recalled from: {(m as any).metaUsedScopes.join(', ')}
+                  {(m as any).metaUsedScopes.map((sk: string) => (
+                    <button
+                      key={`ex-${sk}`}
+                      className="ml-2 text-xs underline"
+                      onClick={() => toggleScope(sk, false)}
+                      aria-label={`Exclude ${sk}`}
+                    >
+                      Exclude {sk}
+                    </button>
+                  ))}
+                </div>
                 )}
                 <div className="content">{m.contentText}</div>
               </div>

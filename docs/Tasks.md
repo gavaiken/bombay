@@ -325,57 +325,57 @@ This section breaks down implementing Scopes per docs/Scopes Feature - PRD.md an
 
 ### Phase S3 — Scoped Retrieval and Policy Enforcement
 
-- [ ] S3.1 RecallProvider interface and stub implementation
+- [x] S3.1 RecallProvider interface and stub implementation
   
   Acceptance Criteria:
   - IRecallProvider.getScopedContext(userId, threadId, enabledScopeKeys, query) -> { snippets, usedScopes } with tests for shape.
 
-- [ ] S3.2 Enforce enabled-only gating
+- [x] S3.2 Enforce enabled-only gating
   
   Acceptance Criteria:
   - Retrieval strictly filters to enabled scopes; unit/integration test ensures disabled scope data is never returned.
 
-- [ ] S3.3 Profile as scope injection
+- [x] S3.3 Profile as scope injection
   
   Acceptance Criteria:
   - If "profile" enabled, inject compact profile snippet/system message; when disabled, no profile injection.
 
-- [ ] S3.4 Scope policies/redaction
+- [x] S3.4 Scope policies/redaction
   
   Acceptance Criteria:
   - Policy engine applies per-scope regex/redaction rules (e.g., Health: remove names; Work: mask secret-like tokens) before provider calls and UI.
   - Tests show sensitive tokens are masked in prompt and response.
 
-- [ ] S3.5 Attribution persistence
+- [x] S3.5 Attribution persistence
   
   Acceptance Criteria:
   - usedScopes recorded in Message.metaJson and included in SSE done; DB row present and retrievable via GET /api/messages.
 
 ### Phase S4 — UI: Scope Toggle Bar (Desktop + Mobile)
 
-- [ ] S4.1 ScopeToggleBar component
+- [x] S4.1 ScopeToggleBar component
   
   Acceptance Criteria:
   - Chips for each registry scope; data-testids: scope-toggle-bar, scope-chip-{key}; toggle on/off; accessible via keyboard and SR.
 
-- [ ] S4.2 Zero-scopes indicator
+- [x] S4.2 Zero-scopes indicator
   
   Acceptance Criteria:
   - When none active, show “No personal data in use”; disappears when any scope enabled; no annotations shown in this state.
 
-- [ ] S4.3 Mobile scrollable chips
+- [x] S4.3 Mobile scrollable chips
   
   Acceptance Criteria:
   - Horizontal scroll/wrap on narrow viewports; touch-friendly; preserves selectors and accessibility.
 
 ### Phase S5 — UI: Consent, Transparency, Refinement
 
-- [ ] S5.1 One-time consent prompt for sensitive scopes
+- [x] S5.1 One-time consent prompt for sensitive scopes
   
   Acceptance Criteria:
   - First ON per thread for sensitive scope shows confirm dialog; Accept logs ScopeConsent and enables; Decline leaves OFF.
 
-- [ ] S5.2 Source annotations in assistant messages
+- [x] S5.2 Source annotations in assistant messages
   
   Acceptance Criteria:
   - When usedScopes non-empty, render prefix “Recalled from: {Scope(s)} 🛈”; data-testid=scope-annotation; supports multi-scope.

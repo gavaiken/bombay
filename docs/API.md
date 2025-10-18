@@ -7,6 +7,9 @@ The API follows REST semantics for thread and message management. The base URL i
 - GET /api/threads – Retrieve the list of chat threads for the authenticated user. Returns a JSON array of thread objects.
 - POST /api/threads – Create a new chat thread. Expects JSON body with an optional title and optional activeModel. Returns the created thread object.
 - PATCH /api/threads/:id – Update an existing thread’s metadata. Currently used to switch the thread’s active model. Expects JSON body with activeModel (the new model id). Returns the updated thread object.
+- GET /api/scopes – Returns available scopes registry; when passed ?threadId, also returns that thread’s activeScopeKeys and consent defaults (feature-flag gated).
+- POST /api/threads/:id/scopes – Sets the thread’s activeScopeKeys (feature-flag gated). Validates keys and requires consent for sensitive scopes.
+- POST /api/threads/:id/scopes/consent – Records consent for a sensitive scope on a thread (feature-flag gated).
 - GET /api/messages?threadId=<id> – Retrieve all messages in a given thread. The threadId is provided as a query parameter. Returns a JSON array of message objects (conversation history) for that thread.
 - POST /api/messages – Send a new user message and receive the assistant’s streaming response. This endpoint uses Server-Sent Events (SSE) to progressively deliver the assistant's reply. Expects a JSON body with threadId (the target thread) and content (the user’s message text). The response is an SSE stream rather than a standard JSON object.
   - Test-only validation path: appending `?mode=json` to this endpoint will return a non-streaming JSON response for tests. This path is gated and returns HTTP 400 in development and production (NODE_ENV !== 'test').
