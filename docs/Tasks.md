@@ -241,6 +241,233 @@ R5. Deployment and production smoke
   Acceptance Criteria:
   - Login with Google; create thread; send SSE message; optional model switch; results in CHANGELOG.
 
+## Missing Requirements from PRD/Design Review
+
+Based on comprehensive analysis of PRD.md, Design.md, and supporting documentation, the following tasks are needed to fully implement the MVP requirements:
+
+### Security and Performance
+
+- [x] SEC.1 Implement Content Security Policy
+  
+  Acceptance Criteria:
+  - Add CSP header to Next.js configuration matching docs/Security.md specification
+  - CSP allows fonts.googleapis.com and fonts.gstatic.com for IBM Plex Mono
+  - CSP blocks unsafe inline scripts and restricts connect-src to 'self'
+  - Verify no console CSP violations on production site
+  - Client Verification: Browser dev tools shows CSP header; no violations in console
+
+- [ ] SEC.2 Add input size limits and rate limiting foundation
+  
+  Acceptance Criteria:
+  - Zod schemas enforce max content length (e.g., 4000 chars) for message input
+  - Add UPSTASH_REDIS_REST_URL/TOKEN env vars (optional) to .env.example
+  - Basic rate limiting utility created (can be no-op if UPSTASH not configured)
+  - Large message inputs return 400 VALIDATION_ERROR with helpful message
+  - Client Verification: Extremely long messages are rejected with clear error
+
+- [ ] PERF.1 Add message history pagination
+  
+  Acceptance Criteria:
+  - GET /api/messages supports ?limit and ?before query parameters
+  - Load initial 50 messages, implement "Load earlier messages" button in UI
+  - Pagination preserves message order and thread context
+  - Long threads don't cause slow page loads or memory issues
+  - Client Verification: Threads with 100+ messages load quickly with pagination
+
+### Observability and Logging
+
+- [ ] OBS.1 Add structured logging for key events
+  
+  Acceptance Criteria:
+  - Log successful sign-ins, thread creation, and message sending with user ID
+  - Log provider API errors with sanitized details (no user content)
+  - Log context truncation events with token estimates
+  - Use consistent JSON log format with timestamp, level, event, userId fields
+  - Client Verification: Production logs show structured events in Logtail
+
+- [ ] OBS.2 Add basic usage metrics collection
+  
+  Acceptance Criteria:
+  - Track token usage per user/session in aggregate (no individual message content)
+  - Store daily active users and message counts in simple metrics
+  - Log model selection frequency and provider response times
+  - Export metrics endpoint for admin use (auth-gated)
+  - Client Verification: Metrics are collected without affecting performance
+
+### Context Management and AI Features
+
+- [ ] CTX.1 Implement context window token estimation
+  
+  Acceptance Criteria:
+  - Add tiktoken dependency for OpenAI token counting
+  - Create word-count fallback for Anthropic models
+  - Context truncation logs warn when messages are dropped
+  - Preserve system message and truncate oldest user/assistant pairs
+  - Client Verification: Very long conversations continue working without errors
+
+- [ ] CTX.2 Add conversation handoff optimization
+  
+  Acceptance Criteria:
+  - When switching models mid-thread, include brief context summary
+  - System message indicates model switch: "Continuing conversation from [previous model]"
+  - New model receives essential context without full history duplication
+  - Handoff preserves conversation coherence and user intent
+  - Client Verification: Model switches maintain conversation flow naturally
+
+### Enhanced UI/UX Features
+
+- [ ] UI.1 Thread management features
+  
+  Acceptance Criteria:
+  - Add "Delete thread" option in thread list (with confirmation dialog)
+  - Implement thread search/filter in left sidebar for users with many threads
+  - Add thread export functionality (markdown format)
+  - Empty states show helpful onboarding hints
+  - Client Verification: Thread management features work smoothly
+
+- [ ] UI.2 Message interaction enhancements
+  
+  Acceptance Criteria:
+  - Add "Copy message" button on assistant messages
+  - Implement "Regenerate response" for last assistant message
+  - Add basic markdown rendering for code blocks and lists in messages
+  - Show message timestamps on hover or in collapsed state
+  - Client Verification: Message interactions enhance usability without clutter
+
+- [ ] UI.3 Improved error handling and user feedback
+  
+  Acceptance Criteria:
+  - Add toast notifications for non-critical feedback (thread created, model switched)
+  - Implement retry mechanism for failed message sends
+  - Show connection status indicator during network issues
+  - Graceful degradation when offline (show cached threads, disable sending)
+  - Client Verification: Error states are helpful and don't block the user
+
+### Deployment and Production Readiness
+
+- [ ] PROD.1 Add health check endpoint
+  
+  Acceptance Criteria:
+  - GET /api/health returns 200 with basic system status
+  - Check database connectivity and provider API accessibility
+  - Include build timestamp and version info in health response
+  - Use health check for uptime monitoring and deployment verification
+  - Client Verification: Health endpoint provides useful status information
+
+- [ ] PROD.2 Environment validation and startup checks
+  
+  Acceptance Criteria:
+  - Validate all required environment variables at application startup
+  - Log clear error messages for missing configuration
+  - Check database schema compatibility on startup
+  - Verify provider API keys work with test calls
+  - Client Verification: Misconfigured deployments fail fast with clear errors
+
+- [ ] PROD.3 Database backup and recovery procedures
+  
+  Acceptance Criteria:
+  - Document database backup strategy in docs/Deployment.md
+  - Create database seeding script for disaster recovery
+  - Add data export utility for user data portability
+  - Test backup/restore procedure in staging environment
+  - Client Verification: Database can be backed up and restored successfully
+
+### API Compliance and Standards
+
+- [ ] API.1 Complete API documentation with OpenAPI spec
+  
+  Acceptance Criteria:
+  - Generate OpenAPI 3.0 spec from Zod schemas and route handlers
+  - Include authentication requirements and error response formats
+  - Document SSE streaming format with example event sequences
+  - Add request/response examples for all endpoints
+  - Client Verification: API documentation is complete and accurate
+
+- [ ] API.2 API versioning and backward compatibility
+  
+  Acceptance Criteria:
+  - Add API version header support (optional for MVP, foundation for future)
+  - Ensure API responses follow consistent envelope format
+  - Document breaking change policy for future API updates
+  - Add client-side error recovery for API format changes
+  - Client Verification: API follows consistent patterns for future evolution
+
+### Foundation MVP Features from PRD
+
+- [ ] MVP.1 Model selection exact implementation
+  
+  Acceptance Criteria:
+  - Support exact models from PRD: openai:gpt-4o, openai:gpt-4o-mini, anthropic:claude-3-5-sonnet, anthropic:claude-3-5-haiku
+  - Default to GPT-4o on new chats (as specified in PRD)
+  - Model selector shows human-friendly names ("GPT-4o", "Claude 3.5 Sonnet")
+  - Thread activeModel persists exact provider:model format in database
+  - Client Verification: All specified models available and working correctly
+
+- [ ] MVP.2 Thread auto-titling from first message
+  
+  Acceptance Criteria:
+  - New threads auto-generate title from first ~50 chars of user's initial message
+  - Fallback to timestamp format "2025-10-18 5:22PM" if first message is very short
+  - Title generation happens client-side to avoid API calls
+  - Thread titles are editable via pencil icon (already implemented)
+  - Client Verification: Thread titles are generated automatically and meaningfully
+
+- [ ] MVP.3 Streaming response implementation verification
+  
+  Acceptance Criteria:
+  - SSE streaming works for both OpenAI and Anthropic providers
+  - "Assistant is typing..." indicator shows during response generation
+  - Response appears progressively (token by token or chunk by chunk)
+  - Stream can be cancelled if user navigates away or closes connection
+  - Client Verification: Message responses stream naturally, not all-at-once
+
+- [ ] MVP.4 User isolation and data privacy
+  
+  Acceptance Criteria:
+  - All database queries scoped to authenticated user's ID
+  - No cross-user data leakage in threads or messages
+  - Google OAuth email used as user identifier
+  - User data isolated in development, staging, and production
+  - Client Verification: Multiple test accounts show completely separate data
+
+- [ ] MVP.5 Basic warning about sensitive data
+  
+  Acceptance Criteria:
+  - Add privacy notice in UI: "Don't share sensitive data. Conversations may be used to improve AI models."
+  - Notice appears in composer or onboarding flow
+  - Link to basic privacy policy or terms (can be simple markdown page)
+  - Warning persists across sessions until acknowledged
+  - Client Verification: Users see privacy warning before first message
+
+### Performance and Reliability
+
+- [ ] REL.1 Response latency optimization
+  
+  Acceptance Criteria:
+  - Target 1-5 second average response latency (per PRD requirement)
+  - Measure and log "time to first token" from provider APIs
+  - Optimize context window to avoid unnecessarily long prompts
+  - Cache provider connections to reduce handshake time
+  - Client Verification: Typical responses start streaming within 2-3 seconds
+
+- [ ] REL.2 Graceful provider error handling
+  
+  Acceptance Criteria:
+  - Map provider-specific errors to user-friendly messages
+  - Suggest model switching when one provider is down
+  - Retry failed requests with exponential backoff
+  - Show "Assistant is temporarily unavailable" with retry option
+  - Client Verification: Provider outages are handled gracefully
+
+- [ ] REL.3 Context window management per PRD spec
+  
+  Acceptance Criteria:
+  - Implement "truncate oldest turns" policy when token limits exceeded
+  - Preserve first system message if present
+  - Log when context truncation occurs for monitoring
+  - Handle both OpenAI and Anthropic context limits appropriately
+  - Client Verification: Very long conversations continue working without errors
+
 ## Next 20 Tasks — Working Demo Track (Phase-Based)
 
 Based on senior engineering feedback, these tasks are organized into phases that deliver verifiable functionality incrementally. Each phase builds upon the previous one, ensuring clear client verification at every step.

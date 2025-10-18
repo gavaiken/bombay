@@ -36,7 +36,7 @@ export default defineConfig({
     // Unauthenticated tests (existing)
     { 
       name: 'unauthenticated', 
-      testIgnore: ['**/authenticated-*.spec.ts', '**/comprehensive-*.spec.ts'],
+      testIgnore: ['**/authenticated-*.spec.ts', '**/comprehensive-*.spec.ts', '**/simple-comprehensive-*.spec.ts'],
       use: { 
         ...devices['Desktop Chrome'],
         navigationTimeout: 30_000
@@ -45,7 +45,7 @@ export default defineConfig({
     // Authenticated tests (use existing auth file)
     {
       name: 'authenticated',
-      testMatch: ['**/authenticated-*.spec.ts', '**/comprehensive-*.spec.ts'],
+      testMatch: ['**/authenticated-*.spec.ts', '**/comprehensive-*.spec.ts', '**/simple-comprehensive-*.spec.ts'],
       use: {
         ...devices['Desktop Chrome'],
         navigationTimeout: 30_000
