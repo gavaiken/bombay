@@ -52,6 +52,7 @@ Updates (Scopes):
 
 - Added Thread.activeScopeKeys String[] with default [] (PostgreSQL array) to persist per-thread active scopes.
 - Added ScopeConsent table (userId, threadId, scopeKey, grantedAt, revokedAt?) to track consent per sensitive scope.
+- Added Message.metaJson Json? for storing attribution (usedScopes, sources) of recalled content.
 
 Notes
 

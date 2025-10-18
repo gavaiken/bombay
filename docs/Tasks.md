@@ -280,7 +280,7 @@ This section breaks down implementing Scopes per docs/Scopes Feature - PRD.md an
   - ScopeConsent(id, userId, threadId, scopeKey, grantedAt, revokedAt?) with FK to User/Thread; compound unique (threadId, scopeKey).
   - Migration runs; docs/Database.md updated.
 
-- [ ] S1.3 Add Message.metaJson for attribution
+- [x] S1.3 Add Message.metaJson for attribution
   
   Acceptance Criteria:
   - Message.metaJson Json? stores usedScopes: string[] and optional sources meta.

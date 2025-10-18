@@ -50,6 +50,7 @@ model Message {
   provider    String?
   model       String?
   usageJson   Json?
+  metaJson    Json?
   createdAt   DateTime  @default(now())
 
   @@index([threadId, createdAt])
