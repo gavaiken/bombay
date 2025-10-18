@@ -387,19 +387,19 @@ This section breaks down implementing Scopes per docs/Scopes Feature - PRD.md an
 
 ### Phase S6 — State Persistence and Model Switching
 
-- [ ] S6.1 Persist per-thread scope state
+- [x] S6.1 Persist per-thread scope state
   
   Acceptance Criteria:
   - Loading a thread restores activeScopeKeys into UI; switching threads updates chips correctly.
 
-- [ ] S6.2 Model switch continuity
+- [x] S6.2 Model switch continuity
   
   Acceptance Criteria:
   - Switching provider/model mid-thread keeps current activeScopeKeys; next reply uses same scopes.
 
 ### Phase S7 — Behavior and Policy Tests
 
-- [ ] S7.1 Zero-scopes behavior
+- [x] S7.1 Zero-scopes behavior
   
   Acceptance Criteria:
   - With all OFF, personal queries produce no recalled data; no scope annotations; assertions verify absence.
@@ -409,7 +409,7 @@ This section breaks down implementing Scopes per docs/Scopes Feature - PRD.md an
   Acceptance Criteria:
   - With only Work ON (Personal has matching data), answer uses only Work; usedScopes === ["work"].
 
-- [ ] S7.3 Mid-thread toggle effect
+- [x] S7.3 Mid-thread toggle effect
   
   Acceptance Criteria:
   - OFF → ask (no recall); enable Health → ask (recall present); disable again → next answer excludes Health.
@@ -419,7 +419,7 @@ This section breaks down implementing Scopes per docs/Scopes Feature - PRD.md an
   Acceptance Criteria:
   - First enable prompts; accepted once per thread; new thread prompts again.
 
-- [ ] S7.5 Policy enforcement
+- [x] S7.5 Policy enforcement
   
   Acceptance Criteria:
   - Redaction rules mask PII/secrets before prompt and UI; tests include seeded sensitive strings.
