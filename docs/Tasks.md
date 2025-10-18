@@ -265,7 +265,7 @@ Based on comprehensive analysis of PRD.md, Design.md, and supporting documentati
   - Large message inputs return 400 VALIDATION_ERROR with helpful message
   - Client Verification: Extremely long messages are rejected with clear error
 
-- [ ] PERF.1 Add message history pagination
+- [x] PERF.1 Add message history pagination
   
   Acceptance Criteria:
   - GET /api/messages supports ?limit and ?before query parameters

@@ -15,20 +15,50 @@ export async function GET(req: NextRequest) {
   try {
     const url = new URL(req.url)
     const threadId = url.searchParams.get('threadId')
+    const limitParam = url.searchParams.get('limit')
+    const beforeParam = url.searchParams.get('before')
+    
     if (!threadId) {
       return jsonError('VALIDATION_ERROR', 'threadId required', 400)
     }
+    
+    // Parse pagination parameters
+    const limit = limitParam ? Math.min(parseInt(limitParam, 10), 200) : 50; // Max 200, default 50
+    const before = beforeParam ? new Date(beforeParam) : undefined;
+    
     // Ownership check
     const own = await prisma.thread.findFirst({ where: { id: threadId, userId }, select: { id: true } })
     if (!own) {
       return jsonError('FORBIDDEN', 'Forbidden', 403)
     }
+    
+    // Build query with pagination
+    const whereClause: any = { threadId };
+    if (before) {
+      whereClause.createdAt = { lt: before };
+    }
+    
     const data = await prisma.message.findMany({
-      where: { threadId },
-      orderBy: { createdAt: 'asc' },
+      where: whereClause,
+      orderBy: { createdAt: 'desc' }, // Desc to get most recent first, then reverse
+      take: limit,
       select: { id: true, role: true, contentText: true, createdAt: true, provider: true, model: true }
     })
-    return new Response(JSON.stringify(data), { headers: { 'Content-Type': 'application/json' } })
+    
+    // Reverse to maintain chronological order (oldest first)
+    const messages = data.reverse();
+    
+    // Add pagination metadata
+    const response = {
+      messages,
+      pagination: {
+        hasMore: data.length === limit,
+        before: data.length > 0 ? data[0].createdAt : null,
+        limit
+      }
+    };
+    
+    return new Response(JSON.stringify(response), { headers: { 'Content-Type': 'application/json' } })
   } catch (e) {
     return jsonError('INTERNAL_ERROR', 'Failed to load messages', 500)
   }
