@@ -6,18 +6,20 @@
 - [x] PERF.1 - Message history pagination (7 tests)
 - [x] OBS.1 - Structured logging for key events (10 tests)
 - [x] PROD.1 - Health check endpoint
+- [x] OBS.2 - Basic usage metrics collection (12 tests)
+- [x] CTX.1 - Context window token estimation (17 tests)
 
-**Total: 5 tasks completed, 31 new tests added**
+**Total: 7 tasks completed, 60 new tests added**
 
 ## Next Priority Tasks to Continue
 
 ### High Priority (Production Critical)
-1. **OBS.2** - Add basic usage metrics collection
-2. **CTX.1** - Implement context window token estimation  
-3. **PROD.2** - Environment validation and startup checks
-4. **MVP.1** - Model selection exact implementation
-5. **REL.1** - Response latency optimization
-6. **SEC.2** follow-up - Update .env.example with UPSTASH vars (already there, verify)
+1. **PROD.2** - Environment validation and startup checks
+2. **MVP.1** - Model selection exact implementation
+3. **REL.1** - Response latency optimization
+4. **CTX.2** - Add conversation handoff optimization
+5. **UI.1** - Thread management features (delete, search, export)
+6. **MVP.2** - Thread auto-titling from first message
 
 ### Medium Priority  
 7. **CTX.2** - Add conversation handoff optimization
@@ -33,18 +35,23 @@
 ## Current State
 - All implementations have been tested and committed to git
 - Tasks.md has been updated with completed checkboxes
-- 5 major production-ready features now implemented
-- Next session should continue with OBS.2 (usage metrics)
+- 7 major production-ready features now implemented
+- Next session should continue with PROD.2 (environment validation)
 
 ## Files Modified in Last Session
 - `next.config.mjs` - Added CSP headers
 - `lib/schemas.ts` - NEW: Zod validation schemas with limits
 - `lib/rate-limit.ts` - NEW: Rate limiting utility
 - `lib/logger.ts` - Enhanced with structured events  
-- `app/api/messages/route.ts` - Added validation & rate limiting & logging
-- `app/api/threads/route.ts` - Added validation & rate limiting & logging
+- `lib/metrics.ts` - NEW: Usage metrics collection system
+- `lib/context.ts` - Enhanced with tiktoken and proper truncation
+- `app/api/messages/route.ts` - Added validation, rate limiting, logging, metrics, context management
+- `app/api/threads/route.ts` - Added validation, rate limiting, logging, metrics
 - `app/api/health/route.ts` - NEW: Health check endpoint
-- `tests/integration/` - 4 new test files with 31 tests total
+- `app/api/admin/metrics/route.ts` - NEW: Admin metrics endpoint
+- `.env.example` - Added admin email configuration
+- `package.json` - Added tiktoken dependency
+- `tests/integration/` - 7 new test files with 60 tests total
 
 ## Current Working Directory
 /Users/gav/Source/bombay (verified in git repository)
