@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react'
 
-type Thread = { id: string; title: string; activeModel: string; updatedAt: string }
+type Thread = { id: string; title: string; activeModel: string; updatedAt: string; activeScopeKeys?: string[] }
 type Message = { id: string; role: 'user'|'assistant'|'system'; contentText: string }
 
 type SSEEvent = { event: string; data: string }
@@ -14,7 +14,12 @@ export default function Chat() {
   const [model, setModel] = useState<string>('openai:gpt-4o')
   const [messages, setMessages] = useState<Message[]>([])
   const [input, setInput] = useState('')
-  const [typing, setTyping] = useState(false)
+const [typing, setTyping] = useState(false)
+
+  // Scopes UI state
+  const [scopesRegistry, setScopesRegistry] = useState<Array<{ key: string; name: string; sensitive: boolean }>>([])
+  const [activeScopeKeys, setActiveScopeKeys] = useState<string[]>([])
+  const [scopeConsents, setScopeConsents] = useState<Record<string, boolean>>({})
 
   // UI state for loading/error/empty
   const [isLoadingThreads, setIsLoadingThreads] = useState(true)
@@ -123,6 +128,17 @@ export default function Chat() {
     }
   }
 
+async function loadScopes(threadId: string) {
+    try {
+      const res = await fetch(`/api/scopes?threadId=${encodeURIComponent(threadId)}`, { cache: 'no-store' })
+      if (!res.ok) return
+      const json = await res.json()
+      setScopesRegistry(json.registry || [])
+      setActiveScopeKeys(json.thread?.activeScopeKeys || [])
+      if (json.consents) setScopeConsents(json.consents)
+    } catch {}
+  }
+
   // Load messages when thread changes
   useEffect(() => {
     if (!currentThreadId) return
@@ -133,6 +149,7 @@ export default function Chat() {
       setMessages([])
       return
     }
+    loadScopes(currentThreadId)
     reloadMessages()
   }, [currentThreadId])
 
@@ -308,7 +325,20 @@ export default function Chat() {
               return [...prev, { id: `a_${Date.now()}`, role: 'assistant', contentText: assistantText }]
             })
           } catch {}
-        } else if (ev.event === 'done') {
+} else if (ev.event === 'done') {
+          try {
+            const payload = JSON.parse(ev.data) as { usedScopes?: string[] }
+            if (payload?.usedScopes && payload.usedScopes.length) {
+              setMessages((prev: any[]) => {
+                if (!prev.length) return prev
+                const last = prev[prev.length - 1] as any
+                if (last.role !== 'assistant') return prev
+                const clone = [...prev]
+                clone[clone.length - 1] = { ...last, metaUsedScopes: payload.usedScopes }
+                return clone
+              })
+            }
+          } catch {}
           finishTyping()
         } else if (ev.event === 'error') {
           try {
@@ -361,6 +391,28 @@ export default function Chat() {
     setTimeout(() => composerRef.current?.focus(), 0)
   }
 
+
+async function toggleScope(key: string, enable: boolean) {
+    if (!currentThreadId) return
+    const def = scopesRegistry.find(s => s.key === key)
+    if (!def) return
+    let allow = true
+    if (enable && def.sensitive && !scopeConsents[key]) {
+      allow = window.confirm(`Allow assistant to use your ${def.name} scope in this conversation?`)
+      if (allow) {
+        await fetch(`/api/threads/${encodeURIComponent(currentThreadId)}/scopes/consent`, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ scopeKey: key, consent: true })
+        })
+        setScopeConsents(prev => ({ ...prev, [key]: true }))
+      }
+    }
+    if (!allow) return
+    const next = enable ? Array.from(new Set([...(activeScopeKeys || []), key])) : (activeScopeKeys || []).filter(k => k !== key)
+    await fetch(`/api/threads/${encodeURIComponent(currentThreadId)}/scopes`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ activeScopeKeys: next })
+    })
+    setActiveScopeKeys(next)
+  }
 
   return (
     <div
@@ -459,7 +511,30 @@ export default function Chat() {
             <option value="anthropic:claude-3-5-haiku-20241022">Claude — 3.5 Haiku</option>
             <option value="anthropic:claude-sonnet-4-20250514">Claude — Sonnet 4</option>
           </select>
-        </header>
+</header>
+
+        {/* Scope Toggle Bar */}
+        <div data-testid="scope-toggle-bar" className="flex flex-wrap gap-2 border-b border-border bg-panel px-3 py-2">
+          <div className="flex gap-2 overflow-x-auto">
+            {scopesRegistry.map((s) => {
+              const on = (activeScopeKeys || []).includes(s.key)
+              return (
+                <button
+                  key={s.key}
+                  data-testid={`scope-chip-${s.key}`}
+                  className={`px-2 py-1 rounded-full border ${on ? 'bg-brand-500 text-white border-brand-500' : 'border-border text-foreground'}`}
+                  onClick={() => toggleScope(s.key, !on)}
+                  aria-pressed={on}
+                >
+                  {s.name}
+                </button>
+              )
+            })}
+          </div>
+          {(!activeScopeKeys || activeScopeKeys.length === 0) && (
+            <div className="text-xs text-text/60" aria-live="polite">No personal data in use</div>
+          )}
+        </div>
 
         {/* Messages/transcript */}
         <section
@@ -507,7 +582,12 @@ export default function Chat() {
               aria-label={m.role === 'assistant' ? 'assistant message' : 'user message'}
             >
               {m.role === 'assistant' && <div className="select-none mr-1">🤖</div>}
-              <div className="content">{m.contentText}</div>
+<div className="flex flex-col">
+                {Array.isArray((m as any).metaUsedScopes) && (m as any).metaUsedScopes.length > 0 && (
+                  <div data-testid="scope-annotation" className="text-xs text-text/60 mb-1">Recalled from: {(m as any).metaUsedScopes.join(', ')}</div>
+                )}
+                <div className="content">{m.contentText}</div>
+              </div>
               {m.role === 'user' && <div className="select-none ml-1">🐸</div>}
             </div>
           ))}
