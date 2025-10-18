@@ -44,3 +44,4 @@
 - 2025-10-18: Scopes S1.3 — Added Message.metaJson Json? for attribution (usedScopes, sources). Update docs/Database.md. Migration required in dev/prod before usage.
 - 2025-10-18: Scopes S1.4 — Seed: Added a "Scopes Sample" thread with Work/Personal/Health tagged notes for dev seeding. Run `npm run db:seed` to populate.
 - 2025-10-18: Scopes S2.1 — Extended Zod Thread schema to include optional activeScopeKeys and UpdateThreadSchema to accept activeScopeKeys. Added unit tests.
+- 2025-10-18: Scopes S2.2 — Implemented GET /api/scopes with feature flag gating; returns registry and optional thread info/consents. Integration test added.

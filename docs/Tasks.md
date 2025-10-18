@@ -299,7 +299,7 @@ This section breaks down implementing Scopes per docs/Scopes Feature - PRD.md an
   - Zod Thread schema includes activeScopeKeys: string[]; UpdateThread allows partial update with activeScopeKeys.
   - PATCH /api/threads/:id validates keys vs registry.
 
-- [ ] S2.2 GET /api/scopes
+- [x] S2.2 GET /api/scopes
   
   Acceptance Criteria:
   - Returns scope registry; if ?threadId provided, include consent states and activeScopeKeys for that thread.
