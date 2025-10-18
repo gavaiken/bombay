@@ -7,7 +7,7 @@
 
 ## Setup
 
-### Option 1: Docker PostgreSQL (Recommended)
+### Option 1: Docker PostgreSQL (Recommended for fully local dev)
 1) `npm install`
 2) Create `.env.docker` from template and set a strong password
    - `cp .env.docker.example .env.docker` then edit `POSTGRES_PASSWORD`
@@ -24,11 +24,12 @@
 5) `npx prisma db push` (or `npx prisma migrate dev` once auth models are added)
 6) `npm run dev` → http://localhost:3000
 
-### Option 2: Local/Cloud PostgreSQL
+### Option 2: Local/Cloud PostgreSQL (Neon, Supabase, etc.)
 1) `npm install`
 2) Ensure PostgreSQL is running locally or use cloud provider
 3) Create `.env.local` by copying `.env.example` and updating DATABASE_URL
    - DATABASE_URL: your Postgres connection string
+   - For Neon, create a dedicated dev branch and copy the pooled connection string (keep `sslmode=require`).
    - Other variables same as above
 4) `npx prisma db push` (or `npx prisma migrate dev` once auth models are added)
 5) `npm run dev` → http://localhost:3000
@@ -43,13 +44,19 @@
   - OPENAI_API_KEY / ANTHROPIC_API_KEY
 - Optional: `vercel env pull .env.local` to sync env locally
 
+If you use Neon in production, create a dedicated database branch (e.g., `main` for production and `dev` for local). Paste the Neon connection string into Vercel’s `DATABASE_URL` and update the matching branch URL in `.env.local` so Prisma migrations run against the same schema. Re-run `vercel env pull .env.local` or manually copy values whenever secrets change to keep local development in sync.
+
 ## Useful Scripts
-- `dev` – start Next dev
+- `dev` – start the Next.js dev server
 - `build` / `start` – production build/run
-- `lint` – ESLint
-- `format` – Prettier check or write
-- `test` – unit/integration
-- `test:e2e` – Playwright (with mocks)
+- `lint` – Next.js ESLint checks
+- `test` – Vitest unit/integration suite
+- `test:e2e` – Playwright (local mocks)
+- `test:e2e:prod` – Playwright against `playwright.prod.config.ts`
+- `test:e2e:prod:headed` – headed Playwright run with production config
+- `test:e2e:prod:auth-setup` – manual auth session seeding for Playwright
+- `test:e2e:prod:authenticated` – Playwright authenticated suite with production config
+- `db:seed` – run Prisma seed script
 
 ## Docker Database Commands
 - `docker compose up -d` – start PostgreSQL in background
