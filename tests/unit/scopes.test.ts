@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { SCOPES_REGISTRY, DEFAULT_ACTIVE_SCOPE_KEYS, isValidScopeKey, getScopeDef, requiresConsent } from '../../lib/scopes';
+import { SCOPES_REGISTRY, DEFAULT_ACTIVE_SCOPE_KEYS, isValidScopeKey, getScopeDef, requiresConsent, SENSITIVE_SCOPE_KEYS } from '../../lib/scopes';
 
 describe('Scopes registry (S0.1)', () => {
   it('exports an empty default active scopes array (privacy-first)', () => {
@@ -37,5 +37,11 @@ describe('Scopes registry (S0.1)', () => {
     expect(requiresConsent('health')).toBe(true);
     expect(requiresConsent('work')).toBe(false);
     expect(requiresConsent('personal')).toBe(false);
+  });
+});
+
+describe('Scopes consent policy (S0.2)', () => {
+  it('lists sensitive scope keys explicitly', () => {
+    expect([...SENSITIVE_SCOPE_KEYS].sort()).toEqual(['health', 'profile'].sort());
   });
 });

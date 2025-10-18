@@ -254,7 +254,7 @@ This section breaks down implementing Scopes per docs/Scopes Feature - PRD.md an
   - Decision recorded in docs/Scopes Feature - PRD.md (Open Questions resolved) or a short addendum in docs/CHANGELOG.md.
   - constants/scopes.ts (or equivalent config) exports the fixed registry (key, name, sensitive, policyId).
 
-- [ ] S0.2 Sensitive scopes and consent policy
+- [x] S0.2 Sensitive scopes and consent policy
   
   Acceptance Criteria:
   - Mark which scopes are sensitive (e.g., profile, health) and define consent granularity (per-thread, per-scope, one-time per thread).

@@ -32,3 +32,7 @@ export function requiresConsent(key: ScopeKey): boolean {
   const def = getScopeDef(key);
   return def.sensitive;
 }
+
+export const SENSITIVE_SCOPE_KEYS: ReadonlyArray<ScopeKey> = Object.freeze(
+  (SCOPES_REGISTRY as ScopeDef[]).filter((s) => s.sensitive).map((s) => s.key as ScopeKey)
+);
