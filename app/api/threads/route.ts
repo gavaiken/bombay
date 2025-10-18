@@ -23,7 +23,10 @@ export async function GET() {
     })
     const { isScopesFeatureEnabled } = await import('lib/scopes')
     const payload = isScopesFeatureEnabled()
-      ? threads.map((t) => ({ ...t, activeScopeKeys: Array.isArray((t as any).activeScopeKeys) ? (t as any).activeScopeKeys : [] }))
+      ? threads.map((t) => {
+          const keys = (t as { activeScopeKeys?: string[] }).activeScopeKeys
+          return { ...t, activeScopeKeys: Array.isArray(keys) ? keys : [] }
+        })
       : threads
     return new Response(JSON.stringify(payload), {
       headers: { 'Content-Type': 'application/json' }
@@ -65,7 +68,7 @@ export async function POST(req: NextRequest) {
     })
     const { isScopesFeatureEnabled } = await import('lib/scopes')
     const responseBody = isScopesFeatureEnabled()
-      ? { ...created, activeScopeKeys: Array.isArray((created as any).activeScopeKeys) ? (created as any).activeScopeKeys : [] }
+      ? { ...created, activeScopeKeys: Array.isArray((created as { activeScopeKeys?: string[] }).activeScopeKeys) ? (created as { activeScopeKeys?: string[] }).activeScopeKeys! : [] }
       : created
     
     // Log thread creation

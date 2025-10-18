@@ -21,7 +21,7 @@ export async function GET(req: NextRequest) {
     if (threadId) {
       const t = await prisma.thread.findFirst({ where: { id: threadId, userId }, select: { id: true, activeScopeKeys: true } })
       if (!t) return jsonError('NOT_FOUND', 'Thread not found', 404)
-      threadInfo = { id: t.id, activeScopeKeys: Array.isArray((t as any).activeScopeKeys) ? (t as any).activeScopeKeys : [] }
+      threadInfo = { id: t.id, activeScopeKeys: Array.isArray((t as { activeScopeKeys?: string[] }).activeScopeKeys) ? (t as { activeScopeKeys?: string[] }).activeScopeKeys! : [] }
       // Load consents from DB (granted and not revoked)
       const rows = await prisma.scopeConsent.findMany({ where: { threadId: t.id, revokedAt: null }, select: { scopeKey: true } })
       const granted = new Set(rows.map((r) => r.scopeKey))
