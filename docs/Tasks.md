@@ -241,6 +241,236 @@ R5. Deployment and production smoke
   Acceptance Criteria:
   - Login with Google; create thread; send SSE message; optional model switch; results in CHANGELOG.
 
+## Next Tasks — Scopes Feature (PRD + UX)
+
+This section breaks down implementing Scopes per docs/Scopes Feature - PRD.md and docs/Scopes Feature – UX Design.md. Keep changes small, verifiable, and privacy-first.
+
+### Phase S0 — Decisions and Feature Flag
+
+- [x] S0.1 Decide default scope state and initial fixed scopes
+  
+  Acceptance Criteria:
+  - Decide fixed scope set for v1 (e.g., profile, work, personal, health) and default = zero scopes (privacy-first) unless overridden.
+  - Decision recorded in docs/Scopes Feature - PRD.md (Open Questions resolved) or a short addendum in docs/CHANGELOG.md.
+  - constants/scopes.ts (or equivalent config) exports the fixed registry (key, name, sensitive, policyId).
+
+- [ ] S0.2 Sensitive scopes and consent policy
+  
+  Acceptance Criteria:
+  - Mark which scopes are sensitive (e.g., profile, health) and define consent granularity (per-thread, per-scope, one-time per thread).
+  - Document policy in docs/Scopes Feature - PRD.md Acceptance Criteria notes.
+
+- [ ] S0.3 Feature flag and rollout plan
+  
+  Acceptance Criteria:
+  - NEXT_PUBLIC_SCOPES_ENABLED gates UI; server respects flag (no scope fields when disabled).
+  - Preview->Prod rollout plan added to docs/Deployment.md + entry in docs/CHANGELOG.md.
+
+### Phase S1 — Database Schema (Prisma) and Seeds
+
+- [ ] S1.1 Add Thread.activeScopeKeys (String[] default [])
+  
+  Acceptance Criteria:
+  - prisma/schema.prisma updated; migration runs; GET/PATCH /api/threads includes activeScopeKeys.
+  - docs/Database.md updated with new field and index considerations.
+
+- [ ] S1.2 Add ScopeConsent table
+  
+  Acceptance Criteria:
+  - ScopeConsent(id, userId, threadId, scopeKey, grantedAt, revokedAt?) with FK to User/Thread; compound unique (threadId, scopeKey).
+  - Migration runs; docs/Database.md updated.
+
+- [ ] S1.3 Add Message.metaJson for attribution
+  
+  Acceptance Criteria:
+  - Message.metaJson Json? stores usedScopes: string[] and optional sources meta.
+  - Migration runs; API serializers expose usedScopes in SSE done payload.
+
+- [ ] S1.4 Seed default scope registry and sample data (dev only)
+  
+  Acceptance Criteria:
+  - Seed adds small sample notes per scope for a dev user to exercise recall and redaction.
+
+### Phase S2 — API Contract and Zod Schemas
+
+- [ ] S2.1 Extend Thread API for scopes
+  
+  Acceptance Criteria:
+  - Zod Thread schema includes activeScopeKeys: string[]; UpdateThread allows partial update with activeScopeKeys.
+  - PATCH /api/threads/:id validates keys vs registry.
+
+- [ ] S2.2 GET /api/scopes
+  
+  Acceptance Criteria:
+  - Returns scope registry; if ?threadId provided, include consent states and activeScopeKeys for that thread.
+  - 401/404 enforced; Zod response schema added; docs/API.md updated with examples.
+
+- [ ] S2.3 POST /api/threads/:id/scopes
+  
+  Acceptance Criteria:
+  - Body { activeScopeKeys: string[] }; validates allowed keys and required consents; persists to Thread.activeScopeKeys.
+  - Returns updated thread; error envelope on violation.
+
+- [ ] S2.4 POST /api/threads/:id/scopes/consent
+  
+  Acceptance Criteria:
+  - Body { scopeKey, consent: true }; upserts ScopeConsent(grantedAt) for this thread/scope.
+  - Required before enabling any sensitive scope.
+
+- [ ] S2.5 SSE done payload includes attribution
+  
+  Acceptance Criteria:
+  - SSE done event adds { usedScopes: string[] } and optional { sources: [...] }.
+  - docs/API.md updated; client safely handles missing/empty usedScopes.
+
+### Phase S3 — Scoped Retrieval and Policy Enforcement
+
+- [ ] S3.1 RecallProvider interface and stub implementation
+  
+  Acceptance Criteria:
+  - IRecallProvider.getScopedContext(userId, threadId, enabledScopeKeys, query) -> { snippets, usedScopes } with tests for shape.
+
+- [ ] S3.2 Enforce enabled-only gating
+  
+  Acceptance Criteria:
+  - Retrieval strictly filters to enabled scopes; unit/integration test ensures disabled scope data is never returned.
+
+- [ ] S3.3 Profile as scope injection
+  
+  Acceptance Criteria:
+  - If "profile" enabled, inject compact profile snippet/system message; when disabled, no profile injection.
+
+- [ ] S3.4 Scope policies/redaction
+  
+  Acceptance Criteria:
+  - Policy engine applies per-scope regex/redaction rules (e.g., Health: remove names; Work: mask secret-like tokens) before provider calls and UI.
+  - Tests show sensitive tokens are masked in prompt and response.
+
+- [ ] S3.5 Attribution persistence
+  
+  Acceptance Criteria:
+  - usedScopes recorded in Message.metaJson and included in SSE done; DB row present and retrievable via GET /api/messages.
+
+### Phase S4 — UI: Scope Toggle Bar (Desktop + Mobile)
+
+- [ ] S4.1 ScopeToggleBar component
+  
+  Acceptance Criteria:
+  - Chips for each registry scope; data-testids: scope-toggle-bar, scope-chip-{key}; toggle on/off; accessible via keyboard and SR.
+
+- [ ] S4.2 Zero-scopes indicator
+  
+  Acceptance Criteria:
+  - When none active, show “No personal data in use”; disappears when any scope enabled; no annotations shown in this state.
+
+- [ ] S4.3 Mobile scrollable chips
+  
+  Acceptance Criteria:
+  - Horizontal scroll/wrap on narrow viewports; touch-friendly; preserves selectors and accessibility.
+
+### Phase S5 — UI: Consent, Transparency, Refinement
+
+- [ ] S5.1 One-time consent prompt for sensitive scopes
+  
+  Acceptance Criteria:
+  - First ON per thread for sensitive scope shows confirm dialog; Accept logs ScopeConsent and enables; Decline leaves OFF.
+
+- [ ] S5.2 Source annotations in assistant messages
+  
+  Acceptance Criteria:
+  - When usedScopes non-empty, render prefix “Recalled from: {Scope(s)} 🛈”; data-testid=scope-annotation; supports multi-scope.
+
+- [ ] S5.3 Quick action: “Exclude {Scope}”
+  
+  Acceptance Criteria:
+  - Inline action disables that scope immediately and updates server; next assistant reply reflects change.
+
+### Phase S6 — State Persistence and Model Switching
+
+- [ ] S6.1 Persist per-thread scope state
+  
+  Acceptance Criteria:
+  - Loading a thread restores activeScopeKeys into UI; switching threads updates chips correctly.
+
+- [ ] S6.2 Model switch continuity
+  
+  Acceptance Criteria:
+  - Switching provider/model mid-thread keeps current activeScopeKeys; next reply uses same scopes.
+
+### Phase S7 — Behavior and Policy Tests
+
+- [ ] S7.1 Zero-scopes behavior
+  
+  Acceptance Criteria:
+  - With all OFF, personal queries produce no recalled data; no scope annotations; assertions verify absence.
+
+- [ ] S7.2 Scoped recall accuracy
+  
+  Acceptance Criteria:
+  - With only Work ON (Personal has matching data), answer uses only Work; usedScopes === ["work"].
+
+- [ ] S7.3 Mid-thread toggle effect
+  
+  Acceptance Criteria:
+  - OFF → ask (no recall); enable Health → ask (recall present); disable again → next answer excludes Health.
+
+- [ ] S7.4 Consent prompt behavior
+  
+  Acceptance Criteria:
+  - First enable prompts; accepted once per thread; new thread prompts again.
+
+- [ ] S7.5 Policy enforcement
+  
+  Acceptance Criteria:
+  - Redaction rules mask PII/secrets before prompt and UI; tests include seeded sensitive strings.
+
+- [ ] S7.6 No cross-scope leakage
+  
+  Acceptance Criteria:
+  - Disabled scope content never appears even when highly relevant; logs/metrics show only enabled scopes accessed.
+
+### Phase S8 — Observability and Metrics
+
+- [ ] S8.1 Structured logs for scopes
+  
+  Acceptance Criteria:
+  - Log scope_toggled, scope_consent, recall_used with scope keys only (no content); respects existing logging sink.
+
+- [ ] S8.2 Metrics
+  
+  Acceptance Criteria:
+  - Track toggles/session, avg scopes enabled per thread, % zero-scope chats, latency deltas; admin/ops visibility.
+
+### Phase S9 — Documentation and Selectors
+
+- [ ] S9.1 Update docs/API.md
+  
+  Acceptance Criteria:
+  - New endpoints, SSE payload fields, consent flow, examples added.
+
+- [ ] S9.2 Update docs/Database.md
+  
+  Acceptance Criteria:
+  - Document Thread.activeScopeKeys, ScopeConsent, Message.metaJson; migration steps.
+
+- [ ] S9.3 Update docs/ui/selectors.md and Testing.md
+  
+  Acceptance Criteria:
+  - Add selectors for scope-toggle-bar, scope-chip-*, scope-annotation, consent dialog; outline test flows.
+
+### Phase S10 — Performance and Rollout Verification
+
+- [ ] S10.1 Latency budget verification
+  
+  Acceptance Criteria:
+  - Measure added overhead for 0/1/2+ scopes; ≤ ~500ms median delta; record time-to-first-token; CHANGELOG note.
+
+- [ ] S10.2 Progressive rollout
+  
+  Acceptance Criteria:
+  - Enable behind flag in preview; smoke zero/one/multi-scope flows; then enable in production with monitoring.
+
+
 ## Missing Requirements from PRD/Design Review
 
 Based on comprehensive analysis of PRD.md, Design.md, and supporting documentation, the following tasks are needed to fully implement the MVP requirements:

@@ -37,3 +37,4 @@
 - 2025-10-14: E2E: Added mobile overlay test; full E2E suite green with mocked auth/provider.
 - 2025-10-14: R5.2 Domain + Google OAuth redirects verified — https://bombay.chat live over HTTPS, sign-in works (user-confirmed). Note: Chrome Safe Browsing may briefly warn on a brand-new domain; expected to clear after reputation warms up or via review.
 - 2025-10-14: Production deployment checklist confirmed: API keys present (OpenAI, Anthropic), environment variables configured for Production/Preview, Vercel project linked, custom domain configured, and production database operational (user-confirmed).
+- 2025-10-18: Scopes S0.1 — Decided fixed scopes and default state. Fixed registry exported at lib/scopes.ts with keys: profile (sensitive), work, personal, health (sensitive). DEFAULT_ACTIVE_SCOPE_KEYS = []. Unit tests added at tests/unit/scopes.test.ts. Privacy-first default confirmed.
