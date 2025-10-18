@@ -25,10 +25,24 @@ export async function POST(req: NextRequest, context: { params: { id: string } }
     const invalid = activeScopeKeys.filter((k) => !isValidScopeKey(k))
     if (invalid.length) return jsonError('VALIDATION_ERROR', `Invalid scope keys: ${invalid.join(',')}`, 400)
 
-    // Enforce consent for sensitive scopes (stubbed: require consent by rejecting if any sensitive present)
+    // Enforce consent for sensitive scopes: ensure each sensitiveRequested has a non-revoked consent row
     const sensitiveRequested = activeScopeKeys.filter((k) => SENSITIVE_SCOPE_KEYS.includes(k as any))
     if (sensitiveRequested.length) {
-      return jsonError('VALIDATION_ERROR', `Consent required for: ${sensitiveRequested.join(',')}`, 400)
+      try {
+        const tid = context.params.id
+        const rows = await prisma.scopeConsent.findMany({
+          where: { threadId: tid, scopeKey: { in: sensitiveRequested }, revokedAt: null },
+          select: { scopeKey: true }
+        })
+        const granted = new Set(rows.map((r) => r.scopeKey))
+        const missing = sensitiveRequested.filter((k) => !granted.has(k))
+        if (missing.length) {
+          return jsonError('VALIDATION_ERROR', `Consent required for: ${missing.join(',')}`, 400)
+        }
+      } catch {
+        // If consent table is missing, conservatively reject
+        return jsonError('VALIDATION_ERROR', `Consent required for: ${sensitiveRequested.join(',')}`, 400)
+      }
     }
 
     // Ownership check

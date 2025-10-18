@@ -274,7 +274,7 @@ This section breaks down implementing Scopes per docs/Scopes Feature - PRD.md an
   - prisma/schema.prisma updated; migration runs; GET/PATCH /api/threads includes activeScopeKeys.
   - docs/Database.md updated with new field and index considerations.
 
-- [ ] S1.2 Add ScopeConsent table
+- [x] S1.2 Add ScopeConsent table
   
   Acceptance Criteria:
   - ScopeConsent(id, userId, threadId, scopeKey, grantedAt, revokedAt?) with FK to User/Thread; compound unique (threadId, scopeKey).
