@@ -130,7 +130,12 @@ export async function POST(req: NextRequest) {
       }
       const { buildPromptWithTruncation } = await import('lib/context')
       const prior = await prisma.message.findMany({ where: { threadId }, orderBy: { createdAt: 'asc' } })
-      const messages = buildPromptWithTruncation({ model: (thread.activeModel || '').split(':')[1] || 'gpt-4o', prior, currentUserText: content })
+      const messages = await buildPromptWithTruncation({ 
+        model: (thread.activeModel || '').split(':')[1] || 'gpt-4o', 
+        prior, 
+        currentUserText: content,
+        userId 
+      })
       const res = await adapter.chatNonStreaming({ model: (thread.activeModel || '').split(':')[1] || 'gpt-4o', messages })
       const saved = await prisma.message.create({
         data: { threadId, role: 'assistant', contentText: res.text, provider: adapter.name, model: (thread.activeModel || '').split(':')[1] || 'gpt-4o', usageJson: res.usage ?? undefined }
@@ -163,7 +168,12 @@ await new Promise((r) => setTimeout(r, 200))
           }
           const { buildPromptWithTruncation } = await import('lib/context')
           const prior = await prisma.message.findMany({ where: { threadId }, orderBy: { createdAt: 'asc' } })
-          const messages = buildPromptWithTruncation({ model, prior, currentUserText: content })
+          const messages = await buildPromptWithTruncation({ 
+            model, 
+            prior, 
+            currentUserText: content,
+            userId 
+          })
           
           // Track response time
           const responseStart = Date.now();
