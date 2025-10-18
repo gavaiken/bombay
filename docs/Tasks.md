@@ -394,7 +394,7 @@ Based on comprehensive analysis of PRD.md, Design.md, and supporting documentati
 
 ### Foundation MVP Features from PRD
 
-- [ ] MVP.1 Model selection exact implementation
+- [x] MVP.1 Model selection exact implementation
   
   Acceptance Criteria:
   - Support exact models from PRD: openai:gpt-4o, openai:gpt-4o-mini, anthropic:claude-3-5-sonnet, anthropic:claude-3-5-haiku
@@ -402,6 +402,7 @@ Based on comprehensive analysis of PRD.md, Design.md, and supporting documentati
   - Model selector shows human-friendly names ("GPT-4o", "Claude 3.5 Sonnet")
   - Thread activeModel persists exact provider:model format in database
   - Client Verification: All specified models available and working correctly
+  - ✓ Implemented centralized model config, provider routing, validation, API endpoint, comprehensive tests
 
 - [ ] MVP.2 Thread auto-titling from first message
   

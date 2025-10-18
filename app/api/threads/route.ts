@@ -9,6 +9,7 @@ import { CreateThreadSchema } from 'lib/schemas'
 import { checkRateLimit, RATE_LIMITS } from 'lib/rate-limit'
 import { logEvent, Events } from 'lib/logger'
 import { Metrics } from 'lib/metrics'
+import { DEFAULT_MODEL } from 'lib/models'
 
 export async function GET() {
   const gate = await requireUser()
@@ -54,7 +55,7 @@ export async function POST(req: NextRequest) {
       data: {
         userId,
         title: title ?? null,
-        activeModel: activeModel ?? 'openai:gpt-4o'
+        activeModel: activeModel ?? DEFAULT_MODEL
       },
       select: { id: true, title: true, activeModel: true, createdAt: true, updatedAt: true }
     })

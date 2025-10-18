@@ -1,5 +1,6 @@
 import Anthropic from '@anthropic-ai/sdk'
 import type { ProviderAdapter, ChatMessage } from './types'
+import { getProviderModelName } from '../models'
 
 let client: Anthropic | null = null
 function ensureClient(): Anthropic | null {
@@ -35,7 +36,9 @@ export const anthropicAdapter: ProviderAdapter = {
     if (!cli) {
       return { text: '[stub] hello from anthropic:' + model, usage: { input_tokens: 1, output_tokens: 2 } }
     }
-    const primary = normalizeAnthropicModelId(model)
+    // Extract actual model name for Anthropic API (remove provider prefix)
+    const actualModel = getProviderModelName(model);
+    const primary = normalizeAnthropicModelId(actualModel)
     try {
       const res = await cli.messages.create({
         model: primary,
@@ -73,7 +76,9 @@ export const anthropicAdapter: ProviderAdapter = {
       yield 'response'
       return
     }
-    const primary = normalizeAnthropicModelId(model)
+    // Extract actual model name for Anthropic API (remove provider prefix)
+    const actualModel = getProviderModelName(model);
+    const primary = normalizeAnthropicModelId(actualModel)
     async function* runStream(modelId: string): AsyncIterable<string> {
       const c = ensureClient()
       if (!c) {

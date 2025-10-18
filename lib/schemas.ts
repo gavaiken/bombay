@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { isValidModel } from './models';
 
 // Maximum content length for messages (4000 characters as per SEC.2 requirements)
 const MAX_MESSAGE_CONTENT_LENGTH = 4000;
@@ -37,11 +38,17 @@ export const CreateThreadSchema = z.object({
   title: z.string()
     .max(MAX_THREAD_TITLE_LENGTH, `Thread title must be ${MAX_THREAD_TITLE_LENGTH} characters or less`)
     .optional(),
-  activeModel: z.string().optional()
+  activeModel: z.string().optional().refine(
+    (model) => !model || isValidModel(model),
+    'Invalid model specified'
+  )
 });
 
 export const UpdateThreadSchema = z.object({
-  activeModel: z.string().min(1, 'Active model is required'),
+  activeModel: z.string().min(1, 'Active model is required').refine(
+    (model) => isValidModel(model),
+    'Invalid model specified'
+  ),
   title: z.string()
     .max(MAX_THREAD_TITLE_LENGTH, `Thread title must be ${MAX_THREAD_TITLE_LENGTH} characters or less`)
     .optional()
@@ -55,7 +62,11 @@ export const SendMessageSchema = z.object({
     .refine(
       (content) => content.trim().length > 0,
       'Message content cannot be only whitespace'
-    )
+    ),
+  model: z.string().optional().refine(
+    (model) => !model || isValidModel(model),
+    'Invalid model specified'
+  )
 });
 
 // Export the constants for use in other files

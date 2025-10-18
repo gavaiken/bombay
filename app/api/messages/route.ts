@@ -82,7 +82,7 @@ export async function POST(req: NextRequest) {
       return jsonError('VALIDATION_ERROR', firstError.message, 400)
     }
     
-    const { threadId, content } = validation.data
+    const { threadId, content, model } = validation.data
     
     // Check rate limiting
     const rateLimit = await checkRateLimit({
@@ -98,11 +98,15 @@ export async function POST(req: NextRequest) {
       });
       return jsonError('RATE_LIMITED', 'Too many messages. Please wait before sending again.', 429)
     }
-    // Ownership check
+    // Ownership check and get thread model
     const thread = await prisma.thread.findFirst({ where: { id: threadId, userId }, select: { id: true, activeModel: true } })
     if (!thread) {
       return jsonError('FORBIDDEN', 'Forbidden', 403)
     }
+    
+    // Use provided model or fall back to thread's active model
+    const { DEFAULT_MODEL } = await import('lib/models');
+    const selectedModel = model || thread.activeModel || DEFAULT_MODEL;
     // Persist user message
     await prisma.message.create({ data: { threadId, role: 'user', contentText: content } })
     
@@ -110,13 +114,13 @@ export async function POST(req: NextRequest) {
     await logEvent(Events.MESSAGE_SENT, 'info', {
       userId,
       threadId,
-      model: thread.activeModel || 'unknown'
+      model: selectedModel
     });
     
     // Track metrics
     await Metrics.trackActiveUser(userId);
-    await Metrics.trackMessage(userId, thread.activeModel || 'unknown');
-    await Metrics.trackModelUsage(thread.activeModel || 'unknown');
+    await Metrics.trackMessage(userId, selectedModel);
+    await Metrics.trackModelUsage(selectedModel);
 
     if (mode === 'json') {
       // Test-only non-streaming validation path
@@ -124,21 +128,22 @@ export async function POST(req: NextRequest) {
         return jsonError('VALIDATION_ERROR', 'mode=json is test-only', 400)
       }
       const { getAdapterForModel } = await import('lib/providers')
-      const adapter = getAdapterForModel(thread.activeModel || 'openai:gpt-4o')
+      const adapter = getAdapterForModel(selectedModel)
       if (!adapter) {
         return jsonError('VALIDATION_ERROR', 'Unsupported model', 400)
       }
       const { buildPromptWithTruncation } = await import('lib/context')
+      const { getProviderModelName } = await import('lib/models')
       const prior = await prisma.message.findMany({ where: { threadId }, orderBy: { createdAt: 'asc' } })
       const messages = await buildPromptWithTruncation({ 
-        model: (thread.activeModel || '').split(':')[1] || 'gpt-4o', 
+        model: getProviderModelName(selectedModel), 
         prior, 
         currentUserText: content,
         userId 
       })
-      const res = await adapter.chatNonStreaming({ model: (thread.activeModel || '').split(':')[1] || 'gpt-4o', messages })
+      const res = await adapter.chatNonStreaming({ model: getProviderModelName(selectedModel), messages })
       const saved = await prisma.message.create({
-        data: { threadId, role: 'assistant', contentText: res.text, provider: adapter.name, model: (thread.activeModel || '').split(':')[1] || 'gpt-4o', usageJson: res.usage ?? undefined }
+        data: { threadId, role: 'assistant', contentText: res.text, provider: adapter.name, model: getProviderModelName(selectedModel), usageJson: res.usage ?? undefined }
       })
       return new Response(JSON.stringify(saved), { headers: { 'Content-Type': 'application/json' } })
     }
@@ -153,8 +158,9 @@ export async function POST(req: NextRequest) {
         }
         try {
           const { getAdapterForModel } = await import('lib/providers')
-          const adapter = getAdapterForModel(thread.activeModel || 'openai:gpt-4o')
-          const model = (thread.activeModel || '').split(':')[1] || 'gpt-4o'
+          const adapter = getAdapterForModel(selectedModel)
+          const { getProviderModelName } = await import('lib/models')
+          const model = getProviderModelName(selectedModel)
           let text = ''
           if (process.env.E2E_STUB_PROVIDER === '1' || !adapter || !adapter.chatStreaming) {
             // Deterministic stub for E2E and when adapter/streaming unavailable

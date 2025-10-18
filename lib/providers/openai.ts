@@ -1,5 +1,6 @@
 import OpenAI from 'openai'
 import type { ProviderAdapter, ChatMessage } from './types'
+import { getProviderModelName } from '../models'
 
 let client: OpenAI | null = null
 function ensureClient(): OpenAI | null {
@@ -25,8 +26,10 @@ export const openaiAdapter: ProviderAdapter = {
       // Deterministic stub when no key provided
       return { text: '[stub] hello from openai:' + model, usage: { input_tokens: 1, output_tokens: 2 } }
     }
+    // Extract actual model name for OpenAI API (remove provider prefix)
+    const actualModel = getProviderModelName(model);
     const res = await cli.chat.completions.create({
-      model,
+      model: actualModel,
       messages: toOpenAI(messages),
       temperature: 0.3
     })
@@ -42,8 +45,10 @@ export const openaiAdapter: ProviderAdapter = {
       yield 'response'
       return
     }
+    // Extract actual model name for OpenAI API (remove provider prefix)
+    const actualModel = getProviderModelName(model);
     const stream = await cli.chat.completions.create({
-      model,
+      model: actualModel,
       messages: toOpenAI(messages),
       stream: true,
       temperature: 0.3
