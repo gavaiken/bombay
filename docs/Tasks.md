@@ -260,7 +260,7 @@ This section breaks down implementing Scopes per docs/Scopes Feature - PRD.md an
   - Mark which scopes are sensitive (e.g., profile, health) and define consent granularity (per-thread, per-scope, one-time per thread).
   - Document policy in docs/Scopes Feature - PRD.md Acceptance Criteria notes.
 
-- [ ] S0.3 Feature flag and rollout plan
+- [x] S0.3 Feature flag and rollout plan
   
   Acceptance Criteria:
   - NEXT_PUBLIC_SCOPES_ENABLED gates UI; server respects flag (no scope fields when disabled).
@@ -268,7 +268,7 @@ This section breaks down implementing Scopes per docs/Scopes Feature - PRD.md an
 
 ### Phase S1 — Database Schema (Prisma) and Seeds
 
-- [ ] S1.1 Add Thread.activeScopeKeys (String[] default [])
+- [x] S1.1 Add Thread.activeScopeKeys (String[] default [])
   
   Acceptance Criteria:
   - prisma/schema.prisma updated; migration runs; GET/PATCH /api/threads includes activeScopeKeys.

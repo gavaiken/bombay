@@ -42,6 +42,29 @@ The script requires environment variables: `BETTERSTACK_CONNECT_HOST`, `BETTERST
 ## Vercel Log Drains (alternative)
 If you prefer a drain for platform logs, add a Log Drain integration in Vercel (Datadog, New Relic, Better Stack). This forwards function logs directly without code changes.
 
+## Scopes Feature Rollout Plan
+
+The Scopes feature is gated behind an environment flag to allow safe, progressive rollout.
+
+- Flag: NEXT_PUBLIC_SCOPES_ENABLED ("1" or "true" to enable)
+- Effect:
+  - UI: Scope Toggle Bar and annotations are shown only when enabled
+  - API: Scope endpoints (/api/scopes, /api/threads/:id/scopes, /api/threads/:id/scopes/consent) return 404 when disabled; threads API omits activeScopeKeys when disabled
+
+Rollout steps:
+1) Preview enablement
+   - Set NEXT_PUBLIC_SCOPES_ENABLED=1 on the Preview environment in Vercel
+   - Smoke test zero-scope, single-scope (Work), and sensitive scope flows (Profile/Health with consent)
+   - Verify SSE done payload includes usedScopes and UI annotations render as expected
+2) Metrics and logs check
+   - Confirm structured logs for scope.toggled, scope.consent, and recall.used are arriving in Logtail (no content values, keys only)
+   - Inspect metrics endpoint (if available) for scope toggle counts and avg scopes enabled per thread
+3) Production enablement
+   - Set NEXT_PUBLIC_SCOPES_ENABLED=1 on Production after preview smoke passes
+   - Monitor logs and metrics for the first 24–48 hours; be ready to disable the flag if issues arise
+4) Rollback
+   - To disable, set the flag to empty/0/false and redeploy; UI and APIs will hide scope-related fields and endpoints
+
 Deployment Runbook (Vercel + Porkbun)
 
 This document outlines how to deploy the bombay.chat application to production. The target production environment is Vercel (for hosting the Next.js app and serverless functions), with the custom domain bombay.chat managed via Porkbun (domain registrar and DNS). Below are the steps and configurations for a successful deployment.

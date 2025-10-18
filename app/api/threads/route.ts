@@ -19,11 +19,11 @@ export async function GET() {
     const threads = await prisma.thread.findMany({
       where: { userId },
       orderBy: { updatedAt: 'desc' },
-      select: { id: true, title: true, activeModel: true, createdAt: true, updatedAt: true }
+      select: { id: true, title: true, activeModel: true, activeScopeKeys: true, createdAt: true, updatedAt: true }
     })
-    const { isScopesFeatureEnabled, DEFAULT_ACTIVE_SCOPE_KEYS } = await import('lib/scopes')
+    const { isScopesFeatureEnabled } = await import('lib/scopes')
     const payload = isScopesFeatureEnabled()
-      ? threads.map((t) => ({ ...t, activeScopeKeys: [...DEFAULT_ACTIVE_SCOPE_KEYS] }))
+      ? threads.map((t) => ({ ...t, activeScopeKeys: Array.isArray((t as any).activeScopeKeys) ? (t as any).activeScopeKeys : [] }))
       : threads
     return new Response(JSON.stringify(payload), {
       headers: { 'Content-Type': 'application/json' }
@@ -61,11 +61,11 @@ export async function POST(req: NextRequest) {
         title: title ?? null,
         activeModel: activeModel ?? DEFAULT_MODEL
       },
-      select: { id: true, title: true, activeModel: true, createdAt: true, updatedAt: true }
+      select: { id: true, title: true, activeModel: true, activeScopeKeys: true, createdAt: true, updatedAt: true }
     })
-    const { isScopesFeatureEnabled, DEFAULT_ACTIVE_SCOPE_KEYS } = await import('lib/scopes')
+    const { isScopesFeatureEnabled } = await import('lib/scopes')
     const responseBody = isScopesFeatureEnabled()
-      ? { ...created, activeScopeKeys: [...DEFAULT_ACTIVE_SCOPE_KEYS] }
+      ? { ...created, activeScopeKeys: Array.isArray((created as any).activeScopeKeys) ? (created as any).activeScopeKeys : [] }
       : created
     
     // Log thread creation

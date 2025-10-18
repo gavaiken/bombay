@@ -48,3 +48,5 @@
 - 2025-10-18: Scopes S2.3 — Implemented POST /api/threads/:id/scopes (flag-gated). Validates keys, rejects sensitive without consent, best-effort persist to Thread.activeScopeKeys. Unit tests added.
 - 2025-10-18: Scopes S2.4 — Implemented POST /api/threads/:id/scopes/consent (flag-gated). Validates sensitive scopeKey and records consent (best-effort). Unit tests added.
 - 2025-10-18: Scopes S2.5 — SSE done events now include usedScopes []. Updated API docs and added integration test.
+- 2025-10-18: Scopes S3.1–S3.5 — Added recall provider stub with gating, profile injection, redaction policies, and attribution. Integrated into prompt building; SSE done includes usedScopes; best-effort metaJson persistence.
+- 2025-10-18: Scopes S4.1–S5.2 — Added Scope Toggle Bar (desktop/mobile), zero-scopes indicator, one-time consent prompt, and source annotations in assistant messages. Added client helper tests.
