@@ -25,6 +25,13 @@ All components MUST use these exact `data-testid` values for testing and automat
 - `composer-input` - Textarea for typing messages
 - `composer-send` - Submit button for sending messages
 
+## Scopes UI
+
+- `scope-toggle-bar` - Container for scope chips
+- `scope-chip-<key>` - Toggle chip for a specific scope (e.g., scope-chip-work)
+- `scope-annotation` - Annotation prefix on assistant messages showing used scopes
+- Consent prompt: native `window.confirm` used (no selector)
+
 ## State Indicators
 
 - `empty-state` - Shown when no threads exist

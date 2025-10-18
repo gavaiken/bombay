@@ -101,6 +101,79 @@ The SendMessageSchema defines the body for sending a message (must include a val
 
 All incoming request bodies are validated against these schemas. For response data, the handlers ensure they return data matching the ThreadSchema or MessageSchema structures above.
 
+Scopes Endpoints (Feature-flag gated)
+
+When NEXT_PUBLIC_SCOPES_ENABLED is on, the following endpoints are available:
+
+- GET /api/scopes[?threadId=<id>] – Returns the scope registry and optionally the thread’s scope state and consent map.
+- POST /api/threads/:id/scopes – Update a thread’s activeScopeKeys (validates keys; requires consent for sensitive scopes).
+- POST /api/threads/:id/scopes/consent – Record consent (or revocation) for a sensitive scope.
+
+Examples:
+
+GET registry only
+
+```bash
+curl -H "Cookie: session=..." https://bombay.chat/api/scopes
+```
+
+Response:
+
+```json
+{
+  "registry": [
+    { "key": "profile", "name": "Profile", "sensitive": true },
+    { "key": "work", "name": "Work", "sensitive": false },
+    { "key": "personal", "name": "Personal", "sensitive": false },
+    { "key": "health", "name": "Health", "sensitive": true }
+  ]
+}
+```
+
+GET registry + thread state
+
+```bash
+curl -H "Cookie: session=..." "https://bombay.chat/api/scopes?threadId=clx123"
+```
+
+Response:
+
+```json
+{
+  "registry": [ /* as above */ ],
+  "thread": { "id": "clx123", "activeScopeKeys": ["work"] },
+  "consents": { "profile": false, "health": false }
+}
+```
+
+Enable scopes (non-sensitive only)
+
+```bash
+curl -X POST -H 'Content-Type: application/json' -H "Cookie: session=..." \
+  -d '{"activeScopeKeys":["work","personal"]}' \
+  https://bombay.chat/api/threads/clx123/scopes
+```
+
+Consent for a sensitive scope
+
+```bash
+curl -X POST -H 'Content-Type: application/json' -H "Cookie: session=..." \
+  -d '{"scopeKey":"health","consent":true}' \
+  https://bombay.chat/api/threads/clx123/scopes/consent
+```
+
+Then enable including sensitive scope
+
+```bash
+curl -X POST -H 'Content-Type: application/json' -H "Cookie: session=..." \
+  -d '{"activeScopeKeys":["work","health"]}' \
+  https://bombay.chat/api/threads/clx123/scopes
+```
+
+Notes:
+- When the flag is disabled, these endpoints return 404 and threads omit activeScopeKeys.
+- SSE done events include `usedScopes: []` reflecting scopes actually used for recall.
+
 Server-Sent Events (Streaming Responses)
 
 The POST /api/messages endpoint implements a streaming response using Server-Sent Events. Upon receiving a valid SendMessageSchema request (which represents a new user message), the server will begin sending SSE events that contain the assistant’s reply incrementally. The SSE stream uses UTF-8 encoded text/event-stream format. Three event types are used in the stream:

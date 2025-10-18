@@ -443,17 +443,17 @@ This section breaks down implementing Scopes per docs/Scopes Feature - PRD.md an
 
 ### Phase S9 — Documentation and Selectors
 
-- [ ] S9.1 Update docs/API.md
+- [x] S9.1 Update docs/API.md
   
   Acceptance Criteria:
   - New endpoints, SSE payload fields, consent flow, examples added.
 
-- [ ] S9.2 Update docs/Database.md
+- [x] S9.2 Update docs/Database.md
   
   Acceptance Criteria:
   - Document Thread.activeScopeKeys, ScopeConsent, Message.metaJson; migration steps.
 
-- [ ] S9.3 Update docs/ui/selectors.md and Testing.md
+- [x] S9.3 Update docs/ui/selectors.md and Testing.md
   
   Acceptance Criteria:
   - Add selectors for scope-toggle-bar, scope-chip-*, scope-annotation, consent dialog; outline test flows.
