@@ -256,7 +256,7 @@ Based on comprehensive analysis of PRD.md, Design.md, and supporting documentati
   - Verify no console CSP violations on production site
   - Client Verification: Browser dev tools shows CSP header; no violations in console
 
-- [ ] SEC.2 Add input size limits and rate limiting foundation
+- [x] SEC.2 Add input size limits and rate limiting foundation
   
   Acceptance Criteria:
   - Zod schemas enforce max content length (e.g., 4000 chars) for message input

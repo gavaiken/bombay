@@ -5,6 +5,8 @@ export const runtime = 'nodejs'
 
 import { requireUser } from 'lib/authz'
 import { jsonError } from 'lib/errors'
+import { SendMessageSchema } from 'lib/schemas'
+import { checkRateLimit, RATE_LIMITS } from 'lib/rate-limit'
 
 export async function GET(req: NextRequest) {
   const gate = await requireUser()
@@ -39,9 +41,25 @@ export async function POST(req: NextRequest) {
   try {
     const url = new URL(req.url)
     const mode = url.searchParams.get('mode') // optional non-stream validation path
-    const { threadId, content } = await req.json()
-    if (!threadId || !content) {
-      return jsonError('VALIDATION_ERROR', 'threadId and content required', 400)
+    
+    // Parse and validate request body with Zod
+    const body = await req.json()
+    const validation = SendMessageSchema.safeParse(body)
+    if (!validation.success) {
+      const firstError = validation.error.errors[0]
+      return jsonError('VALIDATION_ERROR', firstError.message, 400)
+    }
+    
+    const { threadId, content } = validation.data
+    
+    // Check rate limiting
+    const rateLimit = await checkRateLimit({
+      identifier: userId,
+      ...RATE_LIMITS.MESSAGES
+    })
+    
+    if (!rateLimit.success) {
+      return jsonError('RATE_LIMITED', 'Too many messages. Please wait before sending again.', 429)
     }
     // Ownership check
     const thread = await prisma.thread.findFirst({ where: { id: threadId, userId }, select: { id: true, activeModel: true } })
