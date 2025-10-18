@@ -42,3 +42,4 @@
 - 2025-10-18: Scopes S0.3 — Feature flag and rollout. Added isScopesFeatureEnabled() reading NEXT_PUBLIC_SCOPES_ENABLED (default off). Threads API includes computed `activeScopeKeys: []` only when enabled. Deployment doc updated with rollout plan. Unit tests added at tests/unit/scopes.featureflag.test.ts.
 - 2025-10-18: Scopes S1.1 — Added Thread.activeScopeKeys String[] to Prisma schema, default []. Threads API conditionally includes `activeScopeKeys` when feature flag enabled. Integration test added at tests/integration/scopes.threads.api.int.test.ts (uses computed default array).
 - 2025-10-18: Scopes S1.3 — Added Message.metaJson Json? for attribution (usedScopes, sources). Update docs/Database.md. Migration required in dev/prod before usage.
+- 2025-10-18: Scopes S1.4 — Seed: Added a "Scopes Sample" thread with Work/Personal/Health tagged notes for dev seeding. Run `npm run db:seed` to populate.

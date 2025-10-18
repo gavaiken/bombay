@@ -286,7 +286,7 @@ This section breaks down implementing Scopes per docs/Scopes Feature - PRD.md an
   - Message.metaJson Json? stores usedScopes: string[] and optional sources meta.
   - Migration runs; API serializers expose usedScopes in SSE done payload.
 
-- [ ] S1.4 Seed default scope registry and sample data (dev only)
+- [x] S1.4 Seed default scope registry and sample data (dev only)
   
   Acceptance Criteria:
   - Seed adds small sample notes per scope for a dev user to exercise recall and redaction.
