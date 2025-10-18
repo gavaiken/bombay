@@ -317,7 +317,7 @@ This section breaks down implementing Scopes per docs/Scopes Feature - PRD.md an
   - Body { scopeKey, consent: true }; upserts ScopeConsent(grantedAt) for this thread/scope.
   - Required before enabling any sensitive scope.
 
-- [ ] S2.5 SSE done payload includes attribution
+- [x] S2.5 SSE done payload includes attribution
   
   Acceptance Criteria:
   - SSE done event adds { usedScopes: string[] } and optional { sources: [...] }.

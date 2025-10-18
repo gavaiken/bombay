@@ -168,7 +168,7 @@ export async function POST(req: NextRequest) {
 await new Promise((r) => setTimeout(r, 200))
             send('delta', JSON.stringify('working on it…'))
             await new Promise((r) => setTimeout(r, 60))
-            send('done', JSON.stringify({ messageId: 'm_temp', usage: { input_tokens: 0, output_tokens: 0 } }))
+            send('done', JSON.stringify({ messageId: 'm_temp', usage: { input_tokens: 0, output_tokens: 0 }, usedScopes: [] }))
             controller.close()
             return
           }
@@ -197,7 +197,7 @@ await new Promise((r) => setTimeout(r, 200))
           const saved = await prisma.message.create({
             data: { threadId, role: 'assistant', contentText: text, provider: adapter.name, model }
           })
-          send('done', JSON.stringify({ messageId: saved.id, usage: { input_tokens: 0, output_tokens: text.length } }))
+          send('done', JSON.stringify({ messageId: saved.id, usage: { input_tokens: 0, output_tokens: text.length }, usedScopes: [] }))
         } catch (err: unknown) {
           // Friendly error mapping + masked logs
           const raw = err && typeof err === 'object' && 'message' in err ? String((err as { message?: string }).message || 'error') : 'error'
