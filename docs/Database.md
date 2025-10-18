@@ -48,6 +48,11 @@ model Message {
 }
 ```
 
+Updates (Scopes):
+
+- Added Thread.activeScopeKeys String[] with default [] (PostgreSQL array) to persist per-thread active scopes.
+- Added ScopeConsent table (userId, threadId, scopeKey, grantedAt, revokedAt?) to track consent per sensitive scope.
+
 Notes
 
 - Cascade on User→Thread and Thread→Message prevents orphans when cleaning up test data.
