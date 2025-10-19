@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server'
 import { prisma } from 'lib/prisma'
+import type { Prisma } from '@prisma/client'
 
 export const runtime = 'nodejs'
 
@@ -11,23 +12,45 @@ import { logEvent, Events } from 'lib/logger'
 import { Metrics } from 'lib/metrics'
 import { DEFAULT_MODEL } from 'lib/models'
 
+type ThreadRow = { id: string; title: string | null; activeModel: string; createdAt: Date; updatedAt: Date; activeScopeKeys?: string[] }
+
 export async function GET() {
   const gate = await requireUser()
   if (!gate.ok) return gate.error
   const userId = gate.user.id
   try {
-    const threads = await prisma.thread.findMany({
-      where: { userId },
-      orderBy: { updatedAt: 'desc' },
-      select: { id: true, title: true, activeModel: true, activeScopeKeys: true, createdAt: true, updatedAt: true }
-    })
     const { isScopesFeatureEnabled } = await import('lib/scopes')
-    const payload = isScopesFeatureEnabled()
+    const scopesOn = isScopesFeatureEnabled()
+
+    // Build select shape conditionally to avoid querying non-existent columns in older DBs
+    const baseSelect: Prisma.ThreadSelect = { id: true, title: true, activeModel: true, createdAt: true, updatedAt: true }
+    const selectWithScopes: Prisma.ThreadSelect = { ...baseSelect, activeScopeKeys: true }
+
+    let threads: ThreadRow[] = []
+    try {
+      const rows = await prisma.thread.findMany({
+        where: { userId },
+        orderBy: { updatedAt: 'desc' },
+        select: scopesOn ? selectWithScopes : baseSelect,
+      })
+      threads = rows as unknown as ThreadRow[]
+    } catch {
+      // Fallback: if column missing (e.g., P2022), retry without it
+      const rows = await prisma.thread.findMany({
+        where: { userId },
+        orderBy: { updatedAt: 'desc' },
+        select: baseSelect,
+      })
+      threads = rows as unknown as ThreadRow[]
+    }
+
+    const payload: ThreadRow[] = scopesOn
       ? threads.map((t) => {
-          const keys = (t as { activeScopeKeys?: string[] }).activeScopeKeys
-          return { ...t, activeScopeKeys: Array.isArray(keys) ? keys : [] }
+          const keys = Array.isArray(t.activeScopeKeys) ? t.activeScopeKeys : []
+          return { ...t, activeScopeKeys: keys }
         })
       : threads
+
     return new Response(JSON.stringify(payload), {
       headers: { 'Content-Type': 'application/json' }
     })
@@ -58,17 +81,28 @@ export async function POST(req: NextRequest) {
       return jsonError('VALIDATION_ERROR', firstError.message, 400)
     }
     const { title, activeModel } = parsed.data
-    const created = await prisma.thread.create({
+
+    const { isScopesFeatureEnabled } = await import('lib/scopes')
+    const scopesOn = isScopesFeatureEnabled()
+
+    // Create thread
+    const selectShape: Prisma.ThreadSelect = scopesOn
+      ? { id: true, title: true, activeModel: true, activeScopeKeys: true, createdAt: true, updatedAt: true }
+      : { id: true, title: true, activeModel: true, createdAt: true, updatedAt: true }
+
+    const createdRow = await prisma.thread.create({
       data: {
         userId,
         title: title ?? null,
         activeModel: activeModel ?? DEFAULT_MODEL
       },
-      select: { id: true, title: true, activeModel: true, activeScopeKeys: true, createdAt: true, updatedAt: true }
+      select: selectShape
     })
-    const { isScopesFeatureEnabled } = await import('lib/scopes')
-    const responseBody = isScopesFeatureEnabled()
-      ? { ...created, activeScopeKeys: Array.isArray((created as { activeScopeKeys?: string[] }).activeScopeKeys) ? (created as { activeScopeKeys?: string[] }).activeScopeKeys! : [] }
+
+    const created = createdRow as unknown as ThreadRow
+
+    const responseBody: ThreadRow = scopesOn
+      ? { ...created, activeScopeKeys: Array.isArray(created.activeScopeKeys) ? created.activeScopeKeys : [] }
       : created
     
     // Log thread creation

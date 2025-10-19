@@ -116,8 +116,10 @@ const [typing, setTyping] = useState(false)
       const url = `/api/messages?threadId=${encodeURIComponent(currentThreadId)}`
       const res = await fetch(url, { cache: 'no-store' })
       if (!res.ok) throw new Error('Failed to load messages')
-      const data = await res.json() as Array<{ id: string; role: 'user'|'assistant'|'system'; content?: string; contentText?: string }>
-      const mapped: Message[] = data.map((m) => ({ id: m.id, role: m.role, contentText: m.content ?? m.contentText ?? '' }))
+      const raw = await res.json()
+      const list: Array<{ id: string; role: 'user'|'assistant'|'system'; content?: string; contentText?: string }> =
+        Array.isArray(raw) ? raw : (Array.isArray(raw?.messages) ? raw.messages : [])
+      const mapped: Message[] = list.map((m) => ({ id: m.id, role: m.role, contentText: m.content ?? m.contentText ?? '' }))
       setMessages(mapped)
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : 'Failed to load messages'
