@@ -6,15 +6,20 @@
 
 ## Content Security Policy
 
+We use a nonce-based CSP so that Next.js inline bootstrap scripts can execute without allowing arbitrary inline JS.
+
 ```
 default-src 'self';
-script-src 'self';
+script-src 'self' 'nonce-<generated-per-request>' 'strict-dynamic';
 style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
 font-src 'self' https://fonts.gstatic.com;
 img-src 'self' data:;
 connect-src 'self';
 frame-src 'none';
 ```
+
+- The nonce is generated per request in `middleware.ts` and attached to all framework scripts by Next.js.
+- This avoids `'unsafe-inline'` for scripts while allowing the framework’s critical inline runtime to run.
 
 (Provider calls occur server-side; browser doesn’t contact provider APIs.)
 

@@ -4,6 +4,23 @@ Below is a sequential list of all tasks required to go from an empty project dir
 
 ## Urgent — Production Issues (Top Priority)
 
+- [x] U7. Prod: Blank page due to CSP blocking Next.js inline scripts — adopt nonce-based CSP
+  
+  Acceptance Criteria:
+  - Replace static CSP in next.config.mjs with a nonce-based CSP set via middleware per request.
+  - Middleware generates a cryptographically strong nonce, injects it into the request as `x-nonce`, and sets `Content-Security-Policy` with `script-src 'self' 'nonce-<value>' 'strict-dynamic'`.
+  - Next.js internal inline scripts load successfully (no CSP errors in console); app hydrates and renders.
+  - docs/Security.md updated to document the nonce-based policy and rationale.
+  - Integration test updated to assert a valid CSP is emitted by middleware (contains nonce and required directives).
+  - Verification: Load app locally (or preview) — no "Refused to execute inline script" errors; vitest security test passes.
+
+  Steps:
+  1) Add `middleware.ts` to generate a per-request nonce and set CSP header with that nonce; propagate nonce via request header `x-nonce`.
+  2) Remove static CSP header from `next.config.mjs` to avoid duplication/conflicts.
+  3) Update `tests/integration/security.int.test.ts` to exercise middleware and assert directives, including `script-src` with `'nonce-'`.
+  4) Update `docs/Security.md` to reflect nonce-based CSP and keep Google Fonts allowances.
+  5) Run lint, type-check, and tests; then verify locally in browser if possible.
+
 - [x] U6. Simplify chat header: remove 'models' section and use static model list
   
   Acceptance Criteria:
