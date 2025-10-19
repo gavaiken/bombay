@@ -52,6 +52,14 @@ export interface EventContext {
   latencyMs?: number;
   userAgent?: string;
   ip?: string;
+  usedScopes?: string[];
+  scopeKeys?: string[];
+  scopeKey?: string;
+  activeCount?: number;
+  consent?: boolean;
+  droppedMessages?: number;
+  remainingTokens?: number;
+  tokenLimit?: number;
 }
 
 export async function logEvent(

@@ -1,9 +1,9 @@
 "use client"
 
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 type Thread = { id: string; title: string; activeModel: string; updatedAt: string; activeScopeKeys?: string[] }
-type Message = { id: string; role: 'user'|'assistant'|'system'; contentText: string }
+type Message = { id: string; role: 'user'|'assistant'|'system'; contentText: string; metaUsedScopes?: string[] }
 
 type SSEEvent = { event: string; data: string }
 
@@ -325,14 +325,14 @@ async function loadScopes(threadId: string) {
               return [...prev, { id: `a_${Date.now()}`, role: 'assistant', contentText: assistantText }]
             })
           } catch {}
-} else if (ev.event === 'done') {
+        } else if (ev.event === 'done') {
           try {
             const payload = JSON.parse(ev.data) as { usedScopes?: string[] }
             if (payload?.usedScopes && payload.usedScopes.length) {
-              setMessages((prev: any[]) => {
+              setMessages((prev) => {
                 if (!prev.length) return prev
-                const last = prev[prev.length - 1] as any
-                if (last.role !== 'assistant') return prev
+                const last = prev[prev.length - 1]
+                if (!last || last.role !== 'assistant') return prev
                 const clone = [...prev]
                 clone[clone.length - 1] = { ...last, metaUsedScopes: payload.usedScopes }
                 return clone
@@ -582,11 +582,11 @@ async function toggleScope(key: string, enable: boolean) {
               aria-label={m.role === 'assistant' ? 'assistant message' : 'user message'}
             >
               {m.role === 'assistant' && <div className="select-none mr-1">🤖</div>}
-<div className="flex flex-col">
-                {Array.isArray((m as any).metaUsedScopes) && (m as any).metaUsedScopes.length > 0 && (
-<div data-testid="scope-annotation" className="text-xs text-text/60 mb-1">
-                  Recalled from: {(m as any).metaUsedScopes.join(', ')}
-                  {(m as any).metaUsedScopes.map((sk: string) => (
+              <div className="flex flex-col">
+                {Array.isArray(m.metaUsedScopes) && m.metaUsedScopes.length > 0 && (
+                  <div data-testid="scope-annotation" className="text-xs text-text/60 mb-1">
+                    Recalled from: {m.metaUsedScopes.join(', ')}
+                    {m.metaUsedScopes.map((sk) => (
                     <button
                       key={`ex-${sk}`}
                       className="ml-2 text-xs underline"
@@ -596,7 +596,7 @@ async function toggleScope(key: string, enable: boolean) {
                       Exclude {sk}
                     </button>
                   ))}
-                </div>
+                  </div>
                 )}
                 <div className="content">{m.contentText}</div>
               </div>

@@ -11,8 +11,8 @@ export async function GET(req: NextRequest) {
     return jsonError('NOT_FOUND', 'Feature disabled', 404)
   }
   const gate = await requireUser()
-  if (!('user' in gate)) return (gate as any).error
-  const userId = (gate as any).user.id as string
+  if (!gate.ok) return gate.error
+  const userId = gate.user.id
   try {
     const url = new URL(req.url)
     const threadId = url.searchParams.get('threadId')
@@ -21,7 +21,8 @@ export async function GET(req: NextRequest) {
     if (threadId) {
       const t = await prisma.thread.findFirst({ where: { id: threadId, userId }, select: { id: true, activeScopeKeys: true } })
       if (!t) return jsonError('NOT_FOUND', 'Thread not found', 404)
-      threadInfo = { id: t.id, activeScopeKeys: Array.isArray((t as { activeScopeKeys?: string[] }).activeScopeKeys) ? (t as { activeScopeKeys?: string[] }).activeScopeKeys! : [] }
+      const activeScopeKeys = Array.isArray(t.activeScopeKeys) ? t.activeScopeKeys : []
+      threadInfo = { id: t.id, activeScopeKeys }
       // Load consents from DB (granted and not revoked)
       const rows = await prisma.scopeConsent.findMany({ where: { threadId: t.id, revokedAt: null }, select: { scopeKey: true } })
       const granted = new Set(rows.map((r) => r.scopeKey))
@@ -30,7 +31,7 @@ export async function GET(req: NextRequest) {
     const registry = SCOPES_REGISTRY.map(({ key, name, sensitive }) => ({ key, name, sensitive }))
     const resp = threadId ? { registry, thread: threadInfo, consents } : { registry }
     return new Response(JSON.stringify(resp), { headers: { 'Content-Type': 'application/json' } })
-  } catch (e) {
+  } catch {
     return jsonError('INTERNAL_ERROR', 'Failed to load scopes', 500)
   }
 }

@@ -5,7 +5,8 @@ import {
   getAvailableModels, 
   getModelsByProvider, 
   DEFAULT_MODEL,
-  ModelUtils
+  ModelUtils,
+  type ModelConfig
 } from '../../../lib/models';
 
 /**
@@ -35,18 +36,21 @@ export async function GET(request: NextRequest) {
       providerColor: ModelUtils.getProviderColor(model.provider)
     }));
 
+    const formattedByProvider = Object.entries(modelsByProvider).reduce<Record<string, { name: string; color: string; models: ReturnType<typeof ModelUtils.formatForDropdown>[] }>>((acc, [provider, groupedModels]) => {
+      const typedProvider = provider as ModelConfig['provider']
+      acc[provider] = {
+        name: ModelUtils.formatProviderName(typedProvider),
+        color: ModelUtils.getProviderColor(typedProvider),
+        models: groupedModels.map(model => ModelUtils.formatForDropdown(model))
+      };
+      return acc;
+    }, {});
+
     return NextResponse.json({
       success: true,
       data: {
         models: formattedModels,
-        modelsByProvider: Object.entries(modelsByProvider).reduce((acc, [provider, models]) => {
-          acc[provider] = {
-            name: ModelUtils.formatProviderName(provider as any),
-            color: ModelUtils.getProviderColor(provider as any),
-            models: models.map(model => ModelUtils.formatForDropdown(model))
-          };
-          return acc;
-        }, {} as any),
+        modelsByProvider: formattedByProvider,
         defaultModel: DEFAULT_MODEL,
         totalModels: models.length
       }

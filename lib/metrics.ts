@@ -9,7 +9,7 @@ export interface MetricEvent {
   userId?: string;
   event: string;
   value: number;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
   timestamp?: Date;
 }
 
@@ -20,6 +20,7 @@ export interface UsageMetrics {
   dailyActiveUsers: number;
   modelUsage: Record<string, number>;
   providerResponseTimes: Record<string, { avg: number; count: number }>;
+  providerTTFT: Record<string, { avg: number; count: number }>;
   tokenUsage: {
     totalInputTokens: number;
     totalOutputTokens: number;
@@ -44,8 +45,6 @@ const metricsStore = {
  * Record a metric event
  */
 export async function recordMetric(event: MetricEvent): Promise<void> {
-  const { userId, event: eventType, value, metadata, timestamp } = event;
-  
   try {
     // For MVP, use in-memory storage only
     // TODO: Add database persistence in future version
@@ -70,26 +69,39 @@ function updateInMemoryMetrics(event: MetricEvent): void {
       break;
 
     case 'model_usage':
-      if (metadata?.model) {
-        const current = metricsStore.modelCounts.get(metadata.model) || 0;
-        metricsStore.modelCounts.set(metadata.model, current + value);
+      if (metadata) {
+        const model = typeof metadata['model'] === 'string' ? metadata['model'] : null;
+        if (!model) break;
+        const current = metricsStore.modelCounts.get(model) || 0;
+        metricsStore.modelCounts.set(model, current + value);
       }
       break;
 
     case 'provider_response_time':
-      if (metadata?.provider && typeof value === 'number') {
-        const current = metricsStore.providerResponseTimes.get(metadata.provider) || { total: 0, count: 0 };
+      if (metadata && typeof metadata['provider'] === 'string' && typeof value === 'number') {
+        const provider = metadata['provider'] as string;
+        const current = metricsStore.providerResponseTimes.get(provider) || { total: 0, count: 0 };
         current.total += value;
         current.count += 1;
-        metricsStore.providerResponseTimes.set(metadata.provider, current);
+        metricsStore.providerResponseTimes.set(provider, current);
       }
       break;
 
     case 'token_usage':
-      if (metadata?.type === 'input') {
+      if (metadata && metadata['type'] === 'input') {
         metricsStore.tokenUsage.input += value;
-      } else if (metadata?.type === 'output') {
+      } else if (metadata && metadata['type'] === 'output') {
         metricsStore.tokenUsage.output += value;
+      }
+      break;
+
+    case 'provider_ttft':
+      if (metadata && typeof metadata['provider'] === 'string' && typeof value === 'number') {
+        const provider = metadata['provider'] as string;
+        const current = metricsStore.providerTTFT.get(provider) || { total: 0, count: 0 };
+        current.total += value;
+        current.count += 1;
+        metricsStore.providerTTFT.set(provider, current);
       }
       break;
   }

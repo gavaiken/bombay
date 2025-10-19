@@ -1,4 +1,11 @@
-export type ErrorCode = 'AUTH_REQUIRED' | 'VALIDATION_ERROR' | 'NOT_FOUND' | 'FORBIDDEN' | 'PROVIDER_ERROR' | 'INTERNAL_ERROR'
+export type ErrorCode =
+  | 'AUTH_REQUIRED'
+  | 'VALIDATION_ERROR'
+  | 'NOT_FOUND'
+  | 'FORBIDDEN'
+  | 'PROVIDER_ERROR'
+  | 'INTERNAL_ERROR'
+  | 'RATE_LIMITED'
 
 export function jsonError(code: ErrorCode, message: string, status: number, details: unknown = null) {
   return new Response(

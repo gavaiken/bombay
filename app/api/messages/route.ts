@@ -1,5 +1,6 @@
 import { prisma } from 'lib/prisma'
 import { NextRequest } from 'next/server'
+import type { Prisma, Message as PrismaMessage } from '@prisma/client'
 
 export const runtime = 'nodejs'
 
@@ -35,7 +36,7 @@ export async function GET(req: NextRequest) {
     }
     
     // Build query with pagination
-    const whereClause: any = { threadId };
+    const whereClause: Prisma.MessageWhereInput = { threadId };
     if (before) {
       whereClause.createdAt = { lt: before };
     }
@@ -61,7 +62,7 @@ export async function GET(req: NextRequest) {
     };
     
     return new Response(JSON.stringify(response), { headers: { 'Content-Type': 'application/json' } })
-  } catch (e) {
+  } catch {
     return jsonError('INTERNAL_ERROR', 'Failed to load messages', 500)
   }
 }
@@ -144,10 +145,18 @@ export async function POST(req: NextRequest) {
             usedScopes = scoped.usedScopes
           }
           const res = await adapter.chatNonStreaming({ model: modelName, messages })
-          let saved: any
+          let saved: PrismaMessage
           try {
             saved = await prisma.message.create({
-              data: { threadId, role: 'assistant', contentText: res.text, provider: adapter.name, model: modelName, usageJson: res.usage ?? undefined, metaJson: usedScopes.length ? { usedScopes } : undefined } as any
+              data: {
+                threadId,
+                role: 'assistant',
+                contentText: res.text,
+                provider: adapter.name,
+                model: modelName,
+                usageJson: (res.usage as Prisma.InputJsonValue | undefined) ?? undefined,
+                metaJson: usedScopes.length ? ({ usedScopes } as Prisma.InputJsonValue) : undefined
+              }
             })
           } catch {
             saved = await prisma.message.create({ data: { threadId, role: 'assistant', contentText: res.text, provider: adapter.name, model: modelName } })
@@ -182,17 +191,23 @@ export async function POST(req: NextRequest) {
             await new Promise((r) => setTimeout(r, 200))
             send('delta', JSON.stringify('working on it…'))
             await new Promise((r) => setTimeout(r, 60))
-            let saved: any
+            let saved: PrismaMessage
             try {
               saved = await prisma.message.create({
-                data: { threadId, role: 'assistant', contentText: 'Okay — working on it…', provider: adapter ? adapter.name : 'test', model, metaJson: usedScopes.length ? { usedScopes } : undefined } as any
+                data: {
+                  threadId,
+                  role: 'assistant',
+                  contentText: 'Okay — working on it…',
+                  provider: adapter ? adapter.name : 'test',
+                  model,
+                  metaJson: usedScopes.length ? ({ usedScopes } as Prisma.InputJsonValue) : undefined
+                }
               })
             } catch {
               saved = await prisma.message.create({ data: { threadId, role: 'assistant', contentText: 'Okay — working on it…', provider: adapter ? adapter.name : 'test', model } })
             }
             // Log recall usage (S8.1/S8.2)
             const { logEvent, Events } = await import('lib/logger')
-            const { Metrics } = await import('lib/metrics')
             await logEvent(Events.RECALL_USED, 'info', { userId, threadId, usedScopes })
             await Metrics.trackRecallUsed(usedScopes)
             send('done', JSON.stringify({ messageId: saved.id, usage: { input_tokens: 0, output_tokens: 0 }, usedScopes }))
@@ -222,17 +237,23 @@ export async function POST(req: NextRequest) {
           // Track provider response time metrics
           await Metrics.trackResponseTime(adapter.name, responseTime);
           
-          let saved: any
+          let saved: PrismaMessage
           try {
             saved = await prisma.message.create({
-              data: { threadId, role: 'assistant', contentText: text, provider: adapter.name, model, metaJson: usedScopes.length ? { usedScopes } : undefined } as any
+              data: {
+                threadId,
+                role: 'assistant',
+                contentText: text,
+                provider: adapter.name,
+                model,
+                metaJson: usedScopes.length ? ({ usedScopes } as Prisma.InputJsonValue) : undefined
+              }
             })
           } catch {
             saved = await prisma.message.create({ data: { threadId, role: 'assistant', contentText: text, provider: adapter.name, model } })
           }
           // Log recall usage (S8.1/S8.2)
           const { logEvent, Events } = await import('lib/logger')
-          const { Metrics } = await import('lib/metrics')
           await logEvent(Events.RECALL_USED, 'info', { userId, threadId, usedScopes })
           await Metrics.trackRecallUsed(usedScopes)
           send('done', JSON.stringify({ messageId: saved.id, usage: { input_tokens: 0, output_tokens: text.length }, usedScopes }))
@@ -258,7 +279,7 @@ export async function POST(req: NextRequest) {
       }
     })
     return new Response(stream, { headers: { 'Content-Type': 'text/event-stream', 'Cache-Control': 'no-cache', Connection: 'keep-alive' } })
-  } catch (e) {
+  } catch {
     return jsonError('INTERNAL_ERROR', 'Failed to stream response', 500)
   }
 }

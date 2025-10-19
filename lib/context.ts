@@ -3,11 +3,12 @@ import { logEvent, Events } from './logger'
 import { Metrics } from './metrics'
 
 // Import tiktoken for accurate OpenAI token counting
-let tiktoken: any = null;
+let tiktoken: typeof import('tiktoken') | null = null;
 try {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
   tiktoken = require('tiktoken');
 } catch (error) {
-  console.warn('tiktoken not available, falling back to word count estimation');
+  console.warn('tiktoken not available, falling back to word count estimation', error);
 }
 
 /**
