@@ -99,6 +99,31 @@ export async function buildPromptWithTruncation(opts: {
     role: m.role as 'system'|'user'|'assistant',
     content: m.contentText
   }))
+  
+  // Check for model switch handoff (CTX.2)
+  const lastAssistantMessage = [...opts.prior].reverse().find(m => m.role === 'assistant');
+  const isModelSwitch = lastAssistantMessage && lastAssistantMessage.model && lastAssistantMessage.model !== opts.model;
+  
+  if (isModelSwitch && lastAssistantMessage) {
+    // Inject handoff context system message
+    const { getModelName } = await import('./models');
+    const previousModelId = lastAssistantMessage.model!;
+    const previousProvider = lastAssistantMessage.provider || 'unknown';
+    
+    // Construct full model IDs for lookup (stored format may not include provider prefix)
+    const previousFullId = previousModelId.includes(':') ? previousModelId : `${previousProvider}:${previousModelId}`;
+    const currentFullId = opts.model;
+    
+    const previousModel = getModelName(previousFullId) || previousModelId;
+    const currentModel = getModelName(currentFullId) || opts.model;
+    
+    const handoffMessage: ProviderMessage = {
+      role: 'system',
+      content: `Continuing conversation from ${previousModel}. You are now ${currentModel}. Maintain conversation context and coherence.`
+    };
+    base.push(handoffMessage);
+  }
+  
   if (opts.currentUserText) base.push({ role: 'user', content: opts.currentUserText })
 
   // Count tokens using proper token counting
