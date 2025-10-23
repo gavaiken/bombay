@@ -25,8 +25,18 @@ function normalizeAnthropicModelId(model: string): string {
   }
 }
 
-function toAnthropic(messages: ChatMessage[]): Anthropic.Messages.MessageParam[] {
-  return messages.map((m) => ({ role: m.role as any, content: m.content }))
+function splitForAnthropic(messages: ChatMessage[]): { system?: string; chat: Anthropic.Messages.MessageParam[] } {
+  const systemParts: string[] = []
+  const chat: Anthropic.Messages.MessageParam[] = []
+  for (const m of messages) {
+    if (m.role === 'system') {
+      systemParts.push(m.content)
+    } else {
+      chat.push({ role: m.role as 'user' | 'assistant', content: m.content } as Anthropic.Messages.MessageParam)
+    }
+  }
+  const system = systemParts.length ? systemParts.join('\n\n') : undefined
+  return { system, chat }
 }
 
 export const anthropicAdapter: ProviderAdapter = {
@@ -38,12 +48,14 @@ export const anthropicAdapter: ProviderAdapter = {
     }
     // Extract actual model name for Anthropic API (remove provider prefix)
     const actualModel = getProviderModelName(model);
-    const primary = normalizeAnthropicModelId(actualModel)
+const primary = normalizeAnthropicModelId(actualModel)
+    const { system, chat } = splitForAnthropic(messages)
     try {
       const res = await cli.messages.create({
         model: primary,
         max_tokens: 512,
-        messages: toAnthropic(messages)
+        system,
+        messages: chat
       })
       const text = (res as any).content?.map((c: any) => c.text).join('') || ''
       const usage = (res as any).usage && 'input_tokens' in (res as any).usage ? { input_tokens: (res as any).usage.input_tokens || 0, output_tokens: (res as any).usage.output_tokens || 0 } : undefined
@@ -54,12 +66,13 @@ export const anthropicAdapter: ProviderAdapter = {
         'claude-3-5-sonnet-latest': 'claude-3-5-sonnet-20241022',
         'claude-3-5-haiku-latest': 'claude-3-5-haiku-20241022'
       }
-      const fallback = fallbackMap[primary]
+const fallback = fallbackMap[primary]
       if (msg.includes('not_found_error') && fallback) {
         const res = await cli.messages.create({
           model: fallback,
           max_tokens: 512,
-          messages: toAnthropic(messages)
+          system,
+          messages: chat
         })
         const text = (res as any).content?.map((c: any) => c.text).join('') || ''
         const usage = (res as any).usage && 'input_tokens' in (res as any).usage ? { input_tokens: (res as any).usage.input_tokens || 0, output_tokens: (res as any).usage.output_tokens || 0 } : undefined
@@ -78,7 +91,8 @@ export const anthropicAdapter: ProviderAdapter = {
     }
     // Extract actual model name for Anthropic API (remove provider prefix)
     const actualModel = getProviderModelName(model);
-    const primary = normalizeAnthropicModelId(actualModel)
+const primary = normalizeAnthropicModelId(actualModel)
+    const { system, chat } = splitForAnthropic(messages)
     async function* runStream(modelId: string): AsyncIterable<string> {
       const c = ensureClient()
       if (!c) {
@@ -90,7 +104,8 @@ export const anthropicAdapter: ProviderAdapter = {
       const stream = await c.messages.stream({
         model: modelId,
         max_tokens: 512,
-        messages: toAnthropic(messages)
+        system,
+        messages: chat
       })
       for await (const event of stream as any) {
         if ((event as any).type === 'content_block_delta') {

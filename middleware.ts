@@ -12,13 +12,23 @@ function generateNonce(): string {
 
 export default function middleware(request: NextRequest) {
   const nonce = generateNonce()
+  const isDev = process.env.NODE_ENV !== 'production'
 
   // Build nonce-based CSP per docs/Security.md
+  // In development, Next.js requires 'unsafe-eval' for Fast Refresh
+  const scriptSrc = isDev
+    ? `script-src 'self' 'nonce-${nonce}' 'unsafe-eval'`
+    : `script-src 'self' 'nonce-${nonce}' 'strict-dynamic'`
+  
+  const fontSrc = isDev
+    ? "font-src 'self' https://fonts.gstatic.com data:"
+    : "font-src 'self' https://fonts.gstatic.com"
+
   const csp = [
     "default-src 'self'",
-    `script-src 'self' 'nonce-${nonce}' 'strict-dynamic'`,
+    scriptSrc,
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-    "font-src 'self' https://fonts.gstatic.com",
+    fontSrc,
     "img-src 'self' data:",
     "connect-src 'self'",
     "frame-src 'none'",

@@ -563,6 +563,34 @@ Based on comprehensive analysis of PRD.md, Design.md, and supporting documentati
 
 ### Enhanced UI/UX Features
 
+- [ ] BUG.1 Messages appearing to send twice
+  
+  Acceptance Criteria:
+  - Investigate and fix issue where models think user is sending messages twice when only sent once
+  - Ensure message submission only creates one user message record per click
+  - Verify message history sent to provider adapters doesn't contain duplicates
+  - Add client-side guard to prevent double submission (e.g., disable send button during submission)
+  - Verification: Send multiple messages and verify each appears only once in transcript and database
+
+- [ ] BUG.2 Model switch indicator in message thread
+  
+  Acceptance Criteria:
+  - Add inline visual indicator when model is switched mid-conversation
+  - Indicator should be centered text in message thread (e.g., "Switched to GPT-4o" or "→ gpt-4o")
+  - Design should be clean, non-intrusive, and clearly distinguish model switches from messages
+  - Include timestamp or position context so users can scroll back and see switch points
+  - Use data-testid="model-switch-indicator" for testing
+  - Verification: Switch models mid-conversation and see clear indicator in transcript; scroll back to verify switch history
+
+- [ ] BUG.3 Composer loses focus after message submission
+  
+  Acceptance Criteria:
+  - After sending a message, cursor should remain focused in the chat input box
+  - User should be able to immediately type another message without clicking back into the box
+  - This should work for both Enter key submission and Send button click
+  - Ensure focus retention works across all supported browsers
+  - Verification: Send a message via Enter or button and immediately start typing—no refocus click required
+
 - [ ] UI.1 Thread management features
   
   Acceptance Criteria:

@@ -19,6 +19,8 @@ yarn.lock
 # Logs
 *.log
 logs/
+.logs/
+chrome-profile/
 
 # Editor
 .vscode/
@@ -44,3 +46,4 @@ venv/
 .pytest_cache/
 .mypy_cache/
 .vercel
+.logs/

@@ -131,6 +131,10 @@ const [typing, setTyping] = useState(false)
   }
 
 async function loadScopes(threadId: string) {
+    // Feature-flag gating: avoid 404 noise when disabled
+    if (process.env.NEXT_PUBLIC_SCOPES_ENABLED !== '1' && process.env.NEXT_PUBLIC_SCOPES_ENABLED !== 'true') {
+      return
+    }
     try {
       const res = await fetch(`/api/scopes?threadId=${encodeURIComponent(threadId)}`, { cache: 'no-store' })
       if (!res.ok) return
@@ -201,8 +205,15 @@ async function loadScopes(threadId: string) {
    */
   async function onChangeModel(next: string) {
     setModel(next)
-    // Skip API call if no active thread (local stub)
-    if (!currentThreadId) return
+    // Skip API call if no active thread or if it's a local stub (not yet persisted)
+    if (!currentThreadId || currentThreadId.startsWith('t_')) {
+      // For stub threads, update the local thread object so when it's persisted
+      // via ensureThread(), it will use the correct model
+      setThreads(prev => prev.map(t => 
+        t.id === currentThreadId ? { ...t, activeModel: next } : t
+      ))
+      return
+    }
     
     // Persist model change to database for the current thread
     await fetch(`/api/threads/${encodeURIComponent(currentThreadId)}`, {
@@ -251,14 +262,18 @@ async function loadScopes(threadId: string) {
     // If we already have a real server thread id, reuse it. Treat local stub ids (e.g., "t_...") as not real.
     if (currentThreadId && !currentThreadId.startsWith('t_')) return currentThreadId
     try {
+      // Get the current model from the local thread state if it exists (user may have switched models)
+      const localThread = threads.find(t => t.id === currentThreadId)
+      const modelToUse = localThread?.activeModel || model
+      
       const res = await fetch('/api/threads', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title: currentThreadTitle || 'New chat' })
+        body: JSON.stringify({ title: currentThreadTitle || 'New chat', activeModel: modelToUse })
       })
       if (!res.ok) throw new Error('Failed to create thread')
       const t = await res.json()
-      setThreads((prev) => [t, ...prev])
+      setThreads((prev) => [t, ...prev.filter(x => x.id !== currentThreadId)])
       setCurrentThreadId(t.id)
       setCurrentThreadTitle(t.title || 'Untitled')
       if (t.activeModel) setModel(t.activeModel)
@@ -419,7 +434,7 @@ async function toggleScope(key: string, enable: boolean) {
   return (
     <div
       data-testid="app-shell"
-      className={`relative md:grid h-screen ${isSidebarVisible ? 'md:grid-cols-[280px_1fr]' : 'md:grid-cols-[0_1fr]'}`}
+      className={`relative md:grid h-full min-h-0 ${isSidebarVisible ? 'md:grid-cols-[280px_1fr]' : 'md:grid-cols-[0_1fr]'}`}
     >
       {/* Mobile overlay backdrop */}
       {isTrayOpen && (
@@ -483,7 +498,7 @@ async function toggleScope(key: string, enable: boolean) {
         </ul>
       </aside>
 
-      <main data-testid="chat-pane" role="main" className="flex flex-col h-screen md:h-auto">
+      <main data-testid="chat-pane" role="main" className="flex flex-col h-full min-h-0">
         <header className="flex items-center justify-between border-b p-3">
           <div className="flex items-center gap-2">
             <button className="md:hidden rounded-md border border-border px-2 py-1" aria-controls="thread-tray" aria-expanded={isTrayOpen} onClick={() => setIsTrayOpen(true)}>

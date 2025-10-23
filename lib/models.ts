@@ -6,7 +6,7 @@
 export interface ModelConfig {
   id: string;
   name: string;
-  provider: 'openai' | 'anthropic';
+  provider: 'openai' | 'anthropic' | 'test';
   description: string;
   contextWindow: number;
   available: boolean;
@@ -16,6 +16,16 @@ export interface ModelConfig {
  * Exact models specified in PRD.md
  */
 export const AVAILABLE_MODELS: Record<string, ModelConfig> = {
+  // Test Model (no external API calls)
+  'test:repeat-after-me': {
+    id: 'test:repeat-after-me',
+    name: 'repeat after me',
+    provider: 'test',
+    description: 'Echoes user input without external API calls (for development/testing)',
+    contextWindow: 10000,
+    available: true,
+  },
+
   // OpenAI Models
   'openai:gpt-4o': {
     id: 'openai:gpt-4o',
@@ -35,19 +45,19 @@ export const AVAILABLE_MODELS: Record<string, ModelConfig> = {
   },
   
   // Anthropic Models
-  'anthropic:claude-3-5-sonnet': {
-    id: 'anthropic:claude-3-5-sonnet',
-    name: 'Claude 3.5 Sonnet',
+  'anthropic:claude-3-5-haiku-20241022': {
+    id: 'anthropic:claude-3-5-haiku-20241022',
+    name: 'Claude 3.5 Haiku',
     provider: 'anthropic',
-    description: 'Anthropic Claude 3.5 Sonnet - Advanced reasoning and coding',
+    description: 'Anthropic Claude 3.5 Haiku (20241022) - Fast and efficient',
     contextWindow: 200000,
     available: true,
   },
-  'anthropic:claude-3-5-haiku': {
-    id: 'anthropic:claude-3-5-haiku',
-    name: 'Claude 3.5 Haiku',
+  'anthropic:claude-sonnet-4-20250514': {
+    id: 'anthropic:claude-sonnet-4-20250514',
+    name: 'Claude — Sonnet 4',
     provider: 'anthropic',
-    description: 'Anthropic Claude 3.5 Haiku - Fast and efficient',
+    description: 'Anthropic Claude Sonnet 4 (20250514) - Advanced reasoning and coding',
     contextWindow: 200000,
     available: true,
   },
@@ -83,7 +93,7 @@ export function getModelName(modelId: string): string {
 /**
  * Get provider from model ID
  */
-export function getProviderFromModel(modelId: string): 'openai' | 'anthropic' | null {
+export function getProviderFromModel(modelId: string): 'openai' | 'anthropic' | 'test' | null {
   const config = getModelConfig(modelId);
   return config ? config.provider : null;
 }
@@ -135,24 +145,28 @@ export const ModelUtils = {
   }),
   
   // Format provider name for display
-  formatProviderName: (provider: 'openai' | 'anthropic'): string => {
+  formatProviderName: (provider: 'openai' | 'anthropic' | 'test'): string => {
     switch (provider) {
       case 'openai':
         return 'OpenAI';
       case 'anthropic':
         return 'Anthropic';
+      case 'test':
+        return 'Test';
       default:
         return provider;
     }
   },
   
   // Get provider color for UI theming
-  getProviderColor: (provider: 'openai' | 'anthropic'): string => {
+  getProviderColor: (provider: 'openai' | 'anthropic' | 'test'): string => {
     switch (provider) {
       case 'openai':
         return '#10a37f'; // OpenAI green
       case 'anthropic':
         return '#d97757'; // Anthropic orange
+      case 'test':
+        return '#64748b'; // Slate for test
       default:
         return '#6b7280'; // Default gray
     }

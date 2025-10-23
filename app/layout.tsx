@@ -30,7 +30,7 @@ export default async function RootLayout({
   const session = await auth()
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${plex.variable} font-mono`} data-theme="dark">
+      <body className={`${plex.variable} font-mono min-h-screen flex flex-col`} data-theme="dark">
         <header className="flex items-center justify-between border-b p-3">
           <div className="flex items-center gap-2">
             <div
@@ -62,8 +62,10 @@ export default async function RootLayout({
               </a>
             )}
           </nav>
-        </header>
-        {children}
+      </header>
+        <div className="flex-1 min-h-0 flex flex-col">
+          {children}
+        </div>
       </body>
     </html>
   )
