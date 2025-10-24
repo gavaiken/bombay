@@ -18,6 +18,8 @@ Bombay is a web-based chat application built with Next.js that allows users to c
 
 ## Architecture
 
+For a deeper tour of the system components and operations stack, see the new [Architecture Overview](docs/architecture.md).
+
 ### Tech Stack
 
 - **Frontend**: React, Next.js 14 (App Router), TypeScript, Tailwind CSS
